@@ -11,6 +11,7 @@ import javax.swing.*;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.swing.mxGraphOutline;
 import com.mxgraph.swing.handler.mxKeyboardHandler;
+import com.mxgraph.swing.handler.mxRubberband;
 import com.mxgraph.swing.util.*;
 import com.mxgraph.util.*;
 import com.mxgraph.util.mxEventSource.mxIEventListener;
@@ -24,13 +25,10 @@ import ui.MeMenuBar;
 
 public class App extends JPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -8150527452734294724L;
 
 	/*
-	 * 
+	 * Panel showing the working tree
 	 */
 	protected JPanel navComponent;
 
@@ -40,27 +38,27 @@ public class App extends JPanel {
 	protected mxGraphComponent graphComponent;
 
 	/**
-	 * 
+	 * UI that display an outline of the graph, help to resize the paper
 	 */
 	protected mxGraphOutline graphOutline;
 
 	/**
-	 * 
+	 * Tool used to handle undo actions (store latest actions)
 	 */
 	protected mxUndoManager undoManager;
 
 	/**
-	 * 
+	 * Title of the Application
 	 */
 	protected String appTitle;
 
 	/**
-	 * 
+	 * Label displayed at the bottom to show the status of the Application
 	 */
 	protected JLabel statusBar;
 
 	/**
-	 * 
+	 * Current file where the changes are saved to
 	 */
 	protected File currentFile;
 
@@ -70,7 +68,12 @@ public class App extends JPanel {
 	protected boolean modified = false;
 
 	/**
-	 * 
+	 * Used to handle rectangular region selection in the graph
+	 */
+	protected mxRubberband rubberband;
+
+	/**
+	 * Used to handle keyboard actions, Accelerators by example
 	 */
 	protected mxKeyboardHandler keyboardHandler;
 
@@ -92,8 +95,26 @@ public class App extends JPanel {
 		}
 	};
 
+	public static void main(String[] args) {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+				mxSwingConstants.SHADOW_COLOR = Color.LIGHT_GRAY;
+				mxConstants.W3C_SHADOWCOLOR = "#D3D3D3";
+
+				App app = new App();
+				app.createFrame(new MeMenuBar(app)).setVisible(true);
+			}
+		});
+	}
+
 	public App() {
-		this.appTitle = "Nouveau graph";
+		this.appTitle = "Medit";
 		this.graphComponent = new MeGraphComponent(new MeGraph());
 
 		final mxGraph graph = graphComponent.getGraph();
@@ -140,38 +161,28 @@ public class App extends JPanel {
 
 		// Creates the status bar
 		statusBar = createStatusBar();
-		
+
 		this.setLayout(new BorderLayout());
 		this.add(mainWrapper, BorderLayout.CENTER);
 		this.add(statusBar, BorderLayout.SOUTH);
-		
+
+		// Handle when graph repaint Event
+		installRepaintListener();
+
 		// Install the tool bar
 		installToolBar();
-	}
 
-	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
-				mxSwingConstants.SHADOW_COLOR = Color.LIGHT_GRAY;
-				mxConstants.W3C_SHADOWCOLOR = "#D3D3D3";
+		// Install keyboard and rubber band handlers
+		installHandlers();
 
-				App app = new App();
-				app.createFrame(new MeMenuBar(app)).setVisible(true);
-			}
-		});
+		updateTitle();
 	}
 
 	public JFrame createFrame(MeMenuBar menuBar) {
 		JFrame frame = new JFrame();
 		frame.getContentPane().add(this);
 		frame.setLocationRelativeTo(null);
-		frame.setSize(1000, 700);
+		frame.setSize(800, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setJMenuBar(menuBar);
 
@@ -189,7 +200,14 @@ public class App extends JPanel {
 	}
 
 	public void setModified(boolean modified) {
+		boolean oldValue = this.modified;
 		this.modified = modified;
+
+		firePropertyChange("modified", oldValue, modified);
+
+		if (oldValue != modified) {
+			updateTitle();
+		}
 	}
 
 	public File getCurrentFile() {
@@ -218,6 +236,73 @@ public class App extends JPanel {
 			}
 
 			frame.setTitle(title + " - " + appTitle);
+		}
+	}
+
+	public mxGraphComponent getGraphComponent() {
+		return graphComponent;
+	}
+
+	public mxGraphOutline getGraphOutline() {
+		return graphOutline;
+	}
+
+	public JPanel getNavComponent() {
+		return navComponent;
+	}
+
+	public void setNavComponent(JPanel navComponent) {
+		this.navComponent = navComponent;
+	}
+
+	public mxUndoManager getUndoManager() {
+		return undoManager;
+	}
+
+	protected void installToolBar() {
+		this.add(new MeToolBar(this, JToolBar.HORIZONTAL), BorderLayout.NORTH);
+	}
+
+	protected JLabel createStatusBar() {
+		JLabel statusBar = new JLabel("Prêt");
+		statusBar.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
+		return statusBar;
+	}
+
+	public void status(String msg) {
+		statusBar.setText(msg);
+	}
+
+	protected void installRepaintListener() {
+		graphComponent.getGraph().addListener(mxEvent.REPAINT, new mxIEventListener() {
+			public void invoke(Object source, mxEventObject evt) {
+				System.out.println(evt.getProperties());
+
+				String buffer = (graphComponent.getTripleBuffer() != null) ? "" : " (unbuffered)";
+				mxRectangle dirty = (mxRectangle) evt.getProperty("region");
+
+				if (dirty == null) {
+					// No zone selected for repaint
+					status("Repaint all" + buffer);
+				} else {
+					// When an area is selected for repaint
+					status("Repaint: x=" + (int) (dirty.getX()) + " y=" + (int) (dirty.getY()) + " w="
+							+ (int) (dirty.getWidth()) + " h=" + (int) (dirty.getHeight()) + buffer);
+				}
+			}
+		});
+	}
+
+	protected void installHandlers() {
+		rubberband = new mxRubberband(graphComponent);
+//		keyboardHandler = new EditorKeyboardHandler(graphComponent);
+	}
+
+	public void exit() {
+		JFrame frame = (JFrame) SwingUtilities.windowForComponent(this);
+
+		if (frame != null) {
+			frame.dispose();
 		}
 	}
 
@@ -250,63 +335,4 @@ public class App extends JPanel {
 
 		return newAction;
 	}
-
-	public mxGraphComponent getGraphComponent() {
-		return graphComponent;
-	}
-
-	public mxGraphOutline getGraphOutline() {
-		return graphOutline;
-	}
-
-	public JPanel getNavComponent() {
-		return navComponent;
-	}
-
-	public void setNavComponent(JPanel navComponent) {
-		this.navComponent = navComponent;
-	}
-
-	public mxUndoManager getUndoManager() {
-		return undoManager;
-	}
-
-	protected void installToolBar() {
-		this.add(new MeToolBar(this, JToolBar.HORIZONTAL), BorderLayout.NORTH);
-	}
-	
-	protected JLabel createStatusBar() {
-		JLabel statusBar = new JLabel("Prêt");
-		statusBar.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
-		return statusBar;
-	}
-
-	public void status(String msg) {
-		statusBar.setText(msg);
-	}
-
-	protected void installRepaintListener() {
-		graphComponent.getGraph().addListener(mxEvent.REPAINT, new mxIEventListener() {
-			public void invoke(Object source, mxEventObject evt) {
-				String buffer = (graphComponent.getTripleBuffer() != null) ? "" : " (unbuffered)";
-				mxRectangle dirty = (mxRectangle) evt.getProperty("region");
-
-				if (dirty == null) {
-					status("Repaint all" + buffer);
-				} else {
-					status("Repaint: x=" + (int) (dirty.getX()) + " y=" + (int) (dirty.getY()) + " w="
-							+ (int) (dirty.getWidth()) + " h=" + (int) (dirty.getHeight()) + buffer);
-				}
-			}
-		});
-	}
-
-	public void exit() {
-		JFrame frame = (JFrame) SwingUtilities.windowForComponent(this);
-
-		if (frame != null) {
-			frame.dispose();
-		}
-	}
-
 }
