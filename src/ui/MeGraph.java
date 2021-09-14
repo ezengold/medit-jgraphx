@@ -30,6 +30,7 @@ public class MeGraph extends mxGraph {
 	 */
 	public MeGraph() {
 		setAlternateEdgeStyle("edgeStyle=mxEdgeStyle.ElbowConnector;elbow=vertical");
+		setCellsResizable(false);
 	}
 
 	/**

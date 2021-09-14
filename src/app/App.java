@@ -3,10 +3,17 @@ package app;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.io.File;
 import java.util.List;
 
 import javax.swing.*;
+
+import org.jgrapht.ListenableGraph;
+import org.jgrapht.ext.JGraphXAdapter;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultListenableGraph;
 
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.swing.mxGraphOutline;
@@ -18,6 +25,7 @@ import com.mxgraph.util.mxEventSource.mxIEventListener;
 import com.mxgraph.util.mxUndoableEdit.mxUndoableChange;
 import com.mxgraph.view.mxGraph;
 
+import models.Transition;
 import ui.MeGraph;
 import ui.MeGraphComponent;
 import ui.MeToolBar;
@@ -31,6 +39,16 @@ public class App extends JPanel {
 	 * Panel showing the working tree
 	 */
 	protected JPanel navComponent;
+
+	/**
+	 * Contains the architecture of the graph
+	 */
+	protected ListenableGraph<String, Transition> graphArray;
+
+	/*
+	 * Adapter that help to draw the graph in the graph component
+	 */
+	protected JGraphXAdapter<String, Transition> jgxAdapter;
 
 	/**
 	 * 
@@ -82,6 +100,7 @@ public class App extends JPanel {
 	 */
 	protected mxIEventListener undoHandler = new mxIEventListener() {
 		public void invoke(Object source, mxEventObject evt) {
+			System.out.println(evt.getName());
 			undoManager.undoableEditHappened((mxUndoableEdit) evt.getProperty("edit"));
 		}
 	};
@@ -108,6 +127,26 @@ public class App extends JPanel {
 				mxConstants.W3C_SHADOWCOLOR = "#D3D3D3";
 
 				App app = new App();
+//				mxGraph graph = app.graphComponent.getGraph();
+//
+//				String v1 = "v1";
+//				String v2 = "v2";
+//				String v3 = "v3";
+//				String v4 = "v4";
+//
+//				graph.getModel().beginUpdate();
+//				try {
+//					graph.insertVertex(graph.getDefaultParent(), v1, new State(new JLabel(v1)), 10.0, 10.0, 50.0, 50.0,
+//							"ROUNDED");
+//				} finally {
+//					graph.getModel().endUpdate();
+//				}
+
+//				app.graphArray.addVertex(v1);
+//				app.graphArray.addVertex(v2);
+//				app.graphArray.addVertex(v3);
+//				app.graphArray.addVertex(v4);
+
 				app.createFrame(new MeMenuBar(app)).setVisible(true);
 			}
 		});
@@ -115,7 +154,11 @@ public class App extends JPanel {
 
 	public App() {
 		this.appTitle = "Medit";
+
 		this.graphComponent = new MeGraphComponent(new MeGraph());
+
+		// Initiate graph array
+		this.graphArray = new DefaultListenableGraph<>(new DefaultDirectedGraph<>(Transition.class));
 
 		final mxGraph graph = graphComponent.getGraph();
 
@@ -298,6 +341,20 @@ public class App extends JPanel {
 //		keyboardHandler = new EditorKeyboardHandler(graphComponent);
 	}
 
+	protected void installListeners() {
+		// Listener for zooming
+		MouseWheelListener wheelTracker = new MouseWheelListener() {
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				if (e.getSource() instanceof mxGraphOutline || e.isControlDown()) {
+					App.this.mouseWheelMoved(e);
+				}
+			}
+		};
+		graphOutline.addMouseWheelListener(wheelTracker);
+		graphComponent.addMouseWheelListener(wheelTracker);
+
+	}
+
 	public void exit() {
 		JFrame frame = (JFrame) SwingUtilities.windowForComponent(this);
 
@@ -334,5 +391,15 @@ public class App extends JPanel {
 		newAction.putValue(Action.SHORT_DESCRIPTION, action.getValue(Action.SHORT_DESCRIPTION));
 
 		return newAction;
+	}
+
+	// LISTENERS
+	protected void mouseWheelMoved(MouseWheelEvent e) {
+		if (e.getWheelRotation() < 0) {
+			graphComponent.zoomIn();
+		} else {
+			graphComponent.zoomOut();
+		}
+		status("ZOOM : " + (int) (100 * graphComponent.getGraph().getView().getScale()) + "%");
 	}
 }
