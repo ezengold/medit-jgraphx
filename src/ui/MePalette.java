@@ -22,7 +22,9 @@ import com.mxgraph.swing.util.mxSwingConstants;
 import com.mxgraph.util.mxEvent;
 import com.mxgraph.util.mxEventObject;
 import com.mxgraph.util.mxEventSource;
+import com.mxgraph.util.mxPoint;
 import com.mxgraph.util.mxRectangle;
+import com.mxgraph.util.mxEventSource.mxIEventListener;
 
 public class MePalette extends JPanel {
 
@@ -34,6 +36,20 @@ public class MePalette extends JPanel {
 
 	public MePalette() {
 		setLayout(new FlowLayout(FlowLayout.LEADING, 5, 5));
+
+		// Add states tool template
+		mxCell stateCell = new mxCell("State", new mxGeometry(0, 0, 50, 50), "");
+		stateCell.setVertex(true);
+		addTemplate("State", new ImageIcon(MePalette.class.getResource("/location.png")), stateCell);
+
+		// Add edge tool template
+		mxGeometry edgeGeometry = new mxGeometry(0, 0, 50, 50);
+		edgeGeometry.setTerminalPoint(new mxPoint(0, 50), true);
+		edgeGeometry.setTerminalPoint(new mxPoint(50, 0), false);
+		edgeGeometry.setRelative(true);
+		mxCell edgeCell = new mxCell("Transition", edgeGeometry, "");
+		edgeCell.setEdge(true);
+		addTemplate("Transition", new ImageIcon(MePalette.class.getResource("/edge.png")), edgeCell);
 	}
 
 	public void clearSelection() {
@@ -60,6 +76,7 @@ public class MePalette extends JPanel {
 
 	/**
 	 * Used to add cell template to palette
+	 * 
 	 * @param name
 	 * @param icon
 	 * @param cell
@@ -89,44 +106,19 @@ public class MePalette extends JPanel {
 
 		entry.addMouseListener(new MouseListener() {
 
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
-			 */
 			public void mousePressed(MouseEvent e) {
 				setSelectionEntry(entry, t);
 			}
 
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
-			 */
 			public void mouseClicked(MouseEvent e) {
 			}
 
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see java.awt.event.MouseListener#mouseEntered(java.awt.event.MouseEvent)
-			 */
 			public void mouseEntered(MouseEvent e) {
 			}
 
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see java.awt.event.MouseListener#mouseExited(java.awt.event.MouseEvent)
-			 */
 			public void mouseExited(MouseEvent e) {
 			}
 
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see java.awt.event.MouseListener#mouseReleased(java.awt.event.MouseEvent)
-			 */
 			public void mouseReleased(MouseEvent e) {
 			}
 
@@ -134,18 +126,49 @@ public class MePalette extends JPanel {
 
 		// Install the handler for dragging nodes into a graph
 		DragGestureListener dragGestureListener = new DragGestureListener() {
-			/**
-			 * 
-			 */
 			public void dragGestureRecognized(DragGestureEvent e) {
 				e.startDrag(null, mxSwingConstants.EMPTY_IMAGE, new Point(), t, null);
 			}
-
 		};
 
 		DragSource dragSource = new DragSource();
 		dragSource.createDefaultDragGestureRecognizer(entry, DnDConstants.ACTION_COPY, dragGestureListener);
 
 		add(entry);
+	}
+
+	/*
+	 * Used to bind an event to the palette
+	 */
+	public void addListener(String eventName, mxIEventListener listener) {
+		eventSource.addListener(eventName, listener);
+	}
+
+	/**
+	 * Tell whether or not event are enabled for this palette
+	 */
+	public boolean isEventsEnabled() {
+		return eventSource.isEventsEnabled();
+	}
+
+	/**
+	 * 
+	 */
+	public void removeListener(mxIEventListener listener) {
+		eventSource.removeListener(listener);
+	}
+
+	/*
+	 * 
+	 */
+	public void removeListener(mxIEventListener listener, String eventName) {
+		eventSource.removeListener(listener, eventName);
+	}
+
+	/*
+	 * 
+	 */
+	public void setEventsEnabled(boolean eventsEnabled) {
+		eventSource.setEventsEnabled(eventsEnabled);
 	}
 }

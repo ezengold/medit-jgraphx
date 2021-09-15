@@ -1,11 +1,13 @@
 package ui;
 
 import java.text.NumberFormat;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
+import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.mxPoint;
 import com.mxgraph.view.mxCellState;
 import com.mxgraph.view.mxGraph;
@@ -31,6 +33,11 @@ public class MeGraph extends mxGraph {
 	public MeGraph() {
 		setAlternateEdgeStyle("edgeStyle=mxEdgeStyle.ElbowConnector;elbow=vertical");
 		setCellsResizable(false);
+
+		Hashtable<String, Object> vertexStyle = (Hashtable<String, Object>) stylesheet.getDefaultVertexStyle();
+		vertexStyle.put(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_ELLIPSE);
+		vertexStyle.put(mxConstants.STYLE_FILLCOLOR, "#78c4fc");
+		getStylesheet().setDefaultVertexStyle(vertexStyle);
 	}
 
 	/**

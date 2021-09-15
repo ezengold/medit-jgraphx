@@ -11,7 +11,6 @@ import java.util.List;
 import javax.swing.*;
 
 import org.jgrapht.ListenableGraph;
-import org.jgrapht.ext.JGraphXAdapter;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultListenableGraph;
 
@@ -30,6 +29,7 @@ import ui.MeGraph;
 import ui.MeGraphComponent;
 import ui.MeToolBar;
 import ui.MeMenuBar;
+import ui.MePalette;
 
 public class App extends JPanel {
 
@@ -46,9 +46,9 @@ public class App extends JPanel {
 	protected ListenableGraph<String, Transition> graphArray;
 
 	/*
-	 * Adapter that help to draw the graph in the graph component
+	 * UI that displays the palette
 	 */
-	protected JGraphXAdapter<String, Transition> jgxAdapter;
+	protected MePalette palette;
 
 	/**
 	 * 
@@ -100,7 +100,6 @@ public class App extends JPanel {
 	 */
 	protected mxIEventListener undoHandler = new mxIEventListener() {
 		public void invoke(Object source, mxEventObject evt) {
-			System.out.println(evt.getName());
 			undoManager.undoableEditHappened((mxUndoableEdit) evt.getProperty("edit"));
 		}
 	};
@@ -127,25 +126,6 @@ public class App extends JPanel {
 				mxConstants.W3C_SHADOWCOLOR = "#D3D3D3";
 
 				App app = new App();
-//				mxGraph graph = app.graphComponent.getGraph();
-//
-//				String v1 = "v1";
-//				String v2 = "v2";
-//				String v3 = "v3";
-//				String v4 = "v4";
-//
-//				graph.getModel().beginUpdate();
-//				try {
-//					graph.insertVertex(graph.getDefaultParent(), v1, new State(new JLabel(v1)), 10.0, 10.0, 50.0, 50.0,
-//							"ROUNDED");
-//				} finally {
-//					graph.getModel().endUpdate();
-//				}
-
-//				app.graphArray.addVertex(v1);
-//				app.graphArray.addVertex(v2);
-//				app.graphArray.addVertex(v3);
-//				app.graphArray.addVertex(v4);
 
 				app.createFrame(new MeMenuBar(app)).setVisible(true);
 			}
@@ -188,18 +168,27 @@ public class App extends JPanel {
 		// Creates the graph outline component
 		this.graphOutline = new mxGraphOutline(graphComponent);
 
-		this.navComponent = new JPanel();
+		// Create instance of palette
+		this.palette = new MePalette();
 
-		JSplitPane leftWrapper = new JSplitPane(JSplitPane.VERTICAL_SPLIT, this.navComponent, this.graphOutline);
-		leftWrapper.setDividerLocation(400);
-		leftWrapper.setResizeWeight(1);
-		leftWrapper.setDividerSize(6);
+		this.navComponent = new JPanel();
+		this.navComponent.setBackground(Color.LIGHT_GRAY);
+
+		JSplitPane leftInner = new JSplitPane(JSplitPane.VERTICAL_SPLIT, this.navComponent, this.graphOutline);
+		leftInner.setDividerLocation(350);
+		leftInner.setResizeWeight(1);
+		leftInner.setDividerSize(3);
+		leftInner.setBorder(null);
+
+		JPanel leftWrapper = new JPanel(new BorderLayout());
+		leftWrapper.add(this.palette, BorderLayout.NORTH);
+		leftWrapper.add(leftInner, BorderLayout.CENTER);
 		leftWrapper.setBorder(null);
 
 		JSplitPane mainWrapper = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftWrapper, this.graphComponent);
 		mainWrapper.setOneTouchExpandable(true);
 		mainWrapper.setDividerLocation(200);
-		mainWrapper.setDividerSize(6);
+		mainWrapper.setDividerSize(3);
 		mainWrapper.setBorder(null);
 
 		// Creates the status bar
@@ -211,9 +200,6 @@ public class App extends JPanel {
 
 		// Handle when graph repaint Event
 		installRepaintListener();
-
-		// Install the tool bar
-		installToolBar();
 
 		// Install keyboard and rubber band handlers
 		installHandlers();
