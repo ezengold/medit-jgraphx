@@ -13,9 +13,8 @@ import java.util.List;
 
 import javax.swing.*;
 
-import org.jgrapht.ListenableGraph;
+import org.jgrapht.ext.JGraphXAdapter;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import org.jgrapht.graph.DefaultListenableGraph;
 
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.swing.mxGraphOutline;
@@ -27,8 +26,8 @@ import com.mxgraph.util.mxEventSource.mxIEventListener;
 import com.mxgraph.util.mxUndoableEdit.mxUndoableChange;
 import com.mxgraph.view.mxGraph;
 
+import models.State;
 import models.Transition;
-import ui.MeGraph;
 import ui.MeGraphComponent;
 import ui.MeToolBar;
 import utils.EditorKeyboardHandler;
@@ -47,8 +46,13 @@ public class App extends JPanel {
 	/**
 	 * Contains the architecture of the graph
 	 */
-	protected ListenableGraph<String, Transition> graphArray;
+	protected DefaultDirectedGraph<State, Transition> graphData;
 
+	/*
+	 * Adapter of the graph
+	 */
+	protected JGraphXAdapter<State, Transition> jgxAdapter;
+	
 	/*
 	 * UI that displays the palette
 	 */
@@ -142,10 +146,22 @@ public class App extends JPanel {
 	public App() {
 		this.appTitle = "Medit";
 
-		this.graphComponent = new MeGraphComponent(new MeGraph());
+		this.graphData = new DefaultDirectedGraph<State, Transition>(Transition.class);
 
-		// Initiate graph array
-		this.graphArray = new DefaultListenableGraph<>(new DefaultDirectedGraph<>(Transition.class));
+		State s1 = new State("s1");
+		State s2 = new State("s2");
+		State s3 = new State("s3");
+		
+		graphData.addVertex(s1);
+		graphData.addVertex(s2);
+		graphData.addVertex(s3);
+
+		graphData.addEdge(s1, s2, new Transition());
+		graphData.addEdge(s3, s1, new Transition());
+
+		this.jgxAdapter = new JGraphXAdapter<State, Transition>(graphData);
+
+		this.graphComponent = new MeGraphComponent(jgxAdapter);
 
 		final mxGraph graph = graphComponent.getGraph();
 
@@ -352,21 +368,21 @@ public class App extends JPanel {
 				}
 			}
 		});
-		
+
 		graphComponent.getGraphControl().addMouseMotionListener(new MouseMotionListener() {
-			
+
 			@Override
 			public void mouseDragged(MouseEvent e) {
 				mouseLocationChanged(e);
 			}
-			
+
 			@Override
 			public void mouseMoved(MouseEvent e) {
 				mouseDragged(e);
 			}
 		});
 	}
-	
+
 	protected void mouseLocationChanged(MouseEvent e) {
 		status(e.getX() + ", " + e.getY());
 	}

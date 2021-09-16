@@ -1,11 +1,48 @@
 package models;
 
-import javax.swing.JLabel;
+import java.util.UUID;
 
 public class State {
-	protected JLabel name;
+	private String name;
 
-	public State(JLabel name) {
+	private String invariant = "";
+
+	private boolean isInitial = false;
+
+	public State() {
+		this.name = UUID.randomUUID().toString();
+	}
+
+	public State(String name) {
 		this.name = name;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getInvariant() {
+		return invariant;
+	}
+
+	public void setInvariant(String invariant) {
+		this.invariant = invariant;
+	}
+
+	public boolean isInitial() {
+		return isInitial;
+	}
+
+	public void setInitial(boolean isInitial) {
+		this.isInitial = isInitial;
+	}
+	
+	@Override
+	public String toString() {
+		return name;
 	}
 }
