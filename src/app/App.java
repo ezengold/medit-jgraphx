@@ -3,6 +3,9 @@ package app;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.File;
@@ -28,6 +31,7 @@ import models.Transition;
 import ui.MeGraph;
 import ui.MeGraphComponent;
 import ui.MeToolBar;
+import utils.EditorKeyboardHandler;
 import ui.MeMenuBar;
 import ui.MePalette;
 
@@ -100,6 +104,9 @@ public class App extends JPanel {
 	 */
 	protected mxIEventListener undoHandler = new mxIEventListener() {
 		public void invoke(Object source, mxEventObject evt) {
+//			List<mxUndoableChange> changes = ((mxUndoableEdit) evt.getProperty("edit")).getChanges();
+//			System.out.println(changes);
+			System.out.println(evt.getProperties());
 			undoManager.undoableEditHappened((mxUndoableEdit) evt.getProperty("edit"));
 		}
 	};
@@ -158,6 +165,7 @@ public class App extends JPanel {
 		mxIEventListener undoHandler = new mxIEventListener() {
 			public void invoke(Object source, mxEventObject evt) {
 				List<mxUndoableChange> changes = ((mxUndoableEdit) evt.getProperty("edit")).getChanges();
+				System.out.println(changes);
 				graph.setSelectionCells(graph.getSelectionCellsForChanges(changes));
 			}
 		};
@@ -305,8 +313,6 @@ public class App extends JPanel {
 	protected void installRepaintListener() {
 		graphComponent.getGraph().addListener(mxEvent.REPAINT, new mxIEventListener() {
 			public void invoke(Object source, mxEventObject evt) {
-				System.out.println(evt.getProperties());
-
 				String buffer = (graphComponent.getTripleBuffer() != null) ? "" : " (unbuffered)";
 				mxRectangle dirty = (mxRectangle) evt.getProperty("region");
 
@@ -324,7 +330,7 @@ public class App extends JPanel {
 
 	protected void installHandlers() {
 		rubberband = new mxRubberband(graphComponent);
-//		keyboardHandler = new EditorKeyboardHandler(graphComponent);
+		keyboardHandler = new EditorKeyboardHandler(graphComponent);
 	}
 
 	protected void installListeners() {
@@ -339,6 +345,30 @@ public class App extends JPanel {
 		graphOutline.addMouseWheelListener(wheelTracker);
 		graphComponent.addMouseWheelListener(wheelTracker);
 
+		graphOutline.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+//					showOutlinePopupMenu(e);
+				}
+			}
+		});
+		
+		graphComponent.getGraphControl().addMouseMotionListener(new MouseMotionListener() {
+			
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				mouseLocationChanged(e);
+			}
+			
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				mouseDragged(e);
+			}
+		});
+	}
+	
+	protected void mouseLocationChanged(MouseEvent e) {
+		status(e.getX() + ", " + e.getY());
 	}
 
 	public void exit() {

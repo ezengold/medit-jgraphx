@@ -162,4 +162,27 @@ public class EditorActions {
 		}
 
 	}
+
+	@SuppressWarnings("serial")
+	public static class HistoryAction extends AbstractAction {
+		protected boolean undo;
+
+		public HistoryAction(boolean undo) {
+			this.undo = undo;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			App app = getApp(e);
+
+			if (app != null) {
+				if (undo) {
+					app.getUndoManager().undo();
+				} else {
+					app.getUndoManager().redo();
+				}
+			}
+		}
+
+	}
 }
