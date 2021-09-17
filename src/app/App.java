@@ -16,6 +16,7 @@ import javax.swing.*;
 import org.jgrapht.ext.JGraphXAdapter;
 import org.jgrapht.graph.DefaultDirectedGraph;
 
+import com.mxgraph.model.mxCell;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.swing.mxGraphOutline;
 import com.mxgraph.swing.handler.mxKeyboardHandler;
@@ -52,7 +53,7 @@ public class App extends JPanel {
 	 * Adapter of the graph
 	 */
 	protected JGraphXAdapter<State, Transition> jgxAdapter;
-	
+
 	/*
 	 * UI that displays the palette
 	 */
@@ -110,7 +111,6 @@ public class App extends JPanel {
 		public void invoke(Object source, mxEventObject evt) {
 //			List<mxUndoableChange> changes = ((mxUndoableEdit) evt.getProperty("edit")).getChanges();
 //			System.out.println(changes);
-			System.out.println(evt.getProperties());
 			undoManager.undoableEditHappened((mxUndoableEdit) evt.getProperty("edit"));
 		}
 	};
@@ -121,6 +121,31 @@ public class App extends JPanel {
 	protected mxIEventListener changeTracker = new mxIEventListener() {
 		public void invoke(Object source, mxEventObject evt) {
 			setModified(true);
+		}
+	};
+
+	/*
+	 * New cell added to the view listener
+	 */
+	protected mxIEventListener cellsAddedHandler = new mxIEventListener() {
+
+		@Override
+		public void invoke(Object source, mxEventObject evt) {
+			Object[] cells = (Object[]) evt.getProperty("cells");
+
+			for (Object c : cells) {
+				mxCell el = (mxCell) c;
+				if (el.isEdge()) {
+					System.out.println("from : " + el.getSource().getValue().toString());
+					System.out.println("to : " + el.getTarget().getValue().toString());
+//					Transition t = new Transition(sourceId, targetId)
+				} else if (el.isVertex()) {
+					State s = new State();
+					el.setValue(s);
+					graphData.addVertex(s);
+				}
+			}
+			System.out.println(graphData.toString());
 		}
 	};
 
@@ -146,18 +171,11 @@ public class App extends JPanel {
 	public App() {
 		this.appTitle = "Medit";
 
+		// Initiate graph with initial state
 		this.graphData = new DefaultDirectedGraph<State, Transition>(Transition.class);
 
-		State s1 = new State("s1");
-		State s2 = new State("s2");
-		State s3 = new State("s3");
-		
-		graphData.addVertex(s1);
-		graphData.addVertex(s2);
-		graphData.addVertex(s3);
-
-		graphData.addEdge(s1, s2, new Transition());
-		graphData.addEdge(s3, s1, new Transition());
+		State s0 = new State("s0");
+		graphData.addVertex(s0);
 
 		this.jgxAdapter = new JGraphXAdapter<State, Transition>(graphData);
 
@@ -176,6 +194,8 @@ public class App extends JPanel {
 		// Adds the command history to the model and view
 		graph.getModel().addListener(mxEvent.UNDO, undoHandler);
 		graph.getView().addListener(mxEvent.UNDO, undoHandler);
+
+		graph.addListener(mxEvent.CELLS_ADDED, cellsAddedHandler);
 
 		// Keeps the selection in sync with the command history
 		mxIEventListener undoHandler = new mxIEventListener() {
@@ -227,6 +247,7 @@ public class App extends JPanel {
 
 		// Install keyboard and rubber band handlers
 		installHandlers();
+		installListeners();
 
 		updateTitle();
 	}

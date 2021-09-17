@@ -73,7 +73,7 @@ public class EditorActions {
 			App app = getApp(e);
 
 			if (app != null) {
-				System.out.println("CLOSE CLICKED");
+				app.exit();
 			}
 		}
 

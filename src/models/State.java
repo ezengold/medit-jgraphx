@@ -1,8 +1,8 @@
 package models;
 
-import java.util.UUID;
-
 public class State {
+	private static Integer NB = 1;
+
 	private String name;
 
 	private String invariant = "";
@@ -10,11 +10,13 @@ public class State {
 	private boolean isInitial = false;
 
 	public State() {
-		this.name = UUID.randomUUID().toString();
+		this.name = "s" + NB.toString();
+		NB++;
 	}
 
 	public State(String name) {
 		this.name = name;
+		NB++;
 	}
 
 	public String getName() {
@@ -40,7 +42,7 @@ public class State {
 	public void setInitial(boolean isInitial) {
 		this.isInitial = isInitial;
 	}
-	
+
 	@Override
 	public String toString() {
 		return name;
