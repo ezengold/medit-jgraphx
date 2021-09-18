@@ -10,9 +10,9 @@ public class Transition extends DefaultEdge {
 
 	private String transitionId;
 
-	private String sourceId;
+	private String sourceStateId;
 
-	private String targetId;
+	private String targetStateId;
 
 	private String guard = "";
 
@@ -22,10 +22,26 @@ public class Transition extends DefaultEdge {
 		this.transitionId = UUID.randomUUID().toString();
 	}
 
-	public Transition(String sourceId, String targetId) {
+	public Transition(String sourceStateId, String targetStateId) {
 		this.transitionId = UUID.randomUUID().toString();
-		this.setSourceId(sourceId);
-		this.setTargetId(targetId);
+		this.sourceStateId = sourceStateId;
+		this.targetStateId = targetStateId;
+	}
+
+	public String getSourceStateId() {
+		return sourceStateId;
+	}
+
+	public String getTargetStateId() {
+		return targetStateId;
+	}
+
+	public void setSourceStateId(String sourceStateId) {
+		this.sourceStateId = sourceStateId;
+	}
+
+	public void setTargetStateId(String targetStateId) {
+		this.targetStateId = targetStateId;
 	}
 
 	public String getTransitionId() {
@@ -34,22 +50,6 @@ public class Transition extends DefaultEdge {
 
 	public void setTransitionId(String transitionId) {
 		this.transitionId = transitionId;
-	}
-
-	public String getSourceId() {
-		return sourceId;
-	}
-
-	public void setSourceId(String sourceId) {
-		this.sourceId = sourceId;
-	}
-
-	public String getTargetId() {
-		return targetId;
-	}
-
-	public void setTargetId(String targetId) {
-		this.targetId = targetId;
 	}
 
 	public String getGuardInstructions() {

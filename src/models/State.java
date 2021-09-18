@@ -1,8 +1,12 @@
 package models;
 
-public class State {
-	private static Integer NB = 1;
+import java.util.UUID;
 
+public class State {
+	private static Integer NB = 0;
+
+	private String stateId;
+	
 	private String name;
 
 	private String invariant = "";
@@ -12,11 +16,21 @@ public class State {
 	public State() {
 		this.name = "s" + NB.toString();
 		NB++;
+		this.setStateId(UUID.randomUUID().toString());
 	}
 
 	public State(String name) {
 		this.name = name;
 		NB++;
+		this.setStateId(UUID.randomUUID().toString());
+	}
+
+	public String getStateId() {
+		return stateId;
+	}
+
+	public void setStateId(String stateId) {
+		this.stateId = stateId;
 	}
 
 	public String getName() {

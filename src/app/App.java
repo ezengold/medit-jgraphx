@@ -109,8 +109,10 @@ public class App extends JPanel {
 	 */
 	protected mxIEventListener undoHandler = new mxIEventListener() {
 		public void invoke(Object source, mxEventObject evt) {
-//			List<mxUndoableChange> changes = ((mxUndoableEdit) evt.getProperty("edit")).getChanges();
-//			System.out.println(changes);
+			List<mxUndoableChange> changes = ((mxUndoableEdit) evt.getProperty("edit")).getChanges();
+			for (mxUndoableChange ch : changes) {
+				System.out.println(ch.toString());
+			}
 			undoManager.undoableEditHappened((mxUndoableEdit) evt.getProperty("edit"));
 		}
 	};
@@ -136,16 +138,50 @@ public class App extends JPanel {
 			for (Object c : cells) {
 				mxCell el = (mxCell) c;
 				if (el.isEdge()) {
-					System.out.println("from : " + el.getSource().getValue().toString());
-					System.out.println("to : " + el.getTarget().getValue().toString());
-//					Transition t = new Transition(sourceId, targetId)
+					Transition t = new Transition();
+					State sourceState = null;
+					State targetState = null;
+
+					if (el.getSource() != null && el.getSource().getValue() != null) {
+						sourceState = (State) el.getSource().getValue();
+						t.setSourceStateId(sourceState.getStateId());
+					}
+
+					if (el.getTarget() != null && el.getTarget().getValue() != null) {
+						targetState = (State) el.getTarget().getValue();
+						t.setTargetStateId(targetState.getStateId());
+					}
+
+					el.setValue(t);
+					graphData.addEdge(sourceState, targetState, t);
 				} else if (el.isVertex()) {
 					State s = new State();
 					el.setValue(s);
 					graphData.addVertex(s);
 				}
 			}
-			System.out.println(graphData.toString());
+		}
+	};
+
+	/*
+	 * Cell removed from the view listener
+	 */
+	protected mxIEventListener cellsRemovedHandler = new mxIEventListener() {
+
+		@Override
+		public void invoke(Object source, mxEventObject evt) {
+			Object[] cells = (Object[]) evt.getProperty("cells");
+
+			for (Object c : cells) {
+				mxCell el = (mxCell) c;
+				if (el.isEdge()) {
+					Transition t = (Transition) el.getValue();
+					graphData.removeEdge(t);
+				} else if (el.isVertex()) {
+					State s = (State) el.getValue();
+					graphData.removeVertex(s);
+				}
+			}
 		}
 	};
 
@@ -196,12 +232,12 @@ public class App extends JPanel {
 		graph.getView().addListener(mxEvent.UNDO, undoHandler);
 
 		graph.addListener(mxEvent.CELLS_ADDED, cellsAddedHandler);
+		graph.addListener(mxEvent.CELLS_REMOVED, cellsRemovedHandler);
 
 		// Keeps the selection in sync with the command history
 		mxIEventListener undoHandler = new mxIEventListener() {
 			public void invoke(Object source, mxEventObject evt) {
 				List<mxUndoableChange> changes = ((mxUndoableEdit) evt.getProperty("edit")).getChanges();
-				System.out.println(changes);
 				graph.setSelectionCells(graph.getSelectionCellsForChanges(changes));
 			}
 		};

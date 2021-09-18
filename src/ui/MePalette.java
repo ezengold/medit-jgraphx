@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Point;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragGestureEvent;
 import java.awt.dnd.DragGestureListener;
@@ -12,8 +13,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.TransferHandler;
 
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
@@ -22,9 +25,12 @@ import com.mxgraph.swing.util.mxSwingConstants;
 import com.mxgraph.util.mxEvent;
 import com.mxgraph.util.mxEventObject;
 import com.mxgraph.util.mxEventSource;
-import com.mxgraph.util.mxPoint;
 import com.mxgraph.util.mxRectangle;
 import com.mxgraph.util.mxEventSource.mxIEventListener;
+import com.mxgraph.util.mxPoint;
+
+import models.State;
+import models.Transition;
 
 public class MePalette extends JPanel {
 
@@ -34,11 +40,12 @@ public class MePalette extends JPanel {
 
 	protected mxEventSource eventSource = new mxEventSource(this);
 
+	@SuppressWarnings("serial")
 	public MePalette() {
 		setLayout(new FlowLayout(FlowLayout.LEADING, 5, 5));
 
 		// Add states tool template
-		mxCell stateCell = new mxCell("State", new mxGeometry(0, 0, 50, 50), "");
+		mxCell stateCell = new mxCell(new State(), new mxGeometry(0, 0, 20, 20), "");
 		stateCell.setVertex(true);
 		addTemplate("State", new ImageIcon(MePalette.class.getResource("/location.png")), stateCell);
 
@@ -47,9 +54,38 @@ public class MePalette extends JPanel {
 		edgeGeometry.setTerminalPoint(new mxPoint(0, 50), true);
 		edgeGeometry.setTerminalPoint(new mxPoint(50, 0), false);
 		edgeGeometry.setRelative(true);
-		mxCell edgeCell = new mxCell("Transition", edgeGeometry, "");
+		mxCell edgeCell = new mxCell(new Transition(), edgeGeometry, "");
 		edgeCell.setEdge(true);
 		addTemplate("Transition", new ImageIcon(MePalette.class.getResource("/edge.png")), edgeCell);
+
+		addMouseListener(new MouseListener() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				clearSelection();
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+			}
+		});
+
+		setTransferHandler(new TransferHandler() {
+			public boolean canImport(JComponent comp, DataFlavor[] flavors) {
+				return true;
+			}
+		});
 	}
 
 	public void clearSelection() {
