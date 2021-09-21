@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
@@ -109,10 +110,10 @@ public class App extends JPanel {
 	 */
 	protected mxIEventListener undoHandler = new mxIEventListener() {
 		public void invoke(Object source, mxEventObject evt) {
-			List<mxUndoableChange> changes = ((mxUndoableEdit) evt.getProperty("edit")).getChanges();
-			for (mxUndoableChange ch : changes) {
-				System.out.println(ch.toString());
-			}
+//			List<mxUndoableChange> changes = ((mxUndoableEdit) evt.getProperty("edit")).getChanges();
+//			for (mxUndoableChange ch : changes) {
+//				System.out.println(ch.toString());
+//			}
 			undoManager.undoableEditHappened((mxUndoableEdit) evt.getProperty("edit"));
 		}
 	};
@@ -153,7 +154,9 @@ public class App extends JPanel {
 					}
 
 					el.setValue(t);
-					graphData.addEdge(sourceState, targetState, t);
+					if (sourceState != null && targetState != null) {
+						graphData.addEdge(sourceState, targetState, t);
+					}
 				} else if (el.isVertex()) {
 					State s = new State();
 					el.setValue(s);
@@ -185,6 +188,14 @@ public class App extends JPanel {
 		}
 	};
 
+	protected mxIEventListener testHandler = new mxIEventListener() {
+
+		@Override
+		public void invoke(Object source, mxEventObject evt) {
+			System.out.println(evt.getProperties());
+		}
+	};
+
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
@@ -210,7 +221,7 @@ public class App extends JPanel {
 		// Initiate graph with initial state
 		this.graphData = new DefaultDirectedGraph<State, Transition>(Transition.class);
 
-		State s0 = new State("s0");
+		State s0 = new State();
 		graphData.addVertex(s0);
 
 		this.jgxAdapter = new JGraphXAdapter<State, Transition>(graphData);
@@ -233,6 +244,58 @@ public class App extends JPanel {
 
 		graph.addListener(mxEvent.CELLS_ADDED, cellsAddedHandler);
 		graph.addListener(mxEvent.CELLS_REMOVED, cellsRemovedHandler);
+
+		graphComponent.getGraphControl().addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				//
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				//
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				//
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				//
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+//				e.
+				if (e.getClickCount() == 2) {
+					mxCell el = (mxCell) graphComponent.getCellAt(e.getX(), e.getY());
+
+					if (el != null) {
+						if (el.isEdge()) {
+							System.out.println(el.getValue().toString());
+						} else if (el.isVertex()) {
+							System.out.println(el.getValue().toString());
+						}
+					}
+				}
+			}
+		});
+
+		graphComponent.getGraphControl().addMouseMotionListener(new MouseMotionListener() {
+
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				//
+			}
+
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				//
+			}
+		});
 
 		// Keeps the selection in sync with the command history
 		mxIEventListener undoHandler = new mxIEventListener() {
@@ -339,7 +402,7 @@ public class App extends JPanel {
 		JFrame frame = (JFrame) SwingUtilities.windowForComponent(this);
 
 		if (frame != null) {
-			String title = (currentFile != null) ? currentFile.getAbsolutePath() : "Nouveau Graph";
+			String title = (currentFile != null) ? currentFile.getAbsolutePath() : "Nouveau Model";
 
 			if (modified) {
 				title += "*";
