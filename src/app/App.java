@@ -30,6 +30,7 @@ import com.mxgraph.view.mxGraph;
 
 import models.State;
 import models.Transition;
+import ui.ConfigStateDialog;
 import ui.MeGraphComponent;
 import ui.MeToolBar;
 import utils.EditorKeyboardHandler;
@@ -269,7 +270,6 @@ public class App extends JPanel {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-//				e.
 				if (e.getClickCount() == 2) {
 					mxCell el = (mxCell) graphComponent.getCellAt(e.getX(), e.getY());
 
@@ -277,7 +277,12 @@ public class App extends JPanel {
 						if (el.isEdge()) {
 							System.out.println(el.getValue().toString());
 						} else if (el.isVertex()) {
-							System.out.println(el.getValue().toString());
+							State state = (State) el.getValue();
+
+							if (state != null) {
+								ConfigStateDialog confDialog = new ConfigStateDialog(state);
+								confDialog.setVisible(true);
+							}
 						}
 					}
 				}
