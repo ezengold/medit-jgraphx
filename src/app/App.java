@@ -31,6 +31,7 @@ import com.mxgraph.view.mxGraph;
 import models.State;
 import models.Transition;
 import ui.ConfigStateDialog;
+import ui.ConfigTransitionEdge;
 import ui.MeGraphComponent;
 import ui.MeToolBar;
 import utils.EditorKeyboardHandler;
@@ -275,12 +276,17 @@ public class App extends JPanel {
 
 					if (el != null) {
 						if (el.isEdge()) {
-							System.out.println(el.getValue().toString());
+							Transition trans = (Transition) el.getValue();
+
+							if (trans != null) {
+								ConfigTransitionEdge confDialog = new ConfigTransitionEdge(el, graph.getModel());
+								confDialog.setVisible(true);
+							}
 						} else if (el.isVertex()) {
 							State state = (State) el.getValue();
 
 							if (state != null) {
-								ConfigStateDialog confDialog = new ConfigStateDialog(state);
+								ConfigStateDialog confDialog = new ConfigStateDialog(el, graph.getModel());
 								confDialog.setVisible(true);
 							}
 						}

@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -16,11 +15,18 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import com.mxgraph.model.mxCell;
+import com.mxgraph.model.mxIGraphModel;
+
 import models.State;
 
 public class ConfigStateDialog extends JDialog {
 
 	private static final long serialVersionUID = -1659747112795946693L;
+
+	protected mxIGraphModel graphModel;
+
+	private mxCell currentCell;
 
 	protected String label = "";
 	protected JTextField labelField = new JTextField();
@@ -31,12 +37,18 @@ public class ConfigStateDialog extends JDialog {
 	protected boolean isInitial = false;
 	protected JCheckBox isInitialBox = new JCheckBox();
 
-	public ConfigStateDialog(State state) {
-		super((Frame) null, state.getName(), true);
+	public ConfigStateDialog(final mxCell cell, final mxIGraphModel graphModel) {
+		super((Frame) null, "", true);
+
+		State state = (State) cell.getValue();
+
+		setTitle(state.getName());
+		this.graphModel = graphModel;
+		this.currentCell = cell;
+
 		setModal(true);
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		Dimension dialogSize = getSize();
-		setLocation(screenSize.width / 2 - (dialogSize.width / 2), screenSize.height / 2 - (dialogSize.height / 2));
+		setPreferredSize(new Dimension(300, 300));
+		setLocation(500, 200);
 
 		JPanel panel = new JPanel(new GridLayout(4, 2, 5, 5));
 		panel.add(new JLabel("Nom de l'état : "));
@@ -53,12 +65,11 @@ public class ConfigStateDialog extends JDialog {
 		JPanel buttonsPanel = new JPanel();
 
 		JButton submitButton = new JButton("Valider");
-		submitButton.setBorder(new EmptyBorder(5, 5, 5, 5));
+		submitButton.setBorder(new EmptyBorder(10, 15, 10, 15));
 		submitButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("SUBMIT CLICKED");
 				if (applyChanges()) {
 					setVisible(false);
 				}
@@ -66,7 +77,7 @@ public class ConfigStateDialog extends JDialog {
 		});
 
 		JButton cancelButton = new JButton("Annuler");
-		cancelButton.setBorder(new EmptyBorder(5, 5, 5, 5));
+		cancelButton.setBorder(new EmptyBorder(10, 15, 10, 15));
 		cancelButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -86,8 +97,37 @@ public class ConfigStateDialog extends JDialog {
 		pack();
 		setResizable(false);
 	}
-	
+
 	public boolean applyChanges() {
-		return true;
+		if (formIsValid()) {
+			State state = (State) currentCell.getValue();
+			
+			state.setName(labelField.getText());
+			state.setInvariant(invariantField.getText());
+			state.setInitial(isInitialBox.isSelected());
+			
+			graphModel.setValue(currentCell, state);
+
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean formIsValid() {
+		if (labelField.getText() != null && labelField.getText() != "" && invariantField.getText() != null
+				&& invariantField.getText() != "") {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public mxCell getCurrentCell() {
+		return currentCell;
+	}
+
+	public void setCurrentCell(mxCell currentCell) {
+		this.currentCell = currentCell;
 	}
 }
