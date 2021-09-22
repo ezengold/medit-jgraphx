@@ -11,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
@@ -19,7 +20,7 @@ import com.mxgraph.model.mxIGraphModel;
 
 import models.Transition;
 
-public class ConfigTransitionEdge extends JDialog {
+public class ConfigTransitionDialog extends JDialog {
 
 	private static final long serialVersionUID = 7296229285381074653L;
 
@@ -27,11 +28,11 @@ public class ConfigTransitionEdge extends JDialog {
 
 	private mxCell currentCell;
 
-	protected JTextArea guardField = new JTextArea();
+	protected JTextArea guardField = new JTextArea(10, 10);
 
-	protected JTextArea updateField = new JTextArea();
+	protected JTextArea updateField = new JTextArea(10, 10);
 
-	public ConfigTransitionEdge(final mxCell cell, final mxIGraphModel graphModel) {
+	public ConfigTransitionDialog(final mxCell cell, final mxIGraphModel graphModel) {
 		super((Frame) null, "Transition", true);
 		setModal(true);
 		setPreferredSize(new Dimension(400, 400));
@@ -43,17 +44,23 @@ public class ConfigTransitionEdge extends JDialog {
 		this.graphModel = graphModel;
 		this.currentCell = cell;
 
-		JPanel panel = new JPanel(new GridLayout(5, 1, 10, 10));
+		JPanel panel = new JPanel(new GridLayout(4, 1));
 
 		panel.add(new JLabel("Garde :"));
-		guardField.setBorder(new EmptyBorder(10, 10, 10, 10));
+		guardField.setBorder(new EmptyBorder(5, 5, 5, 5));
+		guardField.setLineWrap(true);
+		guardField.setWrapStyleWord(true);
 		guardField.setText(transition.getGuardInstructions());
-		panel.add(guardField);
+		JScrollPane scrollGuardField = new JScrollPane(guardField);
+		panel.add(scrollGuardField);
 
 		panel.add(new JLabel("Mise à jour :"));
-		guardField.setBorder(new EmptyBorder(10, 10, 10, 10));
+		updateField.setBorder(new EmptyBorder(5, 5, 5, 5));
+		updateField.setLineWrap(true);
+		updateField.setWrapStyleWord(true);
 		updateField.setText(transition.getUpdateInstructions());
-		panel.add(updateField);
+		JScrollPane scrollUpdateField = new JScrollPane(updateField);
+		panel.add(scrollUpdateField);
 
 		JPanel buttonsPanel = new JPanel();
 

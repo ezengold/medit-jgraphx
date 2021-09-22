@@ -12,6 +12,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
@@ -32,7 +34,7 @@ public class ConfigStateDialog extends JDialog {
 	protected JTextField labelField = new JTextField();
 
 	protected String invariant = "";
-	protected JTextField invariantField = new JTextField();
+	protected JTextArea invariantField = new JTextArea(10, 10);
 
 	protected boolean isInitial = false;
 	protected JCheckBox isInitialBox = new JCheckBox();
@@ -50,14 +52,19 @@ public class ConfigStateDialog extends JDialog {
 		setPreferredSize(new Dimension(300, 300));
 		setLocation(500, 200);
 
-		JPanel panel = new JPanel(new GridLayout(4, 2, 5, 5));
-		panel.add(new JLabel("Nom de l'état : "));
+		JPanel panel = new JPanel(new GridLayout(5, 1));
+		panel.add(new JLabel("Nom de l'état :"));
+		labelField.setBorder(new EmptyBorder(5, 5, 5, 5));
 		labelField.setText(state.getName());
 		panel.add(labelField);
 
-		panel.add(new JLabel("Invariant : "));
+		panel.add(new JLabel("Invariant :"));
+		invariantField.setBorder(new EmptyBorder(5, 5, 5, 5));
+		invariantField.setLineWrap(true);
+		invariantField.setWrapStyleWord(true);
 		invariantField.setText(state.getInvariant());
-		panel.add(invariantField);
+		JScrollPane scrollInvariantField = new JScrollPane(invariantField);
+		panel.add(scrollInvariantField);
 
 		isInitialBox = new JCheckBox("Initial", state.isInitial());
 		panel.add(isInitialBox);
@@ -101,11 +108,17 @@ public class ConfigStateDialog extends JDialog {
 	public boolean applyChanges() {
 		if (formIsValid()) {
 			State state = (State) currentCell.getValue();
-			
+
 			state.setName(labelField.getText());
 			state.setInvariant(invariantField.getText());
 			state.setInitial(isInitialBox.isSelected());
-			
+
+			if (state.isInitial()) {
+				graphModel.setStyle(currentCell, "fillColor=#888888;strokeColor=#dddddd");
+			} else {
+				graphModel.setStyle(currentCell, "");
+			}
+
 			graphModel.setValue(currentCell, state);
 
 			return true;
