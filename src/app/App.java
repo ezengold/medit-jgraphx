@@ -51,6 +51,11 @@ public class App extends JPanel {
 	 */
 	protected JPanel navComponent;
 
+	/*
+	 * Console panel to view errors and status
+	 */
+	protected Console consolePanel;
+
 	/**
 	 * Contains the architecture of the graph
 	 */
@@ -365,11 +370,18 @@ public class App extends JPanel {
 		leftWrapper.add(leftInner, BorderLayout.CENTER);
 		leftWrapper.setBorder(null);
 
-		JSplitPane mainWrapper = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftWrapper, this.graphComponent);
+		this.consolePanel = createConsolePanel();
+
+		JSplitPane consoleSpliter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, graphComponent, consolePanel);
+		consoleSpliter.setOneTouchExpandable(true);
+		consoleSpliter.setDividerLocation(750);
+		consoleSpliter.setDividerSize(10);
+		consoleSpliter.setBorder(null);
+
+		JSplitPane mainWrapper = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftWrapper, consoleSpliter);
 		mainWrapper.setOneTouchExpandable(true);
-		mainWrapper.setDividerLocation(260);
-		mainWrapper.setDividerSize(3);
-		mainWrapper.setBorder(null);
+		mainWrapper.setDividerLocation(250);
+		mainWrapper.setDividerSize(5);
 
 		// Creates the status bar
 		statusBar = createStatusBar();
@@ -391,7 +403,7 @@ public class App extends JPanel {
 	public JFrame createFrame(MeMenuBar menuBar) {
 		JFrame frame = new JFrame();
 		frame.setLocationRelativeTo(null);
-		frame.setSize(800, 700);
+		frame.setSize(1200, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setJMenuBar(menuBar);
 
@@ -530,6 +542,10 @@ public class App extends JPanel {
 		});
 
 		return nav;
+	}
+
+	public Console createConsolePanel() {
+		return new Console();
 	}
 
 	public void status(String msg) {
