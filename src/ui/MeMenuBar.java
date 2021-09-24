@@ -1,5 +1,7 @@
 package ui;
 
+import java.awt.Font;
+
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 
@@ -8,23 +10,25 @@ import utils.EditorActions.*;
 
 public class MeMenuBar extends JMenuBar {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public MeMenuBar(final App app) {
 		JMenu menu = null;
 		
 		// Create file menu
-		menu = add(new JMenu("Fichier"));
-		menu.add(app.bind("Nouveau", new NewAction()));
-		menu.add(app.bind("Ouvrir", new OpenAction()));
-		menu.add(app.bind("Sauvegarder", new SaveAction()));
+		JMenu fichierMenu = new JMenu("Fichier");
+		fichierMenu.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
+		menu = add(fichierMenu);
+		menu.add(app.bind("Nouveau", new NewAction(), "/file.png"));
+		menu.add(app.bind("Ouvrir", new OpenAction(), "/folder.png"));
+		menu.add(app.bind("Sauvegarder", new SaveAction(), "/disk.png"));
 		menu.addSeparator();
-		menu.add(app.bind("Fermer", new CloseAction()));
+		menu.add(app.bind("Fermer", new CloseAction(), "/exit.png"));
 		
-		menu = add(new JMenu("Aide"));
-		menu.add(app.bind("A propos", new AboutAction()));
+		JMenu helpMenu = new JMenu("Aide");
+		helpMenu.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
+		
+		menu = add(helpMenu);
+		menu.add(app.bind("A propos", new AboutAction(), "/about.png"));
 	}
 }

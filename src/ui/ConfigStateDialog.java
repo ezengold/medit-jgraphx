@@ -1,13 +1,14 @@
 package ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -53,26 +54,38 @@ public class ConfigStateDialog extends JDialog {
 		setLocation(500, 200);
 
 		JPanel panel = new JPanel(new GridLayout(5, 1));
-		panel.add(new JLabel("Nom de l'état :"));
+
+		JLabel nameLabel = new JLabel("Nom de l'état :");
+		nameLabel.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
+		nameLabel.setBorder(new EmptyBorder(0, 5, 5, 5));
+		panel.add(nameLabel);
 		labelField.setBorder(new EmptyBorder(5, 5, 5, 5));
 		labelField.setText(state.getName());
+		labelField.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
 		panel.add(labelField);
 
-		panel.add(new JLabel("Invariant :"));
+		JLabel invariantLabel = new JLabel("Invariant :");
+		invariantLabel.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
+		invariantLabel.setBorder(new EmptyBorder(15, 5, 5, 5));
+		panel.add(invariantLabel);
 		invariantField.setBorder(new EmptyBorder(5, 5, 5, 5));
 		invariantField.setLineWrap(true);
 		invariantField.setWrapStyleWord(true);
 		invariantField.setText(state.getInvariant());
+		invariantField.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
 		JScrollPane scrollInvariantField = new JScrollPane(invariantField);
 		panel.add(scrollInvariantField);
 
 		isInitialBox = new JCheckBox("Initial", state.isInitial());
+		isInitialBox.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
+		isInitialBox.setBorder(new EmptyBorder(15, 5, 5, 5));
 		panel.add(isInitialBox);
 
 		JPanel buttonsPanel = new JPanel();
+		buttonsPanel.setBorder(new EmptyBorder(20, 5, 5, 5));
 
-		JButton submitButton = new JButton("Valider");
-		submitButton.setBorder(new EmptyBorder(10, 15, 10, 15));
+		Button submitButton = new Button("Valider");
+		submitButton.setBackground(Color.decode("#9099ae"));
 		submitButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -83,8 +96,8 @@ public class ConfigStateDialog extends JDialog {
 			}
 		});
 
-		JButton cancelButton = new JButton("Annuler");
-		cancelButton.setBorder(new EmptyBorder(10, 15, 10, 15));
+		Button cancelButton = new Button("Annuler");
+		cancelButton.setBackground(new Color(0, 0, 0, 50));
 		cancelButton.addActionListener(new ActionListener() {
 
 			@Override

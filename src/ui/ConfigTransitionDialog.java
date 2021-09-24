@@ -1,13 +1,14 @@
 package ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -35,7 +36,7 @@ public class ConfigTransitionDialog extends JDialog {
 	public ConfigTransitionDialog(final mxCell cell, final mxIGraphModel graphModel) {
 		super((Frame) null, "Transition", true);
 		setModal(true);
-		setPreferredSize(new Dimension(400, 400));
+		setPreferredSize(new Dimension(400, 300));
 
 		setLocation(500, 200);
 
@@ -46,26 +47,35 @@ public class ConfigTransitionDialog extends JDialog {
 
 		JPanel panel = new JPanel(new GridLayout(4, 1));
 
-		panel.add(new JLabel("Garde :"));
+		JLabel guardLabel = new JLabel("Garde :");
+		guardLabel.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
+		guardLabel.setBorder(new EmptyBorder(0, 5, 5, 5));
+		panel.add(guardLabel);
 		guardField.setBorder(new EmptyBorder(5, 5, 5, 5));
 		guardField.setLineWrap(true);
 		guardField.setWrapStyleWord(true);
+		guardField.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
 		guardField.setText(transition.getGuardInstructions());
 		JScrollPane scrollGuardField = new JScrollPane(guardField);
 		panel.add(scrollGuardField);
 
-		panel.add(new JLabel("Mise à jour :"));
+		JLabel updateLabel = new JLabel("Mise à jour :");
+		updateLabel.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
+		updateLabel.setBorder(new EmptyBorder(15, 5, 5, 5));
+		panel.add(updateLabel);
 		updateField.setBorder(new EmptyBorder(5, 5, 5, 5));
 		updateField.setLineWrap(true);
 		updateField.setWrapStyleWord(true);
+		updateField.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
 		updateField.setText(transition.getUpdateInstructions());
 		JScrollPane scrollUpdateField = new JScrollPane(updateField);
 		panel.add(scrollUpdateField);
 
 		JPanel buttonsPanel = new JPanel();
+		buttonsPanel.setBorder(new EmptyBorder(20, 5, 5, 5));
 
-		JButton submitButton = new JButton("Valider");
-		submitButton.setBorder(new EmptyBorder(10, 15, 10, 15));
+		Button submitButton = new Button("Valider");
+		submitButton.setBackground(Color.decode("#9099ae"));
 		submitButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -76,8 +86,8 @@ public class ConfigTransitionDialog extends JDialog {
 			}
 		});
 
-		JButton cancelButton = new JButton("Annuler");
-		cancelButton.setBorder(new EmptyBorder(10, 15, 10, 15));
+		Button cancelButton = new Button("Annuler");
+		cancelButton.setBackground(new Color(0, 0, 0, 50));
 		cancelButton.addActionListener(new ActionListener() {
 
 			@Override

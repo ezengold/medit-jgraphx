@@ -647,7 +647,7 @@ public class App extends JPanel {
 		};
 
 		newAction.putValue(Action.SHORT_DESCRIPTION, action.getValue(Action.SHORT_DESCRIPTION));
-
+		
 		return newAction;
 	}
 
