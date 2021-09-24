@@ -2,6 +2,7 @@ package app;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -13,6 +14,7 @@ import java.io.File;
 import java.util.List;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
 import org.jgrapht.ext.JGraphXAdapter;
 import org.jgrapht.graph.DefaultDirectedGraph;
@@ -106,6 +108,14 @@ public class App extends JPanel {
 	 * Used to handle keyboard actions, Accelerators by example
 	 */
 	protected mxKeyboardHandler keyboardHandler;
+
+	/*
+	 * Main tab container
+	 */
+	protected JTabbedPane mainTab;
+
+	protected Simulator simulatorPanel;
+	protected Verifier verifierPanel;
 
 	/**
 	 * 
@@ -214,8 +224,8 @@ public class App extends JPanel {
 			public void run() {
 				try {
 					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-				} catch (Exception e1) {
-					e1.printStackTrace();
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 				mxSwingConstants.SHADOW_COLOR = Color.LIGHT_GRAY;
 				mxConstants.W3C_SHADOWCOLOR = "#D3D3D3";
@@ -374,13 +384,25 @@ public class App extends JPanel {
 
 	public JFrame createFrame(MeMenuBar menuBar) {
 		JFrame frame = new JFrame();
-		frame.getContentPane().add(this);
 		frame.setLocationRelativeTo(null);
 		frame.setSize(800, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setJMenuBar(menuBar);
 
 		this.updateTitle();
+
+		// Create other tabs instances and forward the graph context
+		simulatorPanel = new Simulator(graphData, graphComponent);
+		verifierPanel = new Verifier(graphData, graphComponent);
+
+		mainTab = new JTabbedPane();
+		mainTab.add("Editeur", this);
+		mainTab.add("Simulateur", simulatorPanel);
+		mainTab.add("Vérificateur", verifierPanel);
+		mainTab.setBorder(new EmptyBorder(10, 0, 0, 0));
+		mainTab.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
+
+		frame.getContentPane().add(mainTab);
 
 		return frame;
 	}
@@ -460,6 +482,7 @@ public class App extends JPanel {
 	protected JLabel createStatusBar() {
 		JLabel statusBar = new JLabel("Prêt");
 		statusBar.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
+		statusBar.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
 		return statusBar;
 	}
 

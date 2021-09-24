@@ -23,9 +23,6 @@ public class MeMenuBar extends JMenuBar {
 		menu.add(app.bind("Sauvegarder", new SaveAction()));
 		menu.addSeparator();
 		menu.add(app.bind("Fermer", new CloseAction()));
-
-		menu = add(new JMenu("Options"));
-		menu.add(app.bind("Simulateur", new SimulatorAction()));
 		
 		menu = add(new JMenu("Aide"));
 		menu.add(app.bind("A propos", new AboutAction()));
