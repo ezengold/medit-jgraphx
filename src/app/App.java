@@ -187,6 +187,16 @@ public class App extends JPanel {
 					graphData.removeVertex(s);
 				}
 			}
+
+			// Check if all cells have been removed then add a new vertex
+			final mxGraph graph = graphComponent.getGraph();
+			Object[] remains = graph.getChildCells(graph.getDefaultParent());
+
+			if (remains.length == 0) {
+				State newState = new State();
+				graphData.addVertex(newState);
+				graph.insertVertex(graph.getDefaultParent(), newState.getName(), newState, 20, 20, 20, 20);
+			}
 		}
 	};
 
@@ -335,7 +345,7 @@ public class App extends JPanel {
 		leftInner.setBorder(null);
 
 		JPanel leftWrapper = new JPanel(new BorderLayout());
-		leftWrapper.add(this.palette, BorderLayout.NORTH);
+//		leftWrapper.add(this.palette, BorderLayout.NORTH);
 		leftWrapper.add(leftInner, BorderLayout.CENTER);
 		leftWrapper.setBorder(null);
 
