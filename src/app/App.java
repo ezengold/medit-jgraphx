@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -58,6 +60,11 @@ public class App extends JPanel {
 	 * Adapter of the graph
 	 */
 	protected JGraphXAdapter<State, Transition> jgxAdapter;
+
+	/*
+	 * Global declarations
+	 */
+	protected String globalDeclarations = "";
 
 	/*
 	 * UI that displays the palette
@@ -345,8 +352,7 @@ public class App extends JPanel {
 		// Create instance of palette
 		this.palette = new MePalette();
 
-		this.navComponent = new JPanel();
-		this.navComponent.setBackground(Color.LIGHT_GRAY);
+		this.navComponent = createNavComponent();
 
 		JSplitPane leftInner = new JSplitPane(JSplitPane.VERTICAL_SPLIT, this.navComponent, this.graphOutline);
 		leftInner.setDividerLocation(350);
@@ -361,7 +367,7 @@ public class App extends JPanel {
 
 		JSplitPane mainWrapper = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftWrapper, this.graphComponent);
 		mainWrapper.setOneTouchExpandable(true);
-		mainWrapper.setDividerLocation(200);
+		mainWrapper.setDividerLocation(260);
 		mainWrapper.setDividerSize(3);
 		mainWrapper.setBorder(null);
 
@@ -484,6 +490,46 @@ public class App extends JPanel {
 		statusBar.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
 		statusBar.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
 		return statusBar;
+	}
+
+	public JPanel createNavComponent() {
+		JPanel nav = new JPanel();
+
+		nav.setLayout(new BorderLayout(5, 5));
+
+		JLabel title = new JLabel("Déclarations globales");
+		title.setBorder(new EmptyBorder(10, 10, 10, 10));
+		title.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
+		nav.add(title, BorderLayout.NORTH);
+
+		JTextArea area = new JTextArea();
+		area.setBorder(new EmptyBorder(5, 5, 5, 5));
+		area.setLineWrap(true);
+		area.setWrapStyleWord(true);
+		area.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
+		JScrollPane scrollArea = new JScrollPane(area);
+		scrollArea.setBorder(new EmptyBorder(3, 3, 3, 3));
+		nav.add(scrollArea, BorderLayout.CENTER);
+
+		area.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+				//
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				globalDeclarations = area.getText();
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				//
+			}
+		});
+
+		return nav;
 	}
 
 	public void status(String msg) {
