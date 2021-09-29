@@ -1,9 +1,18 @@
 package utils;
 
 import java.awt.Component;
+import java.awt.Container;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.io.File;
 
 import javax.swing.AbstractAction;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+
+import com.mxgraph.swing.mxGraphComponent;
+import com.mxgraph.util.mxUtils;
 
 import app.App;
 
@@ -54,12 +63,84 @@ public class EditorActions {
 	@SuppressWarnings("serial")
 	public static class SaveAction extends AbstractAction {
 
+		protected String lastDir = null;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			App app = getApp(e);
 
 			if (app != null) {
-				System.out.println("SAVE FILE CLICKED");
+				mxGraphComponent graphComponent = app.getGraphComponent();
+				String filename = null;
+
+				// START OF GETTING THE FILE TO HOLD THE GRAPH
+				if (app.getCurrentFile() == null) {
+					// No file in the app context
+					String wd;
+
+					if (lastDir != null) {
+						wd = lastDir;
+					} else if (app.getCurrentFile() != null) {
+						wd = app.getCurrentFile().getParent();
+					} else {
+						wd = System.getProperty("user.dir");
+					}
+
+					JFileChooser fc = new JFileChooser(wd);
+					EditorFileFilter xmlFilter = new EditorFileFilter(".xml", "Fichier XML");
+					fc.setAcceptAllFileFilterUsed(false);
+					fc.setFileFilter(xmlFilter);
+					setFileChooserFont(fc.getComponents());
+					int response = fc.showDialog(null, "Enregistrer l'automate");
+
+					if (response != JFileChooser.APPROVE_OPTION) {
+						return;
+					} else {
+						lastDir = fc.getSelectedFile().getParent();
+					}
+
+					filename = fc.getSelectedFile().getAbsolutePath();
+
+					if (!filename.toLowerCase().endsWith(xmlFilter.getExtension())) {
+						filename += xmlFilter.getExtension();
+					}
+
+					// Check if named file already exists
+					UIManager.put("OptionPane.messageFont", new Font("Ubuntu Mono", Font.PLAIN, 14));
+					UIManager.put("OptionPane.buttonFont", new Font("Ubuntu Mono", Font.PLAIN, 14));
+
+					if (new File(filename).exists() && JOptionPane.showConfirmDialog(graphComponent,
+							"Fusionner avec le fichier existant ?") != JOptionPane.YES_OPTION) {
+						return;
+					}
+				} else {
+					filename = app.getCurrentFile().getAbsolutePath();
+				}
+				// END GETTING THE FILE
+
+				// Write in the file
+				try {
+					XmlHandler xmlHandler = new XmlHandler(graphComponent, app.getGlobalDeclarations());
+					mxUtils.writeFile(xmlHandler.getAsXml(), filename);
+				} catch (Throwable exception) {
+					exception.printStackTrace();
+					JOptionPane.showMessageDialog(graphComponent, exception.toString(), "Erreur",
+							JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		}
+
+		public void setFileChooserFont(Component[] comps) {
+			for (Component comp : comps) {
+				if (comp instanceof Container) {
+					setFileChooserFont(((Container) comp).getComponents());
+				}
+
+				try {
+					comp.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
+				} catch (Exception e) {
+					//
+				}
 			}
 		}
 

@@ -489,6 +489,22 @@ public class App extends JPanel {
 		this.navComponent = navComponent;
 	}
 
+	public String getGlobalDeclarations() {
+		return globalDeclarations;
+	}
+
+	public void setGlobalDeclarations(String globalDeclarations) {
+		this.globalDeclarations = globalDeclarations;
+	}
+
+	public DefaultDirectedGraph<State, Transition> getGraphData() {
+		return graphData;
+	}
+
+	public void setGraphData(DefaultDirectedGraph<State, Transition> graphData) {
+		this.graphData = graphData;
+	}
+
 	public mxUndoManager getUndoManager() {
 		return undoManager;
 	}
