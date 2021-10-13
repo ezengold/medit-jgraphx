@@ -48,16 +48,62 @@ public class EditorActions {
 
 	@SuppressWarnings("serial")
 	public static class OpenAction extends AbstractAction {
+		/*
+		 * 
+		 */
+		protected String lastDir;
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			App app = getApp(e);
 
 			if (app != null) {
-				System.out.println("OPEN FILE CLICKED");
+				if (!app.isModified() || JOptionPane.showConfirmDialog(app,
+						"Êtes-vous prêts à perdre vos modifications ?") == JOptionPane.YES_OPTION) {
+					mxGraphComponent graphComponent = app.getGraphComponent();
+
+					if (graphComponent != null) {
+						String wd = (lastDir != null) ? lastDir : System.getProperty("user.dir");
+
+						JFileChooser fc = new JFileChooser(wd);
+						EditorFileFilter xmlFilter = new EditorFileFilter(".xml", "Fichier XML");
+						fc.setAcceptAllFileFilterUsed(false);
+						fc.setFileFilter(xmlFilter);
+						setFileChooserFont(fc.getComponents());
+
+						int response = fc.showDialog(null, "Ouvrir un automate");
+
+						if (response == JFileChooser.APPROVE_OPTION) {
+							lastDir = fc.getSelectedFile().getParent();
+
+							// Read in the file
+							try {
+								XmlHandler xmlHandler = new XmlHandler(app);
+								xmlHandler.readXml(fc.getSelectedFile());
+							} catch (Throwable exception) {
+								exception.printStackTrace();
+								JOptionPane.showMessageDialog(graphComponent, exception.toString(), "Erreur",
+										JOptionPane.ERROR_MESSAGE);
+							}
+						}
+					}
+				}
 			}
 		}
 
+		public void setFileChooserFont(Component[] comps) {
+			for (Component comp : comps) {
+				if (comp instanceof Container) {
+					setFileChooserFont(((Container) comp).getComponents());
+				}
+
+				try {
+					comp.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
+				} catch (Exception e) {
+					//
+				}
+			}
+		}
 	}
 
 	@SuppressWarnings("serial")
@@ -120,7 +166,7 @@ public class EditorActions {
 
 				// Write in the file
 				try {
-					XmlHandler xmlHandler = new XmlHandler(graphComponent, app.getGlobalDeclarations());
+					XmlHandler xmlHandler = new XmlHandler(app);
 					mxUtils.writeFile(xmlHandler.getAsXml(), filename);
 				} catch (Throwable exception) {
 					exception.printStackTrace();

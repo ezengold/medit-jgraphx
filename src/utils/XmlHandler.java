@@ -1,27 +1,35 @@
 package utils;
 
+import java.io.File;
+import java.util.HashMap;
+
 import com.mxgraph.model.mxCell;
-import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.view.mxGraph;
 
+import app.App;
 import models.State;
 import models.Transition;
 
 public class XmlHandler {
-	private mxGraphComponent graphComponent;
-	private String globalDeclarations = "";
+	private App app;
 
-	public XmlHandler(mxGraphComponent graphComponent, String globalDeclarations) {
-		this.graphComponent = graphComponent;
-		this.globalDeclarations = globalDeclarations;
+	private HashMap<String, String> excepts = new HashMap<String, String>();
+
+	public XmlHandler(App parent) {
+		this.app = parent;
+
+		excepts.put("<", "&gt;");
+		excepts.put(">", "&lt;");
+		excepts.put("&", "&amp;");
 	}
 
 	public String getAsXml() {
-		mxGraph graph = this.graphComponent.getGraph();
+		mxGraph graph = this.app.getGraphComponent().getGraph();
+		String globalDeclarations = escapeStr((this.app.getGlobalDeclarations()));
 		String xmlStr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" + "<!-- DTD GOES HERE -->\n" + "<content>\n";
 
 		// START Add global declarations
-		xmlStr += "\t<declarations>" + this.globalDeclarations + "\n\t</declarations>\n";
+		xmlStr += "\t<declarations>" + globalDeclarations + "\n\t</declarations>\n";
 		// END Add global declarations
 
 		// START Add model
@@ -37,8 +45,9 @@ public class XmlHandler {
 						+ (state != null ? state.getStateId() : "") + "\" x=\"" + cell.getGeometry().getX() + "\" y=\""
 						+ cell.getGeometry().getY() + "\" isInitial=\""
 						+ (state != null && state.isInitial() ? "1" : "0") + "\">\n";
-				xmlStr += "\t\t\t<name>" + (state != null ? state.getName() : "") + "</name>\n";
-				xmlStr += "\t\t\t<invariant>" + (state != null ? state.getInvariant() : "") + "</invariant>\n";
+				xmlStr += "\t\t\t<name>" + (state != null ? escapeStr(state.getName()) : "") + "</name>\n";
+				xmlStr += "\t\t\t<invariant>" + (state != null ? escapeStr(state.getInvariant()) : "")
+						+ "</invariant>\n";
 				xmlStr += "\t\t</location>\n";
 			} else if (cell.isEdge()) {
 				Transition transition = (Transition) cell.getValue();
@@ -49,9 +58,9 @@ public class XmlHandler {
 						+ "\" sourceY=\"" + cell.getGeometry().getSourcePoint().getY() + "\" target=\""
 						+ cell.getTarget().getId() + "\" targetX=\"" + cell.getGeometry().getTargetPoint().getX()
 						+ "\" targetY=\"" + cell.getGeometry().getTargetPoint().getY() + "\">\n";
-				xmlStr += "\t\t\t<guard>" + (transition != null ? transition.getGuardInstructions() : "")
+				xmlStr += "\t\t\t<guard>" + (transition != null ? escapeStr(transition.getGuardInstructions()) : "")
 						+ "</guard>\n";
-				xmlStr += "\t\t\t<updates>" + (transition != null ? transition.getUpdateInstructions() : "")
+				xmlStr += "\t\t\t<updates>" + (transition != null ? escapeStr(transition.getUpdateInstructions()) : "")
 						+ "</updates>\n";
 				xmlStr += "\t\t</transition>\n";
 			}
@@ -63,19 +72,32 @@ public class XmlHandler {
 		return xmlStr + "</content>\n";
 	}
 
-	public mxGraphComponent getGraphComponent() {
-		return graphComponent;
+	public void readXml(File file) {
+		//
 	}
 
-	public void setGraphComponent(mxGraphComponent graphComponent) {
-		this.graphComponent = graphComponent;
+	public String escapeStr(final String input) {
+		String output = input;
+		for (String token : excepts.keySet()) {
+			output = output.replaceAll(token, excepts.get(token));
+		}
+		System.out.println("input : " + input + " | output : " + output);
+		return output;
 	}
 
-	public String getGlobalDeclarations() {
-		return globalDeclarations;
+	public String restoreStr(final String input) {
+		String output = input;
+		for (String token : excepts.keySet()) {
+			output.replaceAll(excepts.get(token), token);
+		}
+		return output;
 	}
 
-	public void setGlobalDeclarations(String globalDeclarations) {
-		this.globalDeclarations = globalDeclarations;
+	public App getApp() {
+		return app;
+	}
+
+	public void setApp(App app) {
+		this.app = app;
 	}
 }

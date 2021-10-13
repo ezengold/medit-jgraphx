@@ -25,7 +25,7 @@ public class MeGraphComponent extends mxGraphComponent {
 	public MeGraphComponent(JGraphXAdapter<State, Transition> adapter) {
 		super(adapter);
 
-		setPageVisible(true);
+		setPageVisible(false);
 		setGridVisible(false);
 		setToolTips(true);
 		getConnectionHandler().setCreateTarget(true);
