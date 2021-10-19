@@ -51,6 +51,8 @@ public class App extends JPanel {
 	 */
 	protected JPanel navComponent;
 
+	protected JTextArea area = new JTextArea();
+
 	/*
 	 * Console panel to view errors and status
 	 */
@@ -477,6 +479,10 @@ public class App extends JPanel {
 		return graphComponent;
 	}
 
+	public void setGraphComponent(mxGraphComponent graphComponent) {
+		this.graphComponent = graphComponent;
+	}
+
 	public mxGraphOutline getGraphOutline() {
 		return graphOutline;
 	}
@@ -494,6 +500,7 @@ public class App extends JPanel {
 	}
 
 	public void setGlobalDeclarations(String globalDeclarations) {
+		this.area.setText(globalDeclarations);
 		this.globalDeclarations = globalDeclarations;
 	}
 
@@ -530,7 +537,7 @@ public class App extends JPanel {
 		title.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
 		nav.add(title, BorderLayout.NORTH);
 
-		JTextArea area = new JTextArea();
+		this.area = new JTextArea();
 		area.setBorder(new EmptyBorder(5, 5, 5, 5));
 		area.setLineWrap(true);
 		area.setWrapStyleWord(true);
@@ -663,7 +670,7 @@ public class App extends JPanel {
 		};
 
 		newAction.putValue(Action.SHORT_DESCRIPTION, action.getValue(Action.SHORT_DESCRIPTION));
-		
+
 		return newAction;
 	}
 
