@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DTD GOES HERE -->
+<content>
+	<declarations>
+		<!-- Global declarations goes here -->
+	</declarations>
+	<model>
+		<location id="" stateId="" x="" y="" isInitial="">
+			<name></name>
+			<invariant></invariant>
+		</location>
+		<transition id="" transitionId="" source="" sourceX="" sourceY="" target="" targetX="" targetY="">
+			<guard></guard>
+			<update></update>
+		</transition>
+	</model>
+</content>
