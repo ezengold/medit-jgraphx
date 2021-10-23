@@ -5,6 +5,9 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
 
 import org.jgrapht.graph.DefaultDirectedGraph;
 
@@ -12,8 +15,14 @@ import com.mxgraph.swing.mxGraphComponent;
 
 import models.State;
 import models.Transition;
+import ui.ModelRequest;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.Vector;
 
 public class Verifier extends JPanel {
 
@@ -21,6 +30,18 @@ public class Verifier extends JPanel {
 	private JPanel topContainer = new JPanel();
 	private JPanel middleContainer = new JPanel();
 	private JPanel bottomContainer = new JPanel();
+
+	//table to view request
+	Object[][] data = {{""}};
+	//Les titres des colonnes
+	String title[] = {"Requete"};
+    ModelRequest modelRequest = new ModelRequest(data,title);
+    JTable tableRequest = new JTable(modelRequest);
+
+
+    //propertie jtextArea
+	JTextArea propertie = new JTextArea("");
+
 
 	public Verifier(DefaultDirectedGraph<State, Transition> graphData, mxGraphComponent graphComponent) {
 		initComponent();
@@ -37,8 +58,41 @@ public class Verifier extends JPanel {
 		apercu.setFont(new Font("Times New Roman",Font.BOLD,13));
 		JPanel contentApercu = new JPanel();
 		contentApercu.setBackground(Color.white);
-		contentApercu.setPreferredSize(new Dimension(1000,100));
+		contentApercu.setPreferredSize(new Dimension(1000,120));
 		contentApercu.setBorder(BorderFactory.createMatteBorder(1,1,1,1,Color.lightGray));
+		//table to view dynamically request
+		tableRequest.setRowSelectionInterval(0 ,0);
+		tableRequest.setPreferredSize(new Dimension(1000,120));
+		tableRequest.setShowGrid(false);
+		tableRequest.setRowHeight(30);
+//		tableRequest.setSelectionBackground(Color.GRAY);
+		tableRequest.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent listSelectionEvent) {
+				if (tableRequest.getSelectedRow() != -1) {
+					propertie.setEditable(true);
+					propertie.setText(tableRequest.getValueAt(tableRequest.getSelectedRow(), 0).toString());
+				} else {
+					propertie.setText("");
+				}
+			}
+		});
+
+
+
+        //Les données du tableau
+
+        JScrollPane jScrollPane = new JScrollPane(tableRequest);
+        jScrollPane.setPreferredSize(new Dimension(950,120));
+        contentApercu.setLayout(new BorderLayout());
+        contentApercu.add(jScrollPane,BorderLayout.WEST);
+
+
+
+
+
+
+
 
 		JPanel viewContainer = new JPanel(new BorderLayout(0,0));
 		viewContainer.add(apercu,BorderLayout.CENTER);
@@ -49,9 +103,40 @@ public class Verifier extends JPanel {
 		verifier.setPreferredSize(new Dimension(150,20));
 		verifier.setBackground(Color.black);
 		JButton inserer = new JButton("Inserer");
+		inserer.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent actionEvent) {
+				modelRequest.insertRow(0,new Object[]{""});
+				tableRequest.setRowSelectionInterval(0,0);
+				propertie.setText("");
+			}
+		});
+
 		inserer.setBackground(Color.GRAY);
 		JButton supprimer = new JButton("Supprimer");
 		supprimer.setBackground(Color.GRAY);
+		supprimer.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent actionEvent) {
+				int rowSelected = tableRequest.getSelectedRow();
+				if (rowSelected != -1) {
+					modelRequest.removeRow(tableRequest.getSelectedRow());
+
+					if (modelRequest.getRowCount() == 0) {
+						propertie.setEditable(false);
+					} else {
+						if (rowSelected == 0) {
+							tableRequest.setRowSelectionInterval(rowSelected ,0);
+						} else {
+							tableRequest.setRowSelectionInterval(rowSelected -1,0);
+						}
+
+					}
+				}
+
+
+			}
+		});
 		JPanel containerButton = new JPanel(new GridLayout(3,1));
 		containerButton.add(verifier);
 		containerButton.add(inserer);
@@ -76,10 +161,31 @@ public class Verifier extends JPanel {
 		requete.setLayout(new BorderLayout());
 		requete.setHorizontalAlignment(SwingConstants.LEFT);
 
-		JTextArea propertie = new JTextArea("");
+
 		propertie.setLineWrap(true);
 		propertie.setBorder(new MatteBorder(1,1,1,1,Color.lightGray));
 		propertie.setPreferredSize(new Dimension(700,100));
+
+		propertie.addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent keyEvent) {
+				if (tableRequest.getSelectedRow() != -1) {
+					modelRequest.setValueAt(propertie.getText()+keyEvent.getKeyChar(),tableRequest.getSelectedRow(),0);
+				}
+			}
+
+			@Override
+			public void keyPressed(KeyEvent keyEvent) {
+
+			}
+
+			@Override
+			public void keyReleased(KeyEvent keyEvent) {
+
+			}
+		});
+
+
 
 		middleContainer.setBorder(new EmptyBorder(5,5,10,10));
 		middleContainer.add(requete,BorderLayout.NORTH);
@@ -93,11 +199,13 @@ public class Verifier extends JPanel {
 		JLabel statusLabel = new JLabel("Status");
 		statusLabel.setFont(new Font("Times New Roman",Font.BOLD,13));
 		JPanel statusContent = new JPanel();
-		statusContent.setBackground(Color.white);
-		statusContent.setPreferredSize(new Dimension(1000,100));
+//		statusContent.setBackground(Color.white);
+//		statusContent.setPreferredSize(new Dimension(1000,100));
+		JScrollPane scrollStatus = new JScrollPane(statusContent);
+		scrollStatus.setPreferredSize(new Dimension(1000,200));
 		statusContent.setBorder(BorderFactory.createMatteBorder(1,1,1,1,Color.lightGray));
 		bottomContainer.add(statusLabel,BorderLayout.NORTH);
-		bottomContainer.add(statusContent,BorderLayout.CENTER);
+		bottomContainer.add(scrollStatus,BorderLayout.CENTER);
 		bottomContainer.setBorder(BorderFactory.createEmptyBorder(5,5,10,10));
 
 		Box b = Box.createVerticalBox();
