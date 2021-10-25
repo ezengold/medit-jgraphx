@@ -4,10 +4,9 @@ import java.util.UUID;
 
 import org.jgrapht.graph.DefaultEdge;
 
+@SuppressWarnings("serial")
 public class Transition extends DefaultEdge {
-
-	private static final long serialVersionUID = 7209157154944409893L;
-
+	
 	private String transitionId;
 
 	private String sourceStateId;
