@@ -1,126 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="assets"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/lib/antlr4-runtime-4.8-1.jar">
+	<classpathentry kind="lib" path="/Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/antlr4-runtime-4.8-1.jar"/>
+	<classpathentry kind="lib" path="/Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/commons-lang3-3.9.jar"/>
+	<classpathentry kind="lib" path="/Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/commons-math3-3.6.1.jar"/>
+	<classpathentry kind="lib" path="/Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/commons-text-1.8.jar"/>
+	<classpathentry kind="lib" path="/Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/dsiutils-2.6.17.jar"/>
+	<classpathentry kind="lib" path="/Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/fastutil-8.5.2.jar"/>
+	<classpathentry kind="lib" path="/Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/guava-29.0-jre.jar"/>
+	<classpathentry kind="lib" path="/Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/jgrapht-core-1.5.1.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="file:/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/javadoc/"/>
+			<attribute name="javadoc_location" value="file:/Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/javadoc/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/lib/commons-lang3-3.9.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/lib/commons-math3-3.6.1.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/lib/commons-text-1.8.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/lib/dsiutils-2.6.17.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/lib/fastutil-8.5.2.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/lib/guava-29.0-jre.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/lib/jgrapht-core-1.5.1.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/lib/jgrapht-demo-1.5.1.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/lib/jgrapht-ext-1.5.1.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/lib/jgrapht-guava-1.5.1.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/lib/jgrapht-io-1.5.1.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/lib/jgrapht-opt-1.5.1.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/lib/jgrapht-unimi-dsi-1.5.1.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/lib/jgraphx-4.1.0.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/lib/jheaps-0.13.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/lib/jsap-20210129.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/lib/logback-classic-1.2.3.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/lib/logback-core-1.2.3.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/lib/slf4j-api-1.7.30.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/lib/sux4j-5.2.3.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/lib/webgraph-3.6.10.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/lib/webgraph-big-3.6.6.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/home/ezen/Documents/MEMOIRE/jgrapht-1.5.1/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" path="assets"/>
+	<classpathentry kind="lib" path="/Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/jgrapht-demo-1.5.1.jar"/>
+	<classpathentry kind="lib" path="/Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/jgrapht-ext-1.5.1.jar"/>
+	<classpathentry kind="lib" path="/Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/jgrapht-guava-1.5.1.jar"/>
+	<classpathentry kind="lib" path="/Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/jgrapht-io-1.5.1.jar"/>
+	<classpathentry kind="lib" path="/Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/jgrapht-opt-1.5.1.jar"/>
+	<classpathentry kind="lib" path="/Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/jgrapht-unimi-dsi-1.5.1.jar"/>
+	<classpathentry kind="lib" path="/Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/jgraphx-4.1.0.jar"/>
+	<classpathentry kind="lib" path="/Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/jheaps-0.13.jar"/>
+	<classpathentry kind="lib" path="/Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/jsap-20210129.jar"/>
+	<classpathentry kind="lib" path="/Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/logback-classic-1.2.3.jar"/>
+	<classpathentry kind="lib" path="/Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/logback-core-1.2.3.jar"/>
+	<classpathentry kind="lib" path="/Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/slf4j-api-1.7.30.jar"/>
+	<classpathentry kind="lib" path="/Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/sux4j-5.2.3.jar"/>
+	<classpathentry kind="lib" path="/Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/webgraph-3.6.10.jar"/>
+	<classpathentry kind="lib" path="/Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/webgraph-big-3.6.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

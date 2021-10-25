@@ -3,7 +3,7 @@ package models;
 import java.util.UUID;
 
 public class State {
-	private static Integer NB = 0;
+	public static Integer NB = 0;
 
 	private String stateId;
 	

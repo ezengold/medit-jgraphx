@@ -1,20 +1,17 @@
 package app;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
-import org.jgrapht.graph.DefaultDirectedGraph;
-
 import com.mxgraph.swing.mxGraphComponent;
 
 import models.State;
 import models.Transition;
+import org.jgrapht.graph.DefaultDirectedGraph;
 import ui.ModelRequest;
 
 import java.awt.*;
@@ -27,6 +24,7 @@ import java.util.Vector;
 public class Verifier extends JPanel {
 
 	private static final long serialVersionUID = -6129589946079881207L;
+
 	private JPanel topContainer = new JPanel();
 	private JPanel middleContainer = new JPanel();
 	private JPanel bottomContainer = new JPanel();
@@ -44,18 +42,22 @@ public class Verifier extends JPanel {
 
 
 	public Verifier(DefaultDirectedGraph<State, Transition> graphData, mxGraphComponent graphComponent) {
+
+
+	}
+	public Verifier(mxGraphComponent graphComponent) {
 		initComponent();
 	}
 
 	private void initComponent() {
 //		this.setLayout(new BorderLayout());
 		/*
-		  top component
+		 * top component
 		 */
-		//apercu
+		// apercu
 
 		JLabel apercu = new JLabel("Apercu");
-		apercu.setFont(new Font("Times New Roman",Font.BOLD,13));
+		apercu.setFont(new Font("Times New Roman", Font.BOLD, 13));
 		JPanel contentApercu = new JPanel();
 		contentApercu.setBackground(Color.white);
 		contentApercu.setPreferredSize(new Dimension(1000,120));
@@ -93,14 +95,16 @@ public class Verifier extends JPanel {
 
 
 
+		contentApercu.setPreferredSize(new Dimension(1000, 100));
+		contentApercu.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.lightGray));
 
-		JPanel viewContainer = new JPanel(new BorderLayout(0,0));
-		viewContainer.add(apercu,BorderLayout.CENTER);
-		viewContainer.add(contentApercu,BorderLayout.SOUTH);
+		JPanel viewContainer = new JPanel(new BorderLayout(0, 0));
+		viewContainer.add(apercu, BorderLayout.CENTER);
+		viewContainer.add(contentApercu, BorderLayout.SOUTH);
 
-		//actions button
+		// actions button
 		JButton verifier = new JButton("Verifier");
-		verifier.setPreferredSize(new Dimension(150,20));
+		verifier.setPreferredSize(new Dimension(150, 20));
 		verifier.setBackground(Color.black);
 		JButton inserer = new JButton("Inserer");
 		inserer.addActionListener(new ActionListener() {
@@ -115,6 +119,7 @@ public class Verifier extends JPanel {
 		inserer.setBackground(Color.GRAY);
 		JButton supprimer = new JButton("Supprimer");
 		supprimer.setBackground(Color.GRAY);
+
 		supprimer.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent actionEvent) {
@@ -142,22 +147,18 @@ public class Verifier extends JPanel {
 		containerButton.add(inserer);
 		containerButton.add(supprimer);
 
-
 		topContainer.setLayout(new BorderLayout());
-		topContainer.add(viewContainer,BorderLayout.WEST);
-		topContainer.add(containerButton,BorderLayout.EAST);
-		topContainer.setBorder(BorderFactory.createEmptyBorder(10,5,5,10));
-
-
-
+		topContainer.add(viewContainer, BorderLayout.WEST);
+		topContainer.add(containerButton, BorderLayout.EAST);
+		topContainer.setBorder(BorderFactory.createEmptyBorder(10, 5, 5, 10));
 
 		/*
-		Middle component
+		 * Middle component
 		 */
 
-		middleContainer.setLayout(new BorderLayout(0,0));
+		middleContainer.setLayout(new BorderLayout(0, 0));
 		JLabel requete = new JLabel("Requete");
-		requete.setFont(new Font("Times New Roman",Font.BOLD,13));
+		requete.setFont(new Font("Times New Roman", Font.BOLD, 13));
 		requete.setLayout(new BorderLayout());
 		requete.setHorizontalAlignment(SwingConstants.LEFT);
 
@@ -187,17 +188,20 @@ public class Verifier extends JPanel {
 
 
 
-		middleContainer.setBorder(new EmptyBorder(5,5,10,10));
-		middleContainer.add(requete,BorderLayout.NORTH);
-		middleContainer.add(new JScrollPane(propertie),BorderLayout.CENTER);
 
+		propertie.setBorder(new MatteBorder(1, 1, 1, 1, Color.lightGray));
+		propertie.setPreferredSize(new Dimension(700, 100));
+
+		middleContainer.setBorder(new EmptyBorder(5, 5, 10, 10));
+		middleContainer.add(requete, BorderLayout.NORTH);
+		middleContainer.add(new JScrollPane(propertie), BorderLayout.CENTER);
 
 		/*
-		 *bottom component
+		 * bottom component
 		 */
-		bottomContainer.setLayout(new BorderLayout(0,0));
+		bottomContainer.setLayout(new BorderLayout(0, 0));
 		JLabel statusLabel = new JLabel("Status");
-		statusLabel.setFont(new Font("Times New Roman",Font.BOLD,13));
+		statusLabel.setFont(new Font("Times New Roman", Font.BOLD, 13));
 		JPanel statusContent = new JPanel();
 //		statusContent.setBackground(Color.white);
 //		statusContent.setPreferredSize(new Dimension(1000,100));
@@ -208,6 +212,7 @@ public class Verifier extends JPanel {
 		bottomContainer.add(scrollStatus,BorderLayout.CENTER);
 		bottomContainer.setBorder(BorderFactory.createEmptyBorder(5,5,10,10));
 
+
 		Box b = Box.createVerticalBox();
 		b.add(topContainer);
 		b.add(middleContainer);
@@ -217,7 +222,6 @@ public class Verifier extends JPanel {
 
 //		this.add(middleContainer);
 //		this.add(bottomContainer);
-
 
 	}
 

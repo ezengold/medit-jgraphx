@@ -18,10 +18,10 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import org.jgrapht.ext.JGraphXAdapter;
-import org.jgrapht.graph.DefaultDirectedGraph;
-
+import com.mxgraph.io.mxCodecRegistry;
+import com.mxgraph.io.mxObjectCodec;
 import com.mxgraph.model.mxCell;
+import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.swing.mxGraphOutline;
 import com.mxgraph.swing.handler.mxKeyboardHandler;
@@ -57,16 +57,6 @@ public class App extends JPanel {
 	 * Console panel to view errors and status
 	 */
 	protected Console consolePanel;
-
-	/**
-	 * Contains the architecture of the graph
-	 */
-	protected DefaultDirectedGraph<State, Transition> graphData;
-
-	/*
-	 * Adapter of the graph
-	 */
-	protected JGraphXAdapter<State, Transition> jgxAdapter;
 
 	/*
 	 * Global declarations
@@ -129,17 +119,16 @@ public class App extends JPanel {
 	protected JTabbedPane mainTab;
 
 	protected Simulator simulatorPanel;
+
 	protected Verifier verifierPanel;
+
+	protected JFrame mainFrame;
 
 	/**
 	 * 
 	 */
 	protected mxIEventListener undoHandler = new mxIEventListener() {
 		public void invoke(Object source, mxEventObject evt) {
-//			List<mxUndoableChange> changes = ((mxUndoableEdit) evt.getProperty("edit")).getChanges();
-//			for (mxUndoableChange ch : changes) {
-//				System.out.println(ch.toString());
-//			}
 			undoManager.undoableEditHappened((mxUndoableEdit) evt.getProperty("edit"));
 		}
 	};
@@ -180,13 +169,9 @@ public class App extends JPanel {
 					}
 
 					el.setValue(t);
-					if (sourceState != null && targetState != null) {
-						graphData.addEdge(sourceState, targetState, t);
-					}
 				} else if (el.isVertex()) {
 					State s = new State();
 					el.setValue(s);
-					graphData.addVertex(s);
 				}
 			}
 		}
@@ -199,36 +184,14 @@ public class App extends JPanel {
 
 		@Override
 		public void invoke(Object source, mxEventObject evt) {
-			Object[] cells = (Object[]) evt.getProperty("cells");
-
-			for (Object c : cells) {
-				mxCell el = (mxCell) c;
-				if (el.isEdge()) {
-					Transition t = (Transition) el.getValue();
-					graphData.removeEdge(t);
-				} else if (el.isVertex()) {
-					State s = (State) el.getValue();
-					graphData.removeVertex(s);
-				}
-			}
-
 			// Check if all cells have been removed then add a new vertex
 			final mxGraph graph = graphComponent.getGraph();
 			Object[] remains = graph.getChildCells(graph.getDefaultParent());
 
 			if (remains.length == 0) {
 				State newState = new State();
-				graphData.addVertex(newState);
 				graph.insertVertex(graph.getDefaultParent(), newState.getName(), newState, 20, 20, 20, 20);
 			}
-		}
-	};
-
-	protected mxIEventListener testHandler = new mxIEventListener() {
-
-		@Override
-		public void invoke(Object source, mxEventObject evt) {
-			System.out.println(evt.getProperties());
 		}
 	};
 
@@ -252,21 +215,26 @@ public class App extends JPanel {
 	}
 
 	public App() {
+		mxCodecRegistry.addPackage("models");
+		mxCodecRegistry.register(new mxObjectCodec(new State()));
+		mxCodecRegistry.register(new mxObjectCodec(new Transition()));
+		
 		this.appTitle = "Medit";
 
-		// Initiate graph with initial state
-		this.graphData = new DefaultDirectedGraph<State, Transition>(Transition.class);
-
 		State s0 = new State();
-		graphData.addVertex(s0);
 
-		this.jgxAdapter = new JGraphXAdapter<State, Transition>(graphData);
+		final mxGraph graph = new mxGraph();
 
-		this.graphComponent = new MeGraphComponent(jgxAdapter);
+		this.graphComponent = new MeGraphComponent(graph);
 
-		final mxGraph graph = graphComponent.getGraph();
+		graph.insertVertex(graph.getDefaultParent(), s0.getName(), s0, 20, 20, 20, 20);
 
 		undoManager = createUndoManager();
+		
+		graph.setMultigraph(false);
+		graph.setAllowDanglingEdges(false);
+		graph.setDisconnectOnMove(false);
+		graph.setVertexLabelsMovable(true);
 
 		// Do not change the scale and translation after files have been loaded
 		graph.setResetViewOnRootChange(false);
@@ -313,32 +281,21 @@ public class App extends JPanel {
 							Transition trans = (Transition) el.getValue();
 
 							if (trans != null) {
-								ConfigTransitionDialog confDialog = new ConfigTransitionDialog(el, graph.getModel());
+								ConfigTransitionDialog confDialog = new ConfigTransitionDialog(el,
+										(mxGraphModel) graphComponent.getGraph().getModel());
 								confDialog.setVisible(true);
 							}
 						} else if (el.isVertex()) {
 							State state = (State) el.getValue();
 
 							if (state != null) {
-								ConfigStateDialog confDialog = new ConfigStateDialog(el, graph.getModel());
+								ConfigStateDialog confDialog = new ConfigStateDialog(el,
+										(mxGraphModel) graphComponent.getGraph().getModel());
 								confDialog.setVisible(true);
 							}
 						}
 					}
 				}
-			}
-		});
-
-		graphComponent.getGraphControl().addMouseMotionListener(new MouseMotionListener() {
-
-			@Override
-			public void mouseMoved(MouseEvent e) {
-				//
-			}
-
-			@Override
-			public void mouseDragged(MouseEvent e) {
-				//
 			}
 		});
 
@@ -368,7 +325,6 @@ public class App extends JPanel {
 		leftInner.setBorder(null);
 
 		JPanel leftWrapper = new JPanel(new BorderLayout());
-//		leftWrapper.add(this.palette, BorderLayout.NORTH);
 		leftWrapper.add(leftInner, BorderLayout.CENTER);
 		leftWrapper.setBorder(null);
 
@@ -403,17 +359,17 @@ public class App extends JPanel {
 	}
 
 	public JFrame createFrame(MeMenuBar menuBar) {
-		JFrame frame = new JFrame();
-		frame.setLocationRelativeTo(null);
-		frame.setSize(1200, 700);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setJMenuBar(menuBar);
+		this.mainFrame = new JFrame(this.appTitle);
+		mainFrame.setLocationRelativeTo(null);
+		mainFrame.setSize(1200, 700);
+		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mainFrame.setJMenuBar(menuBar);
 
 		this.updateTitle();
 
 		// Create other tabs instances and forward the graph context
-		simulatorPanel = new Simulator(graphData, graphComponent);
-		verifierPanel = new Verifier(graphData, graphComponent);
+		simulatorPanel = new Simulator(graphComponent);
+		verifierPanel = new Verifier(graphComponent);
 
 		mainTab = new JTabbedPane();
 		mainTab.add("Editeur", this);
@@ -422,9 +378,38 @@ public class App extends JPanel {
 		mainTab.setBorder(new EmptyBorder(10, 0, 0, 0));
 		mainTab.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
 
-		frame.getContentPane().add(mainTab);
+		mainFrame.getContentPane().add(mainTab);
 
-		return frame;
+		return mainFrame;
+	}
+
+	public void updateGraph(final mxGraph newGraph) {
+		this.setModified(false);
+		this.getUndoManager().clear();
+		this.getGraphComponent().zoomAndCenter();
+
+		// Do not change the scale and translation after files have been loaded
+		newGraph.setResetViewOnRootChange(false);
+
+		// Updates the modified flag if the graph model changes
+		newGraph.getModel().addListener(mxEvent.CHANGE, undoHandler);
+
+		// Adds the command history to the model and view
+		newGraph.getModel().addListener(mxEvent.UNDO, undoHandler);
+		newGraph.getView().addListener(mxEvent.UNDO, undoHandler);
+
+		newGraph.addListener(mxEvent.CELLS_ADDED, cellsAddedHandler);
+		newGraph.addListener(mxEvent.CELLS_REMOVED, cellsRemovedHandler);
+
+		this.graphComponent.setGraph(newGraph);
+	}
+
+	public JFrame getMainFrame() {
+		return mainFrame;
+	}
+
+	public void setMainFrame(JFrame mainFrame) {
+		this.mainFrame = mainFrame;
 	}
 
 	protected mxUndoManager createUndoManager() {
@@ -461,7 +446,7 @@ public class App extends JPanel {
 		}
 	}
 
-	public void updateTitle() {
+	public void updateTitle() {		
 		JFrame frame = (JFrame) SwingUtilities.windowForComponent(this);
 
 		if (frame != null) {
@@ -472,6 +457,8 @@ public class App extends JPanel {
 			}
 
 			frame.setTitle(title + " - " + appTitle);
+		} else {
+			System.out.print("NO FRAME");
 		}
 	}
 
@@ -502,14 +489,6 @@ public class App extends JPanel {
 	public void setGlobalDeclarations(String globalDeclarations) {
 		this.area.setText(globalDeclarations);
 		this.globalDeclarations = globalDeclarations;
-	}
-
-	public DefaultDirectedGraph<State, Transition> getGraphData() {
-		return graphData;
-	}
-
-	public void setGraphData(DefaultDirectedGraph<State, Transition> graphData) {
-		this.graphData = graphData;
 	}
 
 	public mxUndoManager getUndoManager() {

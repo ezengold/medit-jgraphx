@@ -11,8 +11,10 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
+import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxUtils;
+import com.mxgraph.view.mxGraph;
 
 import app.App;
 
@@ -78,8 +80,11 @@ public class EditorActions {
 
 							// Read in the file
 							try {
+								app.setCurrentFile(fc.getSelectedFile());
+								((mxGraphModel) graphComponent.getGraph().getModel()).clear();
+
 								XmlHandler xmlHandler = new XmlHandler(app);
-								xmlHandler.readXml(fc.getSelectedFile());
+								app.updateGraph(xmlHandler.readXml(fc.getSelectedFile()));
 							} catch (Throwable exception) {
 								exception.printStackTrace();
 								JOptionPane.showMessageDialog(graphComponent, exception.toString(), "Erreur",
@@ -116,7 +121,7 @@ public class EditorActions {
 			App app = getApp(e);
 
 			if (app != null) {
-				mxGraphComponent graphComponent = app.getGraphComponent();
+				mxGraphComponent graphComponent = (mxGraphComponent) app.getGraphComponent();
 				String filename = null;
 
 				// START OF GETTING THE FILE TO HOLD THE GRAPH
@@ -167,7 +172,8 @@ public class EditorActions {
 				// Write in the file
 				try {
 					XmlHandler xmlHandler = new XmlHandler(app);
-					mxUtils.writeFile(xmlHandler.getAsXml(), filename);
+					mxUtils.writeFile(xmlHandler.getAsXml((mxGraph) app.getGraphComponent().getGraph()), filename);
+					app.status("Fichier sauvegardé avec succès");
 				} catch (Throwable exception) {
 					exception.printStackTrace();
 					JOptionPane.showMessageDialog(graphComponent, exception.toString(), "Erreur",

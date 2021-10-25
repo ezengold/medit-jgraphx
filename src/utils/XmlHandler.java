@@ -3,6 +3,7 @@ package utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Hashtable;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -15,7 +16,8 @@ import org.w3c.dom.NodeList;
 
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
-import com.mxgraph.model.mxIGraphModel;
+import com.mxgraph.util.mxConstants;
+import com.mxgraph.util.mxPoint;
 import com.mxgraph.view.mxGraph;
 
 import app.App;
@@ -35,13 +37,12 @@ public class XmlHandler {
 		excepts.put("&", "&amp;");
 	}
 
-	public String getAsXml() {
-		mxGraph graph = this.app.getGraphComponent().getGraph();
+	public String getAsXml(final mxGraph graph) {
 		String globalDeclarations = escapeStr((this.app.getGlobalDeclarations()));
 		String xmlStr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" + "<!-- DTD GOES HERE -->\n" + "<content>\n";
 
 		// START Add global declarations
-		xmlStr += "\t<declarations>" + globalDeclarations + "\n\t</declarations>\n";
+		xmlStr += "\t<declarations>" + globalDeclarations + "</declarations>\n";
 		// END Add global declarations
 
 		// START Add model
@@ -84,9 +85,25 @@ public class XmlHandler {
 		return xmlStr + "</content>\n";
 	}
 
-	public void readXml(File file) throws IOException {
+	public mxGraph readXml(File file) throws IOException {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		mxGraph graph = this.app.getGraphComponent().getGraph();
+		mxGraph graph = new mxGraph();
+
+		graph.setCellsResizable(false);
+		graph.setCellsEditable(false);
+		graph.isLabelMovable(true);
+
+		Hashtable<String, Object> edgeStyle = (Hashtable<String, Object>) graph.getStylesheet().getDefaultEdgeStyle();
+		edgeStyle.put(mxConstants.STYLE_ENDARROW, mxConstants.ARROW_OPEN);
+		edgeStyle.put(mxConstants.STYLE_EDGE, mxConstants.EDGESTYLE_ENTITY_RELATION);
+		edgeStyle.put(mxConstants.STYLE_ROUNDED, "1");
+		graph.getStylesheet().setDefaultEdgeStyle(edgeStyle);
+
+		Hashtable<String, Object> vertexStyle = (Hashtable<String, Object>) graph.getStylesheet()
+				.getDefaultVertexStyle();
+		vertexStyle.put(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_ELLIPSE);
+		vertexStyle.put(mxConstants.STYLE_FILLCOLOR, "#78c4fc");
+		graph.getStylesheet().setDefaultVertexStyle(vertexStyle);
 
 		try {
 			dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
@@ -102,7 +119,11 @@ public class XmlHandler {
 			try {
 				graph.removeCells(graph.getChildCells(graph.getDefaultParent()));
 
+				// Hold all the vertices created
+				HashMap<String, Object> verticesArray = new HashMap<String, Object>();
+
 				// GET LOCATIONS
+				State.NB = 0;
 				NodeList locationsList = doc.getElementsByTagName("location");
 				for (int i = 0; i < locationsList.getLength(); i++) {
 					Node node = locationsList.item(i);
@@ -112,7 +133,7 @@ public class XmlHandler {
 
 						String id = location.getAttribute("id");
 						String stateId = location.getAttribute("stateId");
-						boolean isInitial = location.getAttribute("isInitial") == "1" ? true : false;
+						boolean isInitial = location.getAttribute("isInitial").equals("1") ? true : false;
 						double x = Double.parseDouble(location.getAttribute("x"));
 						double y = Double.parseDouble(location.getAttribute("y"));
 						String name = restoreStr(location.getElementsByTagName("name").item(0).getTextContent());
@@ -124,20 +145,72 @@ public class XmlHandler {
 						s.setInitial(isInitial);
 						s.setInvariant(invariant);
 
-						mxGeometry geometry = new mxGeometry(x, y, 20, 20);
+						Object vertex = graph.insertVertex(graph.getDefaultParent(), id, s, x, y, 20, 20);
 
-						graph.addCell(new mxCell(s, geometry, ""), graph.getDefaultParent());
-						graph.repaint();
-//						graph.insertVertex(graph.getDefaultParent(), null, s, x, y, 20, 20);
+						if (isInitial) {
+							((mxCell) vertex).setStyle("fillColor=#888888;strokeColor=#dddddd");
+						}
+
+						verticesArray.put(id, vertex);
+					}
+				}
+
+				// GET EDGES
+				NodeList edgesList = doc.getElementsByTagName("transition");
+				for (int i = 0; i < edgesList.getLength(); i++) {
+					Node node = edgesList.item(i);
+
+					if (node.getNodeType() == Node.ELEMENT_NODE) {
+						Element edge = (Element) node;
+
+						String id = edge.getAttribute("id");
+						String transitionId = edge.getAttribute("transitionId");
+
+						String guard = restoreStr(edge.getElementsByTagName("guard").item(0).getTextContent());
+						String updates = restoreStr(edge.getElementsByTagName("updates").item(0).getTextContent());
+
+						String sourceId = edge.getAttribute("source");
+						mxCell source = (mxCell) verticesArray.get(sourceId);
+						double sourceX = Double.parseDouble(edge.getAttribute("sourceX"));
+						double sourceY = Double.parseDouble(edge.getAttribute("sourceY"));
+
+						String targetId = edge.getAttribute("target");
+						mxCell target = (mxCell) verticesArray.get(targetId);
+						double targetX = Double.parseDouble(edge.getAttribute("targetX"));
+						double targetY = Double.parseDouble(edge.getAttribute("targetY"));
+
+						Transition transition = new Transition();
+						transition.setTransitionId(transitionId);
+
+						if (source != null && source.getValue() != null) {
+							transition.setSourceStateId(((State) source.getValue()).getStateId());
+						}
+
+						if (target != null && target.getValue() != null) {
+							transition.setTargetStateId(((State) target.getValue()).getStateId());
+						}
+
+						transition.setGuardInstructions(guard);
+						transition.setUpdateInstructions(updates);
+
+						mxCell newEdge = (mxCell) graph.insertEdge(graph.getDefaultParent(), id, transition, source,
+								target);
+
+						mxGeometry edgeGeometry = new mxGeometry();
+						edgeGeometry.setTerminalPoint(new mxPoint(sourceX, sourceY), true);
+						edgeGeometry.setTerminalPoint(new mxPoint(targetX, targetY), false);
+						edgeGeometry.setRelative(true);
+						newEdge.setGeometry(edgeGeometry);
 					}
 				}
 			} finally {
 				graph.getModel().endUpdate();
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		return graph;
 	}
 
 	public String escapeStr(final String input) {
@@ -154,13 +227,5 @@ public class XmlHandler {
 			output = output.replaceAll(excepts.get(token), token);
 		}
 		return output;
-	}
-
-	public App getApp() {
-		return app;
-	}
-
-	public void setApp(App app) {
-		this.app = app;
 	}
 }
