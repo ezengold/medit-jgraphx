@@ -18,9 +18,6 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import org.jgrapht.ext.JGraphXAdapter;
-import org.jgrapht.graph.DefaultDirectedGraph;
-
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.swing.mxGraphComponent;
@@ -58,16 +55,6 @@ public class App extends JPanel {
 	 * Console panel to view errors and status
 	 */
 	protected Console consolePanel;
-
-	/**
-	 * Contains the architecture of the graph
-	 */
-	protected DefaultDirectedGraph<State, Transition> graphData;
-
-	/*
-	 * Adapter of the graph
-	 */
-	protected JGraphXAdapter<State, Transition> jgxAdapter;
 
 	/*
 	 * Global declarations
@@ -180,13 +167,9 @@ public class App extends JPanel {
 					}
 
 					el.setValue(t);
-					if (sourceState != null && targetState != null) {
-						graphData.addEdge(sourceState, targetState, t);
-					}
 				} else if (el.isVertex()) {
 					State s = new State();
 					el.setValue(s);
-					graphData.addVertex(s);
 				}
 			}
 		}
@@ -199,36 +182,14 @@ public class App extends JPanel {
 
 		@Override
 		public void invoke(Object source, mxEventObject evt) {
-			Object[] cells = (Object[]) evt.getProperty("cells");
-
-			for (Object c : cells) {
-				mxCell el = (mxCell) c;
-				if (el.isEdge()) {
-					Transition t = (Transition) el.getValue();
-					graphData.removeEdge(t);
-				} else if (el.isVertex()) {
-					State s = (State) el.getValue();
-					graphData.removeVertex(s);
-				}
-			}
-
 			// Check if all cells have been removed then add a new vertex
 			final mxGraph graph = graphComponent.getGraph();
 			Object[] remains = graph.getChildCells(graph.getDefaultParent());
 
 			if (remains.length == 0) {
 				State newState = new State();
-				graphData.addVertex(newState);
 				graph.insertVertex(graph.getDefaultParent(), newState.getName(), newState, 20, 20, 20, 20);
 			}
-		}
-	};
-
-	protected mxIEventListener testHandler = new mxIEventListener() {
-
-		@Override
-		public void invoke(Object source, mxEventObject evt) {
-			System.out.println(evt.getProperties());
 		}
 	};
 
@@ -254,17 +215,13 @@ public class App extends JPanel {
 	public App() {
 		this.appTitle = "Medit";
 
-		// Initiate graph with initial state
-		this.graphData = new DefaultDirectedGraph<State, Transition>(Transition.class);
-
 		State s0 = new State();
-		graphData.addVertex(s0);
 
-		this.jgxAdapter = new JGraphXAdapter<State, Transition>(graphData);
+		final mxGraph graph = new mxGraph();
 
-		this.graphComponent = new MeGraphComponent(jgxAdapter);
+		this.graphComponent = new MeGraphComponent(graph);
 
-		final mxGraph graph = graphComponent.getGraph();
+		graph.insertVertex(graph.getDefaultParent(), s0.getName(), s0, 20, 20, 20, 20);
 
 		undoManager = createUndoManager();
 
@@ -400,8 +357,8 @@ public class App extends JPanel {
 		this.updateTitle();
 
 		// Create other tabs instances and forward the graph context
-		simulatorPanel = new Simulator(graphData, graphComponent);
-		verifierPanel = new Verifier(graphData, graphComponent);
+		simulatorPanel = new Simulator(graphComponent);
+		verifierPanel = new Verifier(graphComponent);
 
 		mainTab = new JTabbedPane();
 		mainTab.add("Editeur", this);
@@ -519,14 +476,6 @@ public class App extends JPanel {
 	public void setGlobalDeclarations(String globalDeclarations) {
 		this.area.setText(globalDeclarations);
 		this.globalDeclarations = globalDeclarations;
-	}
-
-	public DefaultDirectedGraph<State, Transition> getGraphData() {
-		return graphData;
-	}
-
-	public void setGraphData(DefaultDirectedGraph<State, Transition> graphData) {
-		this.graphData = graphData;
 	}
 
 	public mxUndoManager getUndoManager() {
