@@ -22,6 +22,7 @@ import org.jgrapht.ext.JGraphXAdapter;
 import org.jgrapht.graph.DefaultDirectedGraph;
 
 import com.mxgraph.model.mxCell;
+import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.swing.mxGraphOutline;
 import com.mxgraph.swing.handler.mxKeyboardHandler;
@@ -129,17 +130,16 @@ public class App extends JPanel {
 	protected JTabbedPane mainTab;
 
 	protected Simulator simulatorPanel;
+
 	protected Verifier verifierPanel;
+
+	protected JFrame mainFrame;
 
 	/**
 	 * 
 	 */
 	protected mxIEventListener undoHandler = new mxIEventListener() {
 		public void invoke(Object source, mxEventObject evt) {
-//			List<mxUndoableChange> changes = ((mxUndoableEdit) evt.getProperty("edit")).getChanges();
-//			for (mxUndoableChange ch : changes) {
-//				System.out.println(ch.toString());
-//			}
 			undoManager.undoableEditHappened((mxUndoableEdit) evt.getProperty("edit"));
 		}
 	};
@@ -313,32 +313,21 @@ public class App extends JPanel {
 							Transition trans = (Transition) el.getValue();
 
 							if (trans != null) {
-								ConfigTransitionDialog confDialog = new ConfigTransitionDialog(el, graph.getModel());
+								ConfigTransitionDialog confDialog = new ConfigTransitionDialog(el,
+										(mxGraphModel) graphComponent.getGraph().getModel());
 								confDialog.setVisible(true);
 							}
 						} else if (el.isVertex()) {
 							State state = (State) el.getValue();
 
 							if (state != null) {
-								ConfigStateDialog confDialog = new ConfigStateDialog(el, graph.getModel());
+								ConfigStateDialog confDialog = new ConfigStateDialog(el,
+										(mxGraphModel) graphComponent.getGraph().getModel());
 								confDialog.setVisible(true);
 							}
 						}
 					}
 				}
-			}
-		});
-
-		graphComponent.getGraphControl().addMouseMotionListener(new MouseMotionListener() {
-
-			@Override
-			public void mouseMoved(MouseEvent e) {
-				//
-			}
-
-			@Override
-			public void mouseDragged(MouseEvent e) {
-				//
 			}
 		});
 
@@ -368,7 +357,6 @@ public class App extends JPanel {
 		leftInner.setBorder(null);
 
 		JPanel leftWrapper = new JPanel(new BorderLayout());
-//		leftWrapper.add(this.palette, BorderLayout.NORTH);
 		leftWrapper.add(leftInner, BorderLayout.CENTER);
 		leftWrapper.setBorder(null);
 
@@ -403,11 +391,11 @@ public class App extends JPanel {
 	}
 
 	public JFrame createFrame(MeMenuBar menuBar) {
-		JFrame frame = new JFrame();
-		frame.setLocationRelativeTo(null);
-		frame.setSize(1200, 700);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setJMenuBar(menuBar);
+		this.mainFrame = new JFrame();
+		mainFrame.setLocationRelativeTo(null);
+		mainFrame.setSize(1200, 700);
+		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mainFrame.setJMenuBar(menuBar);
 
 		this.updateTitle();
 
@@ -422,9 +410,38 @@ public class App extends JPanel {
 		mainTab.setBorder(new EmptyBorder(10, 0, 0, 0));
 		mainTab.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
 
-		frame.getContentPane().add(mainTab);
+		mainFrame.getContentPane().add(mainTab);
 
-		return frame;
+		return mainFrame;
+	}
+
+	public void updateGraph(final mxGraph newGraph) {
+		this.setModified(false);
+		this.getUndoManager().clear();
+		this.getGraphComponent().zoomAndCenter();
+
+		// Do not change the scale and translation after files have been loaded
+		newGraph.setResetViewOnRootChange(false);
+
+		// Updates the modified flag if the graph model changes
+		newGraph.getModel().addListener(mxEvent.CHANGE, undoHandler);
+
+		// Adds the command history to the model and view
+		newGraph.getModel().addListener(mxEvent.UNDO, undoHandler);
+		newGraph.getView().addListener(mxEvent.UNDO, undoHandler);
+
+		newGraph.addListener(mxEvent.CELLS_ADDED, cellsAddedHandler);
+		newGraph.addListener(mxEvent.CELLS_REMOVED, cellsRemovedHandler);
+
+		this.graphComponent.setGraph(newGraph);
+	}
+
+	public JFrame getMainFrame() {
+		return mainFrame;
+	}
+
+	public void setMainFrame(JFrame mainFrame) {
+		this.mainFrame = mainFrame;
 	}
 
 	protected mxUndoManager createUndoManager() {
