@@ -1,8 +1,12 @@
 package models;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class State {
+public class State implements Serializable {
+	
+	private static final long serialVersionUID = -1569774286174664135L;
+
 	public static Integer NB = 0;
 
 	private String stateId;

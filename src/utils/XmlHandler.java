@@ -71,9 +71,9 @@ public class XmlHandler {
 						+ "\" sourceY=\"" + cell.getGeometry().getSourcePoint().getY() + "\" target=\""
 						+ cell.getTarget().getId() + "\" targetX=\"" + cell.getGeometry().getTargetPoint().getX()
 						+ "\" targetY=\"" + cell.getGeometry().getTargetPoint().getY() + "\">\n";
-				xmlStr += "\t\t\t<guard>" + (transition != null ? escapeStr(transition.getGuardInstructions()) : "")
+				xmlStr += "\t\t\t<guard>" + (transition != null ? escapeStr(transition.getGuard()) : "")
 						+ "</guard>\n";
-				xmlStr += "\t\t\t<updates>" + (transition != null ? escapeStr(transition.getUpdateInstructions()) : "")
+				xmlStr += "\t\t\t<updates>" + (transition != null ? escapeStr(transition.getUpdate()) : "")
 						+ "</updates>\n";
 				xmlStr += "\t\t</transition>\n";
 			}
@@ -190,8 +190,8 @@ public class XmlHandler {
 							transition.setTargetStateId(((State) target.getValue()).getStateId());
 						}
 
-						transition.setGuardInstructions(guard);
-						transition.setUpdateInstructions(updates);
+						transition.setGuard(guard);
+						transition.setUpdate(updates);
 
 						mxCell newEdge = (mxCell) graph.insertEdge(graph.getDefaultParent(), id, transition, source,
 								target);

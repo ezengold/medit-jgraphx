@@ -1,12 +1,14 @@
 package models;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 import org.jgrapht.graph.DefaultEdge;
 
-@SuppressWarnings("serial")
-public class Transition extends DefaultEdge {
+public class Transition extends DefaultEdge implements Serializable {
 	
+	private static final long serialVersionUID = 4467909557424652342L;
+
 	private String transitionId;
 
 	private String sourceStateId;
@@ -51,19 +53,19 @@ public class Transition extends DefaultEdge {
 		this.transitionId = transitionId;
 	}
 
-	public String getGuardInstructions() {
+	public String getGuard() {
 		return guard;
 	}
 
-	public void setGuardInstructions(String guard) {
+	public void setGuard(String guard) {
 		this.guard = guard;
 	}
 
-	public String getUpdateInstructions() {
+	public String getUpdate() {
 		return update;
 	}
 
-	public void setUpdateInstructions(String update) {
+	public void setUpdate(String update) {
 		this.update = update;
 	}
 	

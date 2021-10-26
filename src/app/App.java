@@ -218,7 +218,7 @@ public class App extends JPanel {
 		mxCodecRegistry.addPackage("models");
 		mxCodecRegistry.register(new mxObjectCodec(new State()));
 		mxCodecRegistry.register(new mxObjectCodec(new Transition()));
-		
+
 		this.appTitle = "Medit";
 
 		State s0 = new State();
@@ -230,11 +230,11 @@ public class App extends JPanel {
 		graph.insertVertex(graph.getDefaultParent(), s0.getName(), s0, 20, 20, 20, 20);
 
 		undoManager = createUndoManager();
-		
+
 		graph.setMultigraph(false);
 		graph.setAllowDanglingEdges(false);
 		graph.setDisconnectOnMove(false);
-		graph.setVertexLabelsMovable(true);
+		graph.setVertexLabelsMovable(false);
 
 		// Do not change the scale and translation after files have been loaded
 		graph.setResetViewOnRootChange(false);
@@ -446,7 +446,7 @@ public class App extends JPanel {
 		}
 	}
 
-	public void updateTitle() {		
+	public void updateTitle() {
 		JFrame frame = (JFrame) SwingUtilities.windowForComponent(this);
 
 		if (frame != null) {
@@ -457,8 +457,6 @@ public class App extends JPanel {
 			}
 
 			frame.setTitle(title + " - " + appTitle);
-		} else {
-			System.out.print("NO FRAME");
 		}
 	}
 

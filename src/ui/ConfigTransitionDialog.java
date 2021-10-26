@@ -55,7 +55,7 @@ public class ConfigTransitionDialog extends JDialog {
 		guardField.setLineWrap(true);
 		guardField.setWrapStyleWord(true);
 		guardField.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
-		guardField.setText(transition.getGuardInstructions());
+		guardField.setText(transition.getGuard());
 		JScrollPane scrollGuardField = new JScrollPane(guardField);
 		panel.add(scrollGuardField);
 
@@ -67,7 +67,7 @@ public class ConfigTransitionDialog extends JDialog {
 		updateField.setLineWrap(true);
 		updateField.setWrapStyleWord(true);
 		updateField.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
-		updateField.setText(transition.getUpdateInstructions());
+		updateField.setText(transition.getUpdate());
 		JScrollPane scrollUpdateField = new JScrollPane(updateField);
 		panel.add(scrollUpdateField);
 
@@ -112,8 +112,8 @@ public class ConfigTransitionDialog extends JDialog {
 		if (formIsValid()) {
 			Transition trans = (Transition) currentCell.getValue();
 
-			trans.setGuardInstructions(guardField.getText());
-			trans.setUpdateInstructions(updateField.getText());
+			trans.setGuard(guardField.getText());
+			trans.setUpdate(updateField.getText());
 
 			graphModel.setValue(currentCell, trans);
 

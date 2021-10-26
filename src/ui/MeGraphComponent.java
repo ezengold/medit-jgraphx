@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Point;
 import java.util.Hashtable;
 
+
 import org.jgrapht.ext.JGraphXAdapter;
 
 import com.mxgraph.model.mxICell;
@@ -24,7 +25,7 @@ public class MeGraphComponent extends mxGraphComponent {
 
 	public MeGraphComponent(JGraphXAdapter<State, Transition> adapter) {
 		super(adapter);
-		
+
 		setPageVisible(false);
 		setGridVisible(false);
 		setToolTips(true);
@@ -44,8 +45,9 @@ public class MeGraphComponent extends mxGraphComponent {
 		graph.setCellsResizable(false);
 		graph.setCellsEditable(false);
 		graph.isLabelMovable(true);
-		
-		Hashtable<String, Object> vertexStyle = (Hashtable<String, Object>) graph.getStylesheet().getDefaultVertexStyle();
+
+		Hashtable<String, Object> vertexStyle = (Hashtable<String, Object>) graph.getStylesheet()
+				.getDefaultVertexStyle();
 		vertexStyle.put(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_ELLIPSE);
 		vertexStyle.put(mxConstants.STYLE_FILLCOLOR, "#78c4fc");
 		graph.getStylesheet().setDefaultVertexStyle(vertexStyle);
@@ -53,10 +55,10 @@ public class MeGraphComponent extends mxGraphComponent {
 		getViewport().setOpaque(true);
 		getViewport().setBackground(Color.WHITE);
 	}
-	
+
 	public MeGraphComponent(mxGraph graphData) {
 		super(graphData);
-		
+
 		setPageVisible(false);
 		setGridVisible(false);
 		setToolTips(true);
@@ -76,8 +78,9 @@ public class MeGraphComponent extends mxGraphComponent {
 		graph.setCellsResizable(false);
 		graph.setCellsEditable(false);
 		graph.isLabelMovable(true);
-		
-		Hashtable<String, Object> vertexStyle = (Hashtable<String, Object>) graph.getStylesheet().getDefaultVertexStyle();
+
+		Hashtable<String, Object> vertexStyle = (Hashtable<String, Object>) graph.getStylesheet()
+				.getDefaultVertexStyle();
 		vertexStyle.put(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_ELLIPSE);
 		vertexStyle.put(mxConstants.STYLE_FILLCOLOR, "#78c4fc");
 		graph.getStylesheet().setDefaultVertexStyle(vertexStyle);
@@ -86,11 +89,6 @@ public class MeGraphComponent extends mxGraphComponent {
 		getViewport().setBackground(Color.WHITE);
 	}
 
-	/**
-	 * Overrides drop behaviour to set the cell style if the target is not a valid
-	 * drop target and the cells are of the same type (eg. both vertices or both
-	 * edges).
-	 */
 	public Object[] importCells(Object[] cells, double dx, double dy, Object target, Point location) {
 		if (target == null && cells.length == 1 && location != null) {
 			target = getCellAt(location.x, location.y);
@@ -111,4 +109,5 @@ public class MeGraphComponent extends mxGraphComponent {
 
 		return super.importCells(cells, dx, dy, target, location);
 	}
+
 }
