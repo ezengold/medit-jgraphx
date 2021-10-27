@@ -2,6 +2,7 @@ package utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 
@@ -21,6 +22,7 @@ import com.mxgraph.util.mxPoint;
 import com.mxgraph.view.mxGraph;
 
 import app.App;
+import app.App.Compilables;
 import models.State;
 import models.Transition;
 
@@ -71,8 +73,7 @@ public class XmlHandler {
 						+ "\" sourceY=\"" + cell.getGeometry().getSourcePoint().getY() + "\" target=\""
 						+ cell.getTarget().getId() + "\" targetX=\"" + cell.getGeometry().getTargetPoint().getX()
 						+ "\" targetY=\"" + cell.getGeometry().getTargetPoint().getY() + "\">\n";
-				xmlStr += "\t\t\t<guard>" + (transition != null ? escapeStr(transition.getGuard()) : "")
-						+ "</guard>\n";
+				xmlStr += "\t\t\t<guard>" + (transition != null ? escapeStr(transition.getGuard()) : "") + "</guard>\n";
 				xmlStr += "\t\t\t<updates>" + (transition != null ? escapeStr(transition.getUpdate()) : "")
 						+ "</updates>\n";
 				xmlStr += "\t\t</transition>\n";
@@ -211,6 +212,20 @@ public class XmlHandler {
 		}
 
 		return graph;
+	}
+
+	/*
+	 * Read the currentFile and get all compilable blocks
+	 */
+	public HashMap<Compilables, ArrayList<String>> getCompilables(File file) throws IOException {
+		HashMap<Compilables, ArrayList<String>> output = new HashMap<Compilables, ArrayList<String>>();
+
+		ArrayList<String> decs = new ArrayList<String>();
+		ArrayList<String> ids = new ArrayList<String>();
+		ArrayList<String> conds = new ArrayList<String>();
+		ArrayList<String> updts = new ArrayList<String>();
+
+		return null;
 	}
 
 	public String escapeStr(final String input) {

@@ -2,6 +2,8 @@ package app;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -17,6 +19,8 @@ import java.util.List;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import com.mxgraph.io.mxCodecRegistry;
 import com.mxgraph.io.mxObjectCodec;
@@ -38,11 +42,17 @@ import ui.ConfigStateDialog;
 import ui.ConfigTransitionDialog;
 import ui.MeGraphComponent;
 import ui.MeToolBar;
+import utils.EditorActions.SaveAction;
+import utils.EditorFileFilter;
 import utils.EditorKeyboardHandler;
+import utils.XmlHandler;
 import ui.MeMenuBar;
-import ui.MePalette;
 
 public class App extends JPanel {
+
+	public enum Compilables {
+		DECLARATIONS, IDENTIFIERS, CONDITIONS, UPDATES
+	}
 
 	private static final long serialVersionUID = -8150527452734294724L;
 
@@ -62,11 +72,6 @@ public class App extends JPanel {
 	 * Global declarations
 	 */
 	protected String globalDeclarations = "";
-
-	/*
-	 * UI that displays the palette
-	 */
-	protected MePalette palette;
 
 	/**
 	 * 
@@ -124,20 +129,15 @@ public class App extends JPanel {
 
 	protected JFrame mainFrame;
 
+	static {
+	}
+
 	/**
 	 * 
 	 */
 	protected mxIEventListener undoHandler = new mxIEventListener() {
 		public void invoke(Object source, mxEventObject evt) {
 			undoManager.undoableEditHappened((mxUndoableEdit) evt.getProperty("edit"));
-		}
-	};
-
-	/**
-	 * 
-	 */
-	protected mxIEventListener changeTracker = new mxIEventListener() {
-		public void invoke(Object source, mxEventObject evt) {
 			setModified(true);
 		}
 	};
@@ -313,9 +313,6 @@ public class App extends JPanel {
 		// Creates the graph outline component
 		this.graphOutline = new mxGraphOutline(graphComponent);
 
-		// Create instance of palette
-		this.palette = new MePalette();
-
 		this.navComponent = createNavComponent();
 
 		JSplitPane leftInner = new JSplitPane(JSplitPane.VERTICAL_SPLIT, this.navComponent, this.graphOutline);
@@ -378,13 +375,89 @@ public class App extends JPanel {
 		mainTab.setBorder(new EmptyBorder(10, 0, 0, 0));
 		mainTab.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
 
+		mainTab.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent event) {
+				if (mainTab.getSelectedIndex() != 0) {
+					int wantedTab = mainTab.getSelectedIndex();
+
+					// Continue unless there is a currentFile and no modifications
+					if (currentFile != null && !isModified()) {
+						compileProject();
+					} else {
+						UIManager.put("OptionPane.messageFont", new Font("Ubuntu Mono", Font.PLAIN, 14));
+						UIManager.put("OptionPane.buttonFont", new Font("Ubuntu Mono", Font.PLAIN, 14));
+
+						mainTab.setSelectedIndex(0);
+						int response = JOptionPane.showConfirmDialog(graphComponent,
+								"Vous devez d'abord sauvegarder l'automate courant afin de continuer ! Proccéder ?",
+								"Attention", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+								new ImageIcon(App.class.getResource("/about.png")));
+
+						if (response == JOptionPane.OK_OPTION) {
+							// Perform save of the graph
+							String filename = null;
+
+							if (currentFile == null) {
+								String wd = System.getProperty("user.dir");
+
+								JFileChooser fc = new JFileChooser(wd);
+								EditorFileFilter xmlFilter = new EditorFileFilter(".xml", "Fichier XML");
+								fc.setAcceptAllFileFilterUsed(false);
+								fc.setFileFilter(xmlFilter);
+								setFileChooserFont(fc.getComponents());
+
+								if (fc.showDialog(null, "Enregistrer l'automate") != JFileChooser.APPROVE_OPTION) {
+									return;
+								}
+
+								filename = fc.getSelectedFile().getAbsolutePath();
+
+								if (!filename.toLowerCase().endsWith(xmlFilter.getExtension())) {
+									filename += xmlFilter.getExtension();
+								}
+
+								if (new File(filename).exists() && JOptionPane.showConfirmDialog(graphComponent,
+										"Fusionner avec le fichier existant ?") != JOptionPane.YES_OPTION) {
+									return;
+								}
+							} else {
+								filename = currentFile.getAbsolutePath();
+							}
+
+							// Write in the file
+							try {
+								XmlHandler xmlHandler = new XmlHandler(getInstance());
+								mxUtils.writeFile(xmlHandler.getAsXml((mxGraph) getGraphComponent().getGraph()),
+										filename);
+								status("Fichier sauvegardé avec succès");
+								
+								setModified(false);
+								setCurrentFile(new File(filename));
+								mainTab.setSelectedIndex(wantedTab);
+								compileProject();
+							} catch (Throwable exception) {
+								exception.printStackTrace();
+								JOptionPane.showMessageDialog(graphComponent, exception.toString(), "Erreur",
+										JOptionPane.ERROR_MESSAGE);
+							}
+						}
+					}
+				}
+			}
+		});
+
 		mainFrame.getContentPane().add(mainTab);
 
 		return mainFrame;
 	}
 
+	public App getInstance() {
+		return this;
+	}
+
 	public void updateGraph(final mxGraph newGraph) {
-		this.setModified(false);
 		this.getUndoManager().clear();
 		this.getGraphComponent().zoomAndCenter();
 
@@ -402,6 +475,7 @@ public class App extends JPanel {
 		newGraph.addListener(mxEvent.CELLS_REMOVED, cellsRemovedHandler);
 
 		this.graphComponent.setGraph(newGraph);
+		this.setModified(false);
 	}
 
 	public JFrame getMainFrame() {
@@ -442,21 +516,19 @@ public class App extends JPanel {
 		firePropertyChange("currentFile", oldValue, file);
 
 		if (oldValue != file) {
-			//
+			updateTitle();
 		}
 	}
 
 	public void updateTitle() {
-		JFrame frame = (JFrame) SwingUtilities.windowForComponent(this);
-
-		if (frame != null) {
-			String title = (currentFile != null) ? currentFile.getAbsolutePath() : "Nouveau Model";
+		if (this.mainFrame != null) {
+			String title = (currentFile != null) ? currentFile.getAbsolutePath() : "Nouvel Automate";
 
 			if (modified) {
 				title += "*";
 			}
 
-			frame.setTitle(title + " - " + appTitle);
+			this.mainFrame.setTitle(this.appTitle + " - " + title);
 		}
 	}
 
@@ -552,6 +624,20 @@ public class App extends JPanel {
 		statusBar.setText(msg);
 	}
 
+	public void setFileChooserFont(Component[] comps) {
+		for (Component comp : comps) {
+			if (comp instanceof Container) {
+				setFileChooserFont(((Container) comp).getComponents());
+			}
+
+			try {
+				comp.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
+			} catch (Exception e) {
+				//
+			}
+		}
+	}
+
 	protected void installRepaintListener() {
 		graphComponent.getGraph().addListener(mxEvent.REPAINT, new mxIEventListener() {
 			public void invoke(Object source, mxEventObject evt) {
@@ -614,11 +700,14 @@ public class App extends JPanel {
 	}
 
 	public void exit() {
-		JFrame frame = (JFrame) SwingUtilities.windowForComponent(this);
-
-		if (frame != null) {
-			frame.dispose();
+		if (this.mainFrame != null) {
+			this.mainFrame.dispose();
 		}
+	}
+
+	public void compileProject() {
+		System.out.println("COMPILED");
+		// long compilationStartTime = System.currentTimeMillis();
 	}
 
 	/**

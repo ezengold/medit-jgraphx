@@ -174,6 +174,7 @@ public class EditorActions {
 					XmlHandler xmlHandler = new XmlHandler(app);
 					mxUtils.writeFile(xmlHandler.getAsXml((mxGraph) app.getGraphComponent().getGraph()), filename);
 					app.status("Fichier sauvegardé avec succès");
+					app.setCurrentFile(new File(filename));
 				} catch (Throwable exception) {
 					exception.printStackTrace();
 					JOptionPane.showMessageDialog(graphComponent, exception.toString(), "Erreur",
