@@ -29,7 +29,7 @@ import models.Transition;
 public class XmlHandler {
 	private App app;
 
-	private HashMap<String, String> excepts = new HashMap<String, String>();
+	private static HashMap<String, String> excepts = new HashMap<String, String>();
 
 	public XmlHandler(App parent) {
 		this.app = parent;
@@ -217,7 +217,7 @@ public class XmlHandler {
 	/*
 	 * Read the currentFile and get all compilable blocks
 	 */
-	public HashMap<Compilables, ArrayList<String>> getCompilables(File file) throws IOException {
+	public static HashMap<Compilables, ArrayList<String>> getCompilables(File file) throws IOException {
 		HashMap<Compilables, ArrayList<String>> output = new HashMap<Compilables, ArrayList<String>>();
 
 		ArrayList<String> decs = new ArrayList<String>();
@@ -225,10 +225,62 @@ public class XmlHandler {
 		ArrayList<String> conds = new ArrayList<String>();
 		ArrayList<String> updts = new ArrayList<String>();
 
-		return null;
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+
+		try {
+			dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			Document doc = db.parse(file);
+			doc.getDocumentElement().normalize();
+
+			// GET DECLARATIONS
+			String declarations = doc.getElementsByTagName("declarations").item(0).getTextContent();
+			decs.add(declarations);
+
+			// GET STATES DATA
+			NodeList locationsList = doc.getElementsByTagName("location");
+			for (int i = 0; i < locationsList.getLength(); i++) {
+				Node node = locationsList.item(i);
+
+				if (node.getNodeType() == Node.ELEMENT_NODE) {
+					Element location = (Element) node;
+
+					String name = restoreStr(location.getElementsByTagName("name").item(0).getTextContent());
+					String invariant = restoreStr(location.getElementsByTagName("invariant").item(0).getTextContent());
+
+					ids.add(name);
+					conds.add(invariant);
+				}
+			}
+
+			// GET EDGES DATA
+			NodeList edgesList = doc.getElementsByTagName("transition");
+			for (int i = 0; i < edgesList.getLength(); i++) {
+				Node node = edgesList.item(i);
+
+				if (node.getNodeType() == Node.ELEMENT_NODE) {
+					Element edge = (Element) node;
+
+					String guard = restoreStr(edge.getElementsByTagName("guard").item(0).getTextContent());
+					String updates = restoreStr(edge.getElementsByTagName("updates").item(0).getTextContent());
+
+					conds.add(guard);
+					updts.add(updates);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		output.put(Compilables.DECLARATIONS, decs);
+		output.put(Compilables.CONDITIONS, conds);
+		output.put(Compilables.IDENTIFIERS, ids);
+		output.put(Compilables.UPDATES, updts);
+
+		return output;
 	}
 
-	public String escapeStr(final String input) {
+	public static String escapeStr(final String input) {
 		String output = input;
 		for (String token : excepts.keySet()) {
 			output = output.replaceAll(token, excepts.get(token));
@@ -236,7 +288,7 @@ public class XmlHandler {
 		return output;
 	}
 
-	public String restoreStr(final String input) {
+	public static String restoreStr(final String input) {
 		String output = input;
 		for (String token : excepts.keySet()) {
 			output = output.replaceAll(excepts.get(token), token);

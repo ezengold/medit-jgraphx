@@ -15,6 +15,9 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.*;
@@ -42,7 +45,6 @@ import ui.ConfigStateDialog;
 import ui.ConfigTransitionDialog;
 import ui.MeGraphComponent;
 import ui.MeToolBar;
-import utils.EditorActions.SaveAction;
 import utils.EditorFileFilter;
 import utils.EditorKeyboardHandler;
 import utils.XmlHandler;
@@ -122,6 +124,8 @@ public class App extends JPanel {
 	 * Main tab container
 	 */
 	protected JTabbedPane mainTab;
+
+	protected int wantedTabIndex = 0;
 
 	protected Simulator simulatorPanel;
 
@@ -329,7 +333,7 @@ public class App extends JPanel {
 
 		JSplitPane consoleSpliter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, graphComponent, consolePanel);
 		consoleSpliter.setOneTouchExpandable(true);
-		consoleSpliter.setDividerLocation(750);
+		consoleSpliter.setDividerLocation(600);
 		consoleSpliter.setDividerSize(10);
 		consoleSpliter.setBorder(null);
 
@@ -380,7 +384,7 @@ public class App extends JPanel {
 			@Override
 			public void stateChanged(ChangeEvent event) {
 				if (mainTab.getSelectedIndex() != 0) {
-					int wantedTab = mainTab.getSelectedIndex();
+					wantedTabIndex = mainTab.getSelectedIndex();
 
 					// Continue unless there is a currentFile and no modifications
 					if (currentFile != null && !isModified()) {
@@ -432,10 +436,9 @@ public class App extends JPanel {
 								mxUtils.writeFile(xmlHandler.getAsXml((mxGraph) getGraphComponent().getGraph()),
 										filename);
 								status("Fichier sauvegardé avec succès");
-								
+
 								setModified(false);
 								setCurrentFile(new File(filename));
-								mainTab.setSelectedIndex(wantedTab);
 								compileProject();
 							} catch (Throwable exception) {
 								exception.printStackTrace();
@@ -620,6 +623,10 @@ public class App extends JPanel {
 		return new Console();
 	}
 
+	public Console getConsolePanel() {
+		return this.consolePanel;
+	}
+
 	public void status(String msg) {
 		statusBar.setText(msg);
 	}
@@ -706,8 +713,23 @@ public class App extends JPanel {
 	}
 
 	public void compileProject() {
-		System.out.println("COMPILED");
-		// long compilationStartTime = System.currentTimeMillis();
+		long compilationStartTime = System.currentTimeMillis();
+
+		try {
+			consolePanel.printSuccess("Récupération des tokens...\n");
+			HashMap<Compilables, ArrayList<String>> elements = XmlHandler.getCompilables(currentFile);
+
+			for (Compilables key : elements.keySet()) {
+				consolePanel.success(((ArrayList<String>) elements.get(key)).toString() + "\n");
+			}
+
+			consolePanel.success("\nTerminé en " + (System.currentTimeMillis() - compilationStartTime) + "ms");
+
+			if (wantedTabIndex != 0)
+				mainTab.setSelectedIndex(wantedTabIndex);
+		} catch (IOException e) {
+			consolePanel.printError(e.getMessage());
+		}
 	}
 
 	/**

@@ -25,16 +25,16 @@ public class Console extends JPanel {
 	public Console() {
 		setLayout(new BorderLayout());
 		setBorder(new EmptyBorder(5, 0, 0, 5));
-		
+
 		JPanel header = new JPanel(new BorderLayout());
 		header.setOpaque(true);
 		header.setBackground(new Color(0, 0, 0, 20));
 		header.setBorder(new EmptyBorder(10, 10, 10, 10));
-		
+
 		JLabel title = new JLabel("Console");
 		title.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
 		header.add(title, BorderLayout.WEST);
-		
+
 		JButton clearBtn = new JButton(new ImageIcon(getClass().getResource("/clear.png")));
 		clearBtn.setOpaque(true);
 		clearBtn.setBorderPainted(false);
@@ -45,7 +45,7 @@ public class Console extends JPanel {
 			}
 		});
 		header.add(clearBtn, BorderLayout.EAST);
-		
+
 		add(header, BorderLayout.NORTH);
 
 		content = new JTextArea("Aucune erreur");
@@ -66,14 +66,26 @@ public class Console extends JPanel {
 		add(scrollContent, BorderLayout.CENTER);
 	}
 
+	public void error(String message) {
+		isError = true;
+		content.setForeground(Color.RED);
+		content.setText(content.getText() + message);
+	}
+
 	public void printError(String message) {
 		isError = true;
 		content.setForeground(Color.RED);
 		content.setText(message);
 	}
 
+	public void success(String message) {
+		isError = false;
+		content.setForeground(Color.decode("#9099ae"));
+		content.setText(content.getText() + message);
+	}
+
 	public void printSuccess(String message) {
-		isError = true;
+		isError = false;
 		content.setForeground(Color.decode("#9099ae"));
 		content.setText(message);
 	}
