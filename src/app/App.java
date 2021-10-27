@@ -133,8 +133,7 @@ public class App extends JPanel {
 
 	protected JFrame mainFrame;
 
-	static {
-	}
+	protected boolean loading = false;
 
 	/**
 	 * 
@@ -359,6 +358,10 @@ public class App extends JPanel {
 		updateTitle();
 	}
 
+	public App getInstance() {
+		return this;
+	}
+
 	public JFrame createFrame(MeMenuBar menuBar) {
 		this.mainFrame = new JFrame(this.appTitle);
 		mainFrame.setLocationRelativeTo(null);
@@ -456,129 +459,6 @@ public class App extends JPanel {
 		return mainFrame;
 	}
 
-	public App getInstance() {
-		return this;
-	}
-
-	public void updateGraph(final mxGraph newGraph) {
-		this.getUndoManager().clear();
-		this.getGraphComponent().zoomAndCenter();
-
-		// Do not change the scale and translation after files have been loaded
-		newGraph.setResetViewOnRootChange(false);
-
-		// Updates the modified flag if the graph model changes
-		newGraph.getModel().addListener(mxEvent.CHANGE, undoHandler);
-
-		// Adds the command history to the model and view
-		newGraph.getModel().addListener(mxEvent.UNDO, undoHandler);
-		newGraph.getView().addListener(mxEvent.UNDO, undoHandler);
-
-		newGraph.addListener(mxEvent.CELLS_ADDED, cellsAddedHandler);
-		newGraph.addListener(mxEvent.CELLS_REMOVED, cellsRemovedHandler);
-
-		this.graphComponent.setGraph(newGraph);
-		this.setModified(false);
-	}
-
-	public JFrame getMainFrame() {
-		return mainFrame;
-	}
-
-	public void setMainFrame(JFrame mainFrame) {
-		this.mainFrame = mainFrame;
-	}
-
-	protected mxUndoManager createUndoManager() {
-		return new mxUndoManager();
-	}
-
-	public boolean isModified() {
-		return modified;
-	}
-
-	public void setModified(boolean modified) {
-		boolean oldValue = this.modified;
-		this.modified = modified;
-
-		firePropertyChange("modified", oldValue, modified);
-
-		if (oldValue != modified) {
-			updateTitle();
-		}
-	}
-
-	public File getCurrentFile() {
-		return currentFile;
-	}
-
-	public void setCurrentFile(File file) {
-		File oldValue = currentFile;
-		currentFile = file;
-
-		firePropertyChange("currentFile", oldValue, file);
-
-		if (oldValue != file) {
-			updateTitle();
-		}
-	}
-
-	public void updateTitle() {
-		if (this.mainFrame != null) {
-			String title = (currentFile != null) ? currentFile.getAbsolutePath() : "Nouvel Automate";
-
-			if (modified) {
-				title += "*";
-			}
-
-			this.mainFrame.setTitle(this.appTitle + " - " + title);
-		}
-	}
-
-	public mxGraphComponent getGraphComponent() {
-		return graphComponent;
-	}
-
-	public void setGraphComponent(mxGraphComponent graphComponent) {
-		this.graphComponent = graphComponent;
-	}
-
-	public mxGraphOutline getGraphOutline() {
-		return graphOutline;
-	}
-
-	public JPanel getNavComponent() {
-		return navComponent;
-	}
-
-	public void setNavComponent(JPanel navComponent) {
-		this.navComponent = navComponent;
-	}
-
-	public String getGlobalDeclarations() {
-		return globalDeclarations;
-	}
-
-	public void setGlobalDeclarations(String globalDeclarations) {
-		this.area.setText(globalDeclarations);
-		this.globalDeclarations = globalDeclarations;
-	}
-
-	public mxUndoManager getUndoManager() {
-		return undoManager;
-	}
-
-	protected void installToolBar() {
-		this.add(new MeToolBar(this, JToolBar.HORIZONTAL), BorderLayout.NORTH);
-	}
-
-	protected JLabel createStatusBar() {
-		JLabel statusBar = new JLabel("Prêt");
-		statusBar.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
-		statusBar.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
-		return statusBar;
-	}
-
 	public JPanel createNavComponent() {
 		JPanel nav = new JPanel();
 
@@ -619,16 +499,29 @@ public class App extends JPanel {
 		return nav;
 	}
 
-	public Console createConsolePanel() {
-		return new Console();
+	public void updateGraph(final mxGraph newGraph) {
+		this.getUndoManager().clear();
+		this.getGraphComponent().zoomAndCenter();
+
+		// Do not change the scale and translation after files have been loaded
+		newGraph.setResetViewOnRootChange(false);
+
+		// Updates the modified flag if the graph model changes
+		newGraph.getModel().addListener(mxEvent.CHANGE, undoHandler);
+
+		// Adds the command history to the model and view
+		newGraph.getModel().addListener(mxEvent.UNDO, undoHandler);
+		newGraph.getView().addListener(mxEvent.UNDO, undoHandler);
+
+		newGraph.addListener(mxEvent.CELLS_ADDED, cellsAddedHandler);
+		newGraph.addListener(mxEvent.CELLS_REMOVED, cellsRemovedHandler);
+
+		this.graphComponent.setGraph(newGraph);
+		this.setModified(false);
 	}
 
-	public Console getConsolePanel() {
-		return this.consolePanel;
-	}
-
-	public void status(String msg) {
-		statusBar.setText(msg);
+	protected void installToolBar() {
+		this.add(new MeToolBar(this, JToolBar.HORIZONTAL), BorderLayout.NORTH);
 	}
 
 	public void setFileChooserFont(Component[] comps) {
@@ -710,6 +603,120 @@ public class App extends JPanel {
 		if (this.mainFrame != null) {
 			this.mainFrame.dispose();
 		}
+	}
+
+	public void updateTitle() {
+		if (this.mainFrame != null) {
+			String title = (currentFile != null) ? currentFile.getAbsolutePath() : "Nouvel Automate";
+
+			if (modified) {
+				title += "*";
+			}
+
+			this.mainFrame.setTitle(this.appTitle + " - " + title);
+		}
+	}
+
+	public JFrame getMainFrame() {
+		return mainFrame;
+	}
+
+	public void setMainFrame(JFrame mainFrame) {
+		this.mainFrame = mainFrame;
+	}
+
+	public boolean isModified() {
+		return modified;
+	}
+
+	public void setModified(boolean modified) {
+		boolean oldValue = this.modified;
+		this.modified = modified;
+
+		firePropertyChange("modified", oldValue, modified);
+
+		if (oldValue != modified) {
+			updateTitle();
+		}
+	}
+
+	protected JLabel createStatusBar() {
+		JLabel statusBar = new JLabel("Prêt");
+		statusBar.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
+		statusBar.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
+		return statusBar;
+	}
+
+	public void status(String msg) {
+		statusBar.setText(msg);
+	}
+
+	public File getCurrentFile() {
+		return currentFile;
+	}
+
+	public void setCurrentFile(File file) {
+		File oldValue = currentFile;
+		currentFile = file;
+
+		firePropertyChange("currentFile", oldValue, file);
+
+		if (oldValue != file) {
+			updateTitle();
+		}
+	}
+
+	protected mxUndoManager createUndoManager() {
+		return new mxUndoManager();
+	}
+
+	public mxUndoManager getUndoManager() {
+		return undoManager;
+	}
+
+	public mxGraphComponent getGraphComponent() {
+		return graphComponent;
+	}
+
+	public void setGraphComponent(mxGraphComponent graphComponent) {
+		this.graphComponent = graphComponent;
+	}
+
+	public mxGraphOutline getGraphOutline() {
+		return graphOutline;
+	}
+
+	public JPanel getNavComponent() {
+		return navComponent;
+	}
+
+	public void setNavComponent(JPanel navComponent) {
+		this.navComponent = navComponent;
+	}
+
+	public boolean isLoading() {
+		return loading;
+	}
+
+	public void setLoading(boolean loading) {
+		this.loading = loading;
+	}
+
+	public String getGlobalDeclarations() {
+		return globalDeclarations;
+	}
+
+	public void setGlobalDeclarations(String globalDeclarations) {
+		this.area.setText(globalDeclarations);
+		this.globalDeclarations = globalDeclarations;
+	}
+
+	public Console createConsolePanel() {
+		return new Console();
+	}
+
+	public Console getConsolePanel() {
+		return this.consolePanel;
 	}
 
 	public void compileProject() {
