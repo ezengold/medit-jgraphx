@@ -723,14 +723,14 @@ public class App extends JPanel {
 		long compilationStartTime = System.currentTimeMillis();
 
 		try {
+			// FETCH DIFFERENTS TOKENS
 			consolePanel.printSuccess("Récupération des tokens...\n");
 			HashMap<Compilables, ArrayList<String>> elements = XmlHandler.getCompilables(currentFile);
+			long step1Time = System.currentTimeMillis();
+			consolePanel.success("\nTerminé en " + (step1Time - compilationStartTime) + "ms");
+			
+			// 
 
-			for (Compilables key : elements.keySet()) {
-				consolePanel.success(((ArrayList<String>) elements.get(key)).toString() + "\n");
-			}
-
-			consolePanel.success("\nTerminé en " + (System.currentTimeMillis() - compilationStartTime) + "ms");
 
 			if (wantedTabIndex != 0)
 				mainTab.setSelectedIndex(wantedTabIndex);
