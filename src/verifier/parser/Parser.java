@@ -458,7 +458,6 @@ public class Parser {
 	// Block ::= '{' StatementList '}'
 	private Block parseBlock() throws IOException{
 		eat(TokenType.LBRACE);
-
 		// recursively call parseStatement() until closing brace
 		StatementList stms = new StatementList();
 		while (token.getType() != TokenType.RBRACE && token.getType() != TokenType.EOF)
