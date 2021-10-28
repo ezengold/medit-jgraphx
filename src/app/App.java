@@ -736,10 +736,9 @@ public class App extends JPanel {
 			// GENERATE COMPILABLE FILE
 			File file = getCompilablesFile(elements);
 
-			// PROCEED TO LEXER WITH THE GENERATED FILE
-			Compiler.testLexer(file, consolePanel);
+			// PROCEED TO PARSER WITH THE GENERATED FILE
+			Compiler.testParser(file, consolePanel);
 
-			
 			removeCurrentTempFile();
 
 			if (wantedTabIndex != 0)
