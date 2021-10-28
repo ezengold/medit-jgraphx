@@ -1,0 +1,8 @@
+int main(){
+clock c1;
+int vitesse = 32;
+int b = 0;
+inv c1>10;
+if (vitesse >20) {  }
+if (vitesse>=24) {  }
+}

@@ -224,6 +224,7 @@ public class XmlHandler {
 		ArrayList<String> ids = new ArrayList<String>();
 		ArrayList<String> conds = new ArrayList<String>();
 		ArrayList<String> updts = new ArrayList<String>();
+		ArrayList<String> invs = new ArrayList<String>();
 
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -235,7 +236,8 @@ public class XmlHandler {
 
 			// GET DECLARATIONS
 			String declarations = doc.getElementsByTagName("declarations").item(0).getTextContent();
-			decs.add(declarations);
+			if (!declarations.isBlank())
+				decs.add(declarations);
 
 			// GET STATES DATA
 			NodeList locationsList = doc.getElementsByTagName("location");
@@ -248,8 +250,11 @@ public class XmlHandler {
 					String name = restoreStr(location.getElementsByTagName("name").item(0).getTextContent());
 					String invariant = restoreStr(location.getElementsByTagName("invariant").item(0).getTextContent());
 
-					ids.add(name);
-					conds.add(invariant);
+					if (!name.isBlank())
+						ids.add(name);
+
+					if (!invariant.isBlank())
+						invs.add(invariant);
 				}
 			}
 
@@ -261,11 +266,14 @@ public class XmlHandler {
 				if (node.getNodeType() == Node.ELEMENT_NODE) {
 					Element edge = (Element) node;
 
-					String guard = restoreStr(edge.getElementsByTagName("guard").item(0).getTextContent());
 					String updates = restoreStr(edge.getElementsByTagName("updates").item(0).getTextContent());
+					String guard = restoreStr(edge.getElementsByTagName("guard").item(0).getTextContent());
 
-					conds.add(guard);
-					updts.add(updates);
+					if (!guard.isBlank())
+						conds.add(guard + "^" + updates);
+					
+					if (!updates.isBlank())
+						updts.add(updates);
 				}
 			}
 		} catch (Exception e) {
@@ -276,6 +284,7 @@ public class XmlHandler {
 		output.put(Compilables.CONDITIONS, conds);
 		output.put(Compilables.IDENTIFIERS, ids);
 		output.put(Compilables.UPDATES, updts);
+		output.put(Compilables.INVARIANTS, invs);
 
 		return output;
 	}

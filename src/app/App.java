@@ -15,6 +15,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,7 +54,7 @@ import ui.MeMenuBar;
 public class App extends JPanel {
 
 	public enum Compilables {
-		DECLARATIONS, IDENTIFIERS, CONDITIONS, UPDATES
+		DECLARATIONS, IDENTIFIERS, CONDITIONS, UPDATES, INVARIANTS
 	}
 
 	private static final long serialVersionUID = -8150527452734294724L;
@@ -104,6 +105,8 @@ public class App extends JPanel {
 	 * Current file where the changes are saved to
 	 */
 	protected File currentFile;
+
+	public static File currentTempFile;
 
 	/**
 	 * Flag indicating whether the current graph has been modified
@@ -728,14 +731,83 @@ public class App extends JPanel {
 			HashMap<Compilables, ArrayList<String>> elements = XmlHandler.getCompilables(currentFile);
 			long step1Time = System.currentTimeMillis();
 			consolePanel.success("\nTerminé en " + (step1Time - compilationStartTime) + "ms");
-			
-			// 
 
+			// GENERATE COMPILABLE FILE
+			File file = getCompilablesFile(elements);
+
+			// PROCEED TO LEXER WITH THE GENERATED FILE
 
 			if (wantedTabIndex != 0)
 				mainTab.setSelectedIndex(wantedTabIndex);
 		} catch (IOException e) {
 			consolePanel.printError(e.getMessage());
+		}
+	}
+
+	public File getCompilablesFile(HashMap<Compilables, ArrayList<String>> elements) {
+		String fullProgram = "int main(){\n";
+
+		for (String dec : elements.get(Compilables.DECLARATIONS)) {
+			fullProgram += dec;
+		}
+
+		for (String inv : elements.get(Compilables.INVARIANTS)) {
+			fullProgram += "\ninv " + inv + ";";
+		}
+
+		for (String guard : elements.get(Compilables.CONDITIONS)) {
+			String condition = "", update = "";
+			String[] tokens = guard.split("^");
+
+			if (tokens.length == 1) {
+				condition = (tokens[0]).substring(0, tokens[0].length() - 1);
+			} else if (tokens.length == 2) {
+				condition = (tokens[0]).substring(0, tokens[0].length() - 1);
+				update = tokens[1];
+			}
+
+			if (condition.isBlank()) {
+				condition = "true";
+			}
+
+			fullProgram += "\nif (" + condition + ") { " + update + " }";
+		}
+
+		fullProgram += "\n}";
+
+		File outputFile = createCurrentTempFile();
+		try {
+			FileWriter writer = new FileWriter(outputFile);
+
+			writer.write(fullProgram);
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return currentTempFile;
+	}
+
+	public static File createCurrentTempFile() {
+		File outputFile = new File("temp/" + String.valueOf(System.currentTimeMillis()) + ".txt");
+
+		try {
+			if (outputFile.createNewFile()) {
+				currentTempFile = outputFile;
+			} else {
+				currentTempFile = null;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return currentTempFile;
+	}
+
+	public static void removeCurrentTempFile() throws IOException {
+		if (currentTempFile != null) {
+			if (currentTempFile.delete())
+				currentTempFile = null;
 		}
 	}
 
