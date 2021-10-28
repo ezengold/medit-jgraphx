@@ -269,9 +269,8 @@ public class XmlHandler {
 					String updates = restoreStr(edge.getElementsByTagName("updates").item(0).getTextContent());
 					String guard = restoreStr(edge.getElementsByTagName("guard").item(0).getTextContent());
 
-					if (!guard.isBlank())
-						conds.add(guard + "^" + updates);
-					
+					conds.add((guard.isBlank() ? "true" : guard) + "^" + updates);
+
 					if (!updates.isBlank())
 						updts.add(updates);
 				}

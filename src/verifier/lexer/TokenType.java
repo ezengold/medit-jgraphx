@@ -1,6 +1,9 @@
 package verifier.lexer;
 
 public enum TokenType {
+	CLOCK, // clock
+	INV, // invariant
+	
 	//For verifier specially
 	ALWAYS, //Quantifier A
 	EXISTS, //Quantifier R

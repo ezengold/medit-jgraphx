@@ -46,6 +46,7 @@ import ui.ConfigStateDialog;
 import ui.ConfigTransitionDialog;
 import ui.MeGraphComponent;
 import ui.MeToolBar;
+import utils.Compiler;
 import utils.EditorFileFilter;
 import utils.EditorKeyboardHandler;
 import utils.XmlHandler;
@@ -736,6 +737,10 @@ public class App extends JPanel {
 			File file = getCompilablesFile(elements);
 
 			// PROCEED TO LEXER WITH THE GENERATED FILE
+			Compiler.testLexer(file, consolePanel);
+
+			
+			removeCurrentTempFile();
 
 			if (wantedTabIndex != 0)
 				mainTab.setSelectedIndex(wantedTabIndex);
@@ -757,23 +762,21 @@ public class App extends JPanel {
 
 		for (String guard : elements.get(Compilables.CONDITIONS)) {
 			String condition = "", update = "";
-			String[] tokens = guard.split("^");
+			String[] tokens = guard.split("\\^");
 
 			if (tokens.length == 1) {
-				condition = (tokens[0]).substring(0, tokens[0].length() - 1);
+				condition = tokens[0];
 			} else if (tokens.length == 2) {
-				condition = (tokens[0]).substring(0, tokens[0].length() - 1);
+				condition = tokens[0];
 				update = tokens[1];
-			}
-
-			if (condition.isBlank()) {
-				condition = "true";
 			}
 
 			fullProgram += "\nif (" + condition + ") { " + update + " }";
 		}
 
 		fullProgram += "\n}";
+
+		System.out.println(fullProgram);
 
 		File outputFile = createCurrentTempFile();
 		try {
