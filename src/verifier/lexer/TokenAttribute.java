@@ -1,6 +1,7 @@
 package verifier.lexer;
 
 public class TokenAttribute {
+	private long clockVal; // clock value of the token
 	private int intVal; // int value of the token
 	private float floatVal; // float value of the token
 	private char charVal; // char value of the token
@@ -9,6 +10,11 @@ public class TokenAttribute {
 
 	public TokenAttribute() {}
 
+	// construct TokenAttribute with an clock value
+	public TokenAttribute(long clockVal){
+		this.clockVal = clockVal;
+	}
+	
 	// construct TokenAttribute with an int value
 	public TokenAttribute(int intVal){
 		this.intVal = intVal;
@@ -32,6 +38,14 @@ public class TokenAttribute {
 	// construct TokenAttribute with an id
 	public TokenAttribute(String idVal){
 		this.idVal = idVal;
+	}
+
+	public long getClockVal() {
+		return clockVal;
+	}
+
+	public void setClockVal(long clockVal) {
+		this.clockVal = clockVal;
 	}
 
 	public int getIntVal() {

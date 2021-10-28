@@ -13,15 +13,16 @@ import verifier.ast.*;
 public class PrintVisitor implements Visitor {
 	@Override
 	public void visit(Program main) {
-		if(main.getList() != null) main.getList().accept(this);
+		if (main.getList() != null)
+			main.getList().accept(this);
 		System.out.println();
 	}
-	
+
 	@Override
-	public void visit(Declarations decl){
-		if(decl.getList() != null){
+	public void visit(Declarations decl) {
+		if (decl.getList() != null) {
 			for (VarDeclList varDeclList : decl.getList()) {
-				for(VarDecl varDecl : varDeclList.getList())
+				for (VarDecl varDecl : varDeclList.getList())
 					System.out.println(varDecl);
 			}
 		}
@@ -30,23 +31,28 @@ public class PrintVisitor implements Visitor {
 
 	@Override
 	public void visit(VarDecl var) {
-		if (var.getType() != null) var.getType().accept(this);
+		if (var.getType() != null)
+			var.getType().accept(this);
 		System.out.print(" ");
-		if (var.getId() != null) var.getId().accept(this);
+		if (var.getId() != null)
+			var.getId().accept(this);
 		System.out.print(";");
 	}
 
 	@Override
 	public void visit(VarDeclList varList) {
-		if (varList.getList() != null) varList.accept(this);
+		if (varList.getList() != null)
+			varList.accept(this);
 		System.out.println();
 	}
 
 	@Override
 	public void visit(Formal param) {
-		if (param.getType() != null) param.getType().accept(this);
+		if (param.getType() != null)
+			param.getType().accept(this);
 		System.out.print(" ");
-		if (param.getId() != null) param.getId().accept(this);
+		if (param.getId() != null)
+			param.getId().accept(this);
 	}
 
 	@Override
@@ -73,29 +79,29 @@ public class PrintVisitor implements Visitor {
 	public void visit(FloatType floatT) {
 		System.out.print("float");
 	}
-	
+
 	@Override
-	public void visit(BooleanLiteral booleanLiteral){
+	public void visit(BooleanLiteral booleanLiteral) {
 		System.out.println(booleanLiteral.getValue());
 	}
 
 	@Override
-	public void visit(BooleanArrayType booleanArrayT){
+	public void visit(BooleanArrayType booleanArrayT) {
 		System.out.print("boolean[]");
 	}
 
 	@Override
-	public void visit(CharLiteral charLiteral){
+	public void visit(CharLiteral charLiteral) {
 		System.out.println(charLiteral.getValue());
 	}
 
 	@Override
-	public void visit(CharArrayType charArrayT){
+	public void visit(CharArrayType charArrayT) {
 		System.out.print("char[]");
 	}
 
 	@Override
-	public void visit(CharType charT){
+	public void visit(CharType charT) {
 		System.out.print("char");
 	}
 
@@ -126,175 +132,212 @@ public class PrintVisitor implements Visitor {
 	@Override
 	public void visit(If ifStm) {
 		System.out.print("if (");
-		if (ifStm.getCondExp() != null) ifStm.getCondExp().accept(this);
+		if (ifStm.getCondExp() != null)
+			ifStm.getCondExp().accept(this);
 		System.out.println(")");
 
 		System.out.print("\t\t\t");
-		if (ifStm.getTrueStm() != null) ifStm.getTrueStm().accept(this);
+		if (ifStm.getTrueStm() != null)
+			ifStm.getTrueStm().accept(this);
 		System.out.println();
 
 		System.out.println("\t\telse");
 		System.out.print("\t\t\t");
-		if (ifStm.getFalseStm() != null) ifStm.getFalseStm().accept(this);
+		if (ifStm.getFalseStm() != null)
+			ifStm.getFalseStm().accept(this);
 	}
 
 	@Override
 	public void visit(While whileStm) {
 		System.out.print("while (");
-		if (whileStm.getCondExp() != null) whileStm.getCondExp().accept(this);
+		if (whileStm.getCondExp() != null)
+			whileStm.getCondExp().accept(this);
 		System.out.print(")");
-		if (whileStm.getStm() != null) whileStm.getStm().accept(this);
+		if (whileStm.getStm() != null)
+			whileStm.getStm().accept(this);
 	}
 
 	@Override
 	public void visit(Assign assignStm) {
-		if (assignStm.getId() != null) assignStm.getId().accept(this);
+		if (assignStm.getId() != null)
+			assignStm.getId().accept(this);
 		System.out.print(" = ");
-		if (assignStm.getValue() != null) assignStm.getValue().accept(this);
+		if (assignStm.getValue() != null)
+			assignStm.getValue().accept(this);
 		System.out.print(";");
 	}
 
 	@Override
 	public void visit(ArrayAssign arrayAssignStm) {
-		if (arrayAssignStm.getId() != null) arrayAssignStm.getId().accept(this);
+		if (arrayAssignStm.getId() != null)
+			arrayAssignStm.getId().accept(this);
 		System.out.print("[");
-		if (arrayAssignStm.getIndex() != null) arrayAssignStm.getIndex().accept(this);
+		if (arrayAssignStm.getIndex() != null)
+			arrayAssignStm.getIndex().accept(this);
 		System.out.print("] = ");
-		if (arrayAssignStm.getValue() != null) arrayAssignStm.getValue().accept(this);
+		if (arrayAssignStm.getValue() != null)
+			arrayAssignStm.getValue().accept(this);
 		System.out.print(";");
 	}
 
 	@Override
 	public void visit(And andExp) {
 		System.out.print("(");
-		if (andExp.getLHS() != null) andExp.getLHS().accept(this);
+		if (andExp.getLHS() != null)
+			andExp.getLHS().accept(this);
 		System.out.print(" && ");
-		if (andExp.getRHS() != null) andExp.getRHS().accept(this);
+		if (andExp.getRHS() != null)
+			andExp.getRHS().accept(this);
 		System.out.print(")");
 	}
 
 	@Override
 	public void visit(Or andExp) {
 		System.out.print("(");
-		if (andExp.getLHS() != null) andExp.getLHS().accept(this);
+		if (andExp.getLHS() != null)
+			andExp.getLHS().accept(this);
 		System.out.print(" || ");
-		if (andExp.getRHS() != null) andExp.getRHS().accept(this);
+		if (andExp.getRHS() != null)
+			andExp.getRHS().accept(this);
 		System.out.print(")");
 	}
 
 	@Override
 	public void visit(Equal andExp) {
 		System.out.print("(");
-		if (andExp.getLHS() != null) andExp.getLHS().accept(this);
+		if (andExp.getLHS() != null)
+			andExp.getLHS().accept(this);
 		System.out.print(" == ");
-		if (andExp.getRHS() != null) andExp.getRHS().accept(this);
+		if (andExp.getRHS() != null)
+			andExp.getRHS().accept(this);
 		System.out.print(")");
 	}
 
 	@Override
 	public void visit(NotEqual andExp) {
 		System.out.print("(");
-		if (andExp.getLHS() != null) andExp.getLHS().accept(this);
+		if (andExp.getLHS() != null)
+			andExp.getLHS().accept(this);
 		System.out.print(" != ");
-		if (andExp.getRHS() != null) andExp.getRHS().accept(this);
+		if (andExp.getRHS() != null)
+			andExp.getRHS().accept(this);
 		System.out.print(")");
 	}
 
 	@Override
 	public void visit(MoreThan andExp) {
 		System.out.print("(");
-		if (andExp.getLHS() != null) andExp.getLHS().accept(this);
+		if (andExp.getLHS() != null)
+			andExp.getLHS().accept(this);
 		System.out.print(" > ");
-		if (andExp.getRHS() != null) andExp.getRHS().accept(this);
+		if (andExp.getRHS() != null)
+			andExp.getRHS().accept(this);
 		System.out.print(")");
 	}
 
 	@Override
 	public void visit(MoreThanEqual andExp) {
 		System.out.print("(");
-		if (andExp.getLHS() != null) andExp.getLHS().accept(this);
+		if (andExp.getLHS() != null)
+			andExp.getLHS().accept(this);
 		System.out.print(" >= ");
-		if (andExp.getRHS() != null) andExp.getRHS().accept(this);
+		if (andExp.getRHS() != null)
+			andExp.getRHS().accept(this);
 		System.out.print(")");
 	}
 
 	@Override
 	public void visit(LessThan lessThanExp) {
 		System.out.print("(");
-		if (lessThanExp.getLHS() != null) lessThanExp.getLHS().accept(this);
+		if (lessThanExp.getLHS() != null)
+			lessThanExp.getLHS().accept(this);
 		System.out.print(" < ");
-		if (lessThanExp.getRHS() != null) lessThanExp.getRHS().accept(this);
+		if (lessThanExp.getRHS() != null)
+			lessThanExp.getRHS().accept(this);
 		System.out.print(")");
 	}
 
 	@Override
 	public void visit(LessThanEqual andExp) {
 		System.out.print("(");
-		if (andExp.getLHS() != null) andExp.getLHS().accept(this);
+		if (andExp.getLHS() != null)
+			andExp.getLHS().accept(this);
 		System.out.print(" <= ");
-		if (andExp.getRHS() != null) andExp.getRHS().accept(this);
+		if (andExp.getRHS() != null)
+			andExp.getRHS().accept(this);
 		System.out.print(")");
 	}
 
 	@Override
 	public void visit(Plus plusExp) {
 		System.out.print("(");
-		if (plusExp.getLHS() != null) plusExp.getLHS().accept(this);
+		if (plusExp.getLHS() != null)
+			plusExp.getLHS().accept(this);
 		System.out.print(" + ");
-		if (plusExp.getRHS() != null) plusExp.getRHS().accept(this);
+		if (plusExp.getRHS() != null)
+			plusExp.getRHS().accept(this);
 		System.out.print(")");
 	}
 
 	@Override
 	public void visit(Minus minusExp) {
 		System.out.print("(");
-		if (minusExp.getLHS() != null) minusExp.getLHS().accept(this);
+		if (minusExp.getLHS() != null)
+			minusExp.getLHS().accept(this);
 		System.out.print(" - ");
-		if (minusExp.getRHS() != null) minusExp.getRHS().accept(this);
+		if (minusExp.getRHS() != null)
+			minusExp.getRHS().accept(this);
 		System.out.print(")");
 	}
 
 	@Override
 	public void visit(Times timesExp) {
 		System.out.print("(");
-		if (timesExp.getLHS() != null) timesExp.getLHS().accept(this);
+		if (timesExp.getLHS() != null)
+			timesExp.getLHS().accept(this);
 		System.out.print(" * ");
-		if (timesExp.getRHS() != null) timesExp.getRHS().accept(this);
+		if (timesExp.getRHS() != null)
+			timesExp.getRHS().accept(this);
 		System.out.print(")");
 	}
 
 	@Override
 	public void visit(Divide timesExp) {
 		System.out.print("(");
-		if (timesExp.getLHS() != null) timesExp.getLHS().accept(this);
+		if (timesExp.getLHS() != null)
+			timesExp.getLHS().accept(this);
 		System.out.print(" / ");
-		if (timesExp.getRHS() != null) timesExp.getRHS().accept(this);
+		if (timesExp.getRHS() != null)
+			timesExp.getRHS().accept(this);
 		System.out.print(")");
 	}
 
 	@Override
 	public void visit(Modules timesExp) {
 		System.out.print("(");
-		if (timesExp.getLHS() != null) timesExp.getLHS().accept(this);
+		if (timesExp.getLHS() != null)
+			timesExp.getLHS().accept(this);
 		System.out.print(" % ");
-		if (timesExp.getRHS() != null) timesExp.getRHS().accept(this);
+		if (timesExp.getRHS() != null)
+			timesExp.getRHS().accept(this);
 		System.out.print(")");
 	}
 
 	@Override
 	public void visit(ArrayLookup arrayLookup) {
-		if (arrayLookup.getArray() != null) arrayLookup.getArray().accept(this);
+		if (arrayLookup.getArray() != null)
+			arrayLookup.getArray().accept(this);
 		System.out.print("[");
-		if (arrayLookup.getIndex() != null) arrayLookup.getIndex().accept(this);
+		if (arrayLookup.getIndex() != null)
+			arrayLookup.getIndex().accept(this);
 	}
 
 	@Override
 	public void visit(ArrayLength length) {
-		if (length.getArray() != null) length.getArray().accept(this);
+		if (length.getArray() != null)
+			length.getArray().accept(this);
 		System.out.print(".length");
 	}
-
-
 
 	@Override
 	public void visit(IntegerLiteral intLiteral) {
@@ -322,32 +365,49 @@ public class PrintVisitor implements Visitor {
 			System.out.print(identExp.getName());
 	}
 
-
-
 	@Override
 	public void visit(NewArray array) {
 		System.out.print("new int [");
-		if (array.getArraySize() != null) array.getArraySize().accept(this);
+		if (array.getArraySize() != null)
+			array.getArraySize().accept(this);
 		System.out.print("]");
 	}
 
 	@Override
 	public void visit(Not notExp) {
 		System.out.print("!");
-		if (notExp.getExp() != null) notExp.getExp().accept(this);
+		if (notExp.getExp() != null)
+			notExp.getExp().accept(this);
 	}
 
 	@Override
 	public void visit(Negative negExp) {
 		System.out.print("-");
-		if (negExp.getExp() != null) negExp.getExp().accept(this);
+		if (negExp.getExp() != null)
+			negExp.getExp().accept(this);
 	}
-
 
 	@Override
 	public void visit(Identifier id) {
 		if (id.getName() != null)
 			System.out.print(id.getName());
+	}
+
+	@Override
+	public void visit(ClockType clock) {
+		System.out.print("clock");
+	}
+
+	@Override
+	public void visit(ClockLiteral clockLiteral) {
+		System.out.print(clockLiteral.getValue());
+	}
+
+	@Override
+	public void visit(Invariant invStm) {
+		System.out.print("inv");
+		if (invStm.getValue() != null)
+			invStm.getValue().accept(this);
 	}
 
 }

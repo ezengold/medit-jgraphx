@@ -159,7 +159,7 @@ public class MeLexer {
 			return new Token(TokenType.ID, new TokenAttribute(current), lineNumber, columnNumber - current.length());
 		}
 
-		// integer literal ([0-9]+) OR float literal ([0-9]+.[0-9]+)
+		// integer literal ([0-9]+) OR clock literal ([0-9]+l)
 		if (Character.isDigit(nextChar)) {
 
 			// create string representation of number
@@ -173,7 +173,10 @@ public class MeLexer {
 				columnNumber++;
 				nextChar = getChar();
 			}
-
+			
+			if ((Character.getNumericValue('l') == nextChar))
+				return new Token(TokenType.CLOCK_CONST, new TokenAttribute(Long.parseLong(numString)), lineNumber, columnNumber - numString.length());
+			
 			// return integer literal token
 			return new Token(TokenType.INT_CONST, new TokenAttribute(Integer.parseInt(numString)), lineNumber, columnNumber - numString.length());
 		}

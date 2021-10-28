@@ -49,4 +49,7 @@ public interface Visitor {
 	public void visit(Not notExp);
 	public void visit(Negative negExp);
 	public void visit(Identifier id);
+	public void visit(ClockType clock);
+	public void visit(ClockLiteral clock);
+	public void visit(Invariant invStm);
 }

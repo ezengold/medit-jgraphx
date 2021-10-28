@@ -8,6 +8,7 @@ public enum TokenType {
 	ALWAYS, //Quantifier A
 	EXISTS, //Quantifier R
 	ID, // [a-zA-Z][a-zA-Z0-9_]*
+	CLOCK_CONST, // [0-9]+
 	INT_CONST, // [0-9]+
 	FLOAT_CONST, //[0-9]+.[0-9]+
 	CHAR_CONST, //'ASCII Char'
