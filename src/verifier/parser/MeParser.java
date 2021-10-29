@@ -183,9 +183,24 @@ public class MeParser {
 		// check for additional varDecl
 		while (token.getType() == TokenType.COMMA) {
 			eat(TokenType.COMMA);
-			VarDecl newVarDecl = new VarDecl(varDecl.getType(), parseIdentifier());
-			varDeclList.addElement(newVarDecl);
-			getDecelarations().add(newVarDecl);
+
+			Identifier id = parseIdentifier();
+
+			if (token.getType() == TokenType.ASSIGN) {
+				eat(TokenType.ASSIGN);
+
+				Exp value = parseExp();
+
+				VarDecl newVarDecl = new VarDecl(varDecl.getType(), id, value);
+				varDeclList.addElement(newVarDecl);
+				getDecelarations().add(newVarDecl);
+				getAssigns().add(new Assign(id, value));
+
+			} else {
+				VarDecl newVarDecl = new VarDecl(varDecl.getType(), parseIdentifier());
+				varDeclList.addElement(newVarDecl);
+				getDecelarations().add(newVarDecl);
+			}
 		}
 		eat(TokenType.SEMI);
 
@@ -196,6 +211,15 @@ public class MeParser {
 	private VarDecl parseVarDecl() throws IOException {
 		Type type = parseType();
 		Identifier id = parseIdentifier();
+
+		if (token.getType() == TokenType.ASSIGN) {
+			eat(TokenType.ASSIGN);
+
+			Exp value = parseExp();
+
+			return new VarDecl(type, id, value);
+		}
+
 		return new VarDecl(type, id);
 	}
 
@@ -311,6 +335,8 @@ public class MeParser {
 			eat(TokenType.INV);
 
 			Exp value = parseExp();
+
+			eat(TokenType.SEMI);
 
 			return new Invariant(value);
 		}

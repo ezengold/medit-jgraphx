@@ -50,6 +50,7 @@ import utils.Compiler;
 import utils.EditorFileFilter;
 import utils.EditorKeyboardHandler;
 import utils.XmlHandler;
+import verifier.ast.Program;
 import ui.MeMenuBar;
 
 public class App extends JPanel {
@@ -106,8 +107,12 @@ public class App extends JPanel {
 	 * Current file where the changes are saved to
 	 */
 	protected File currentFile;
+	
+	public static File automateFile;
 
 	public static File currentTempFile;
+	
+	public static Program FinalProgram;
 
 	/**
 	 * Flag indicating whether the current graph has been modified
@@ -376,8 +381,8 @@ public class App extends JPanel {
 		this.updateTitle();
 
 		// Create other tabs instances and forward the graph context
-		simulatorPanel = new Simulator(graphComponent);
-		verifierPanel = new Verifier(graphComponent);
+		simulatorPanel = new Simulator(getInstance());
+		verifierPanel = new Verifier(getInstance());
 
 		mainTab = new JTabbedPane();
 		mainTab.add("Editeur", this);
@@ -737,7 +742,7 @@ public class App extends JPanel {
 			File file = getCompilablesFile(elements);
 
 			// PROCEED TO PARSER WITH THE GENERATED FILE
-			Compiler.testParser(file, consolePanel);
+			FinalProgram = Compiler.testSementic(file, consolePanel);
 
 			removeCurrentTempFile();
 
