@@ -236,7 +236,7 @@ public class XmlHandler {
 
 			// GET DECLARATIONS
 			String declarations = doc.getElementsByTagName("declarations").item(0).getTextContent();
-			if (!declarations.isBlank())
+			if (!declarations.isEmpty())
 				decs.add(declarations);
 
 			// GET STATES DATA
@@ -250,10 +250,10 @@ public class XmlHandler {
 					String name = restoreStr(location.getElementsByTagName("name").item(0).getTextContent());
 					String invariant = restoreStr(location.getElementsByTagName("invariant").item(0).getTextContent());
 
-					if (!name.isBlank())
+					if (!name.isEmpty())
 						ids.add(name);
 
-					if (!invariant.isBlank())
+					if (!invariant.isEmpty())
 						invs.add(invariant);
 				}
 			}
@@ -269,9 +269,9 @@ public class XmlHandler {
 					String updates = restoreStr(edge.getElementsByTagName("updates").item(0).getTextContent());
 					String guard = restoreStr(edge.getElementsByTagName("guard").item(0).getTextContent());
 
-					conds.add((guard.isBlank() ? "true" : guard) + "^" + (updates.isBlank() ? ";" : updates));
+					conds.add((guard.isEmpty() ? "true" : guard) + "^" + (updates.isEmpty() ? ";" : updates));
 
-					if (!updates.isBlank())
+					if (!updates.isEmpty())
 						updts.add(updates);
 				}
 			}
