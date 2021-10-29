@@ -27,6 +27,7 @@ import verifier.ast.LessThanEqual;
 import verifier.ast.MoreThan;
 import verifier.ast.MoreThanEqual;
 import verifier.ast.NotEqual;
+import verifier.ast.Program;
 import verifier.ast.Type;
 import verifier.ast.VarDecl;
 import verifier.parser.MeParser;
@@ -42,6 +43,8 @@ public class MeSemanticAnalyzer {
 	private int errors;
 	
 	private Console log;
+	
+	private Program finalProgram;
 
 	public MeSemanticAnalyzer(FileReader file, Console log) throws IOException{
 		this.parser = new MeParser(file, log);
@@ -53,9 +56,17 @@ public class MeSemanticAnalyzer {
 		return errors;
 	}
 	
+	public Program getFinalProgram() {
+		return finalProgram;
+	}
+
+	public void setFinalProgram(Program finalProgram) {
+		this.finalProgram = finalProgram;
+	}
+
 	//start semantic analyzer
 	public void analyzeProgram() throws IOException{
-		this.parser.parseProgram();
+		this.finalProgram = this.parser.parseProgram();
 		this.declerations = this.parser.getDecelarations();
 		checkDeclerations();
 		this.identifiers = this.parser.getIdentifiers();

@@ -12,7 +12,6 @@ import verifier.lexer.Token;
 import verifier.lexer.TokenType;
 import verifier.parser.MeParser;
 import verifier.semantic.MeSemanticAnalyzer;
-import verifier.semantic.SemanticAnalyzer;
 import verifier.visitor.PrintVisitor;
 
 public class Compiler {
@@ -99,7 +98,7 @@ public class Compiler {
 		System.out.println();
 	}
 
-	public static void testSementic(File inputFile, Console log) throws IOException {
+	public static Program testSementic(File inputFile, Console log) throws IOException {
 		FileReader file = null;
 
 		// attempt to open file
@@ -122,5 +121,7 @@ public class Compiler {
 		log.success("File has finished analyzing!");
 		log.success("Execution time: " + (endTime - startTime) + "ms");
 		log.success(semantic.getErrors() + " errors reported");
+		
+		return semantic.getFinalProgram();
 	}
 }
