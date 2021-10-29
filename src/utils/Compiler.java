@@ -11,6 +11,8 @@ import verifier.lexer.MeLexer;
 import verifier.lexer.Token;
 import verifier.lexer.TokenType;
 import verifier.parser.MeParser;
+import verifier.semantic.MeSemanticAnalyzer;
+import verifier.semantic.SemanticAnalyzer;
 import verifier.visitor.PrintVisitor;
 
 public class Compiler {
@@ -74,12 +76,12 @@ public class Compiler {
 		try {
 			file = new FileReader(inputFile);
 		} catch (FileNotFoundException e) {
-			log.error(inputFile.getAbsolutePath() + " was not found!");
+			log.error("Compilaton generated file was not found!");
 		}
 
 		// create parser
 		MeParser parser = new MeParser(file, log);
-		log.success("Parsing " + inputFile.getAbsolutePath() + "...");
+		log.success("Parsing...");
 
 		// initiate parse and clock time
 		long startTime = System.currentTimeMillis();
@@ -87,7 +89,7 @@ public class Compiler {
 		long endTime = System.currentTimeMillis();
 
 		// print out statistics
-		log.success("File has finished parsing!");
+		log.success("File has finished parsing ! \n");
 		log.success("Execution time: " + (endTime - startTime) + "ms");
 		log.success(parser.getErrors() + " errors reported \n");
 
@@ -95,5 +97,30 @@ public class Compiler {
 		PrintVisitor printer = new PrintVisitor();
 		printer.visit(program);
 		System.out.println();
+	}
+
+	public static void testSementic(File inputFile, Console log) throws IOException {
+		FileReader file = null;
+
+		// attempt to open file
+		try {
+			file = new FileReader(inputFile);
+		} catch (FileNotFoundException e) {
+			log.error(inputFile.getAbsolutePath() + " was not found!");
+		}
+
+		// create semantic analyzer
+		MeSemanticAnalyzer semantic = new MeSemanticAnalyzer(file, log);
+		log.success("Analyzing...");
+
+		// initiate parse and clock time
+		long startTime = System.currentTimeMillis();
+		semantic.analyzeProgram();
+		long endTime = System.currentTimeMillis();
+
+		// print out statistics
+		log.success("File has finished analyzing!");
+		log.success("Execution time: " + (endTime - startTime) + "ms");
+		log.success(semantic.getErrors() + " errors reported");
 	}
 }

@@ -106,6 +106,8 @@ public class App extends JPanel {
 	 * Current file where the changes are saved to
 	 */
 	protected File currentFile;
+	
+	public static File automateFile;
 
 	public static File currentTempFile;
 
@@ -737,7 +739,7 @@ public class App extends JPanel {
 			File file = getCompilablesFile(elements);
 
 			// PROCEED TO PARSER WITH THE GENERATED FILE
-			Compiler.testParser(file, consolePanel);
+			Compiler.testSementic(file, consolePanel);
 
 			removeCurrentTempFile();
 

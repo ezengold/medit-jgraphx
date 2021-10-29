@@ -269,7 +269,7 @@ public class XmlHandler {
 					String updates = restoreStr(edge.getElementsByTagName("updates").item(0).getTextContent());
 					String guard = restoreStr(edge.getElementsByTagName("guard").item(0).getTextContent());
 
-					conds.add((guard.isEmpty() ? "true" : guard) + "^" + (updates.isEmpty() ? ";" : updates));
+					conds.add((guard.isEmpty() ? "true" : guard) + "^" + (updates.isEmpty() ? "" : updates));
 
 					if (!updates.isEmpty())
 						updts.add(updates);
