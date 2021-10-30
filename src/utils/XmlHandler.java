@@ -131,7 +131,6 @@ public class XmlHandler {
 
 					if (node.getNodeType() == Node.ELEMENT_NODE) {
 						Element location = (Element) node;
-
 						String id = location.getAttribute("id");
 						String stateId = location.getAttribute("stateId");
 						boolean isInitial = location.getAttribute("isInitial").equals("1") ? true : false;
