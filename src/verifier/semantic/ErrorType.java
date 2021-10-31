@@ -21,5 +21,6 @@ public enum ErrorType {
 	
 	SINGLE_TO_ARRAY, //single variable to array error
 	ARRAY_TO_SINGLE, //array to single variable error
-	INVALID_CONDITION //invalid condition error
+	INVALID_CONDITION, //invalid condition error
+	INVALID_IDENTIFIER
 }

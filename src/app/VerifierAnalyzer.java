@@ -7,6 +7,8 @@ import verifier.lexer.Token;
 import verifier.lexer.TokenType;
 import verifier.lexer.VerifierLexer;
 import verifier.parser.VerifierParser;
+import verifier.semantic.MeSemanticAnalyzer;
+import verifier.semantic.VerifierSemanticAnalyzer;
 import verifier.visitor.PrintVisitor;
 
 import java.io.*;
@@ -32,7 +34,7 @@ public class VerifierAnalyzer {
             File file = getCompilablesFile();
 
             // PROCEED TO LEXER FOR THE GENERATED FILE
-           testLexer(file);
+           testSemantic(file);
             App.removeCurrentTempFile();
 
         } catch (IOException e) {
@@ -130,8 +132,8 @@ public class VerifierAnalyzer {
         long endTime = System.currentTimeMillis();
 
         // print out statistics
-        statusVerifier.normal("File has finished parsing!");
-        statusVerifier.normal("Execution time: " + (endTime - startTime) + "ms");
+        statusVerifier.success("File has finished parsing!");
+        statusVerifier.success("Execution time: " + (endTime - startTime) + "ms");
         statusVerifier.normal(parser.getErrors() + " errors reported");
         statusVerifier.normal("---");
 
@@ -155,6 +157,33 @@ public class VerifierAnalyzer {
         }
 
         System.out.println();
+    }
+
+    private void testSemantic(File inputFile) throws IOException {
+        FileReader file = null;
+
+        // attempt to open file
+        try {
+            file = new FileReader(inputFile);
+        } catch (FileNotFoundException e) {
+            statusVerifier.error(inputFile.getAbsolutePath() + " was not found!");
+        }
+
+        // create semantic analyzer
+        VerifierSemanticAnalyzer semantic = new VerifierSemanticAnalyzer(file,statusVerifier);
+        statusVerifier.normal("Analyzing...");
+
+        // initiate parse and clock time
+        long startTime = System.currentTimeMillis();
+        semantic.analyzeProgram();
+        long endTime = System.currentTimeMillis();
+
+        // print out statistics
+        statusVerifier.success("File has finished analyzing!");
+        statusVerifier.success("Execution time: " + (endTime - startTime) + "ms");
+        statusVerifier.normal(semantic.getErrors() + " errors reported");
+
+
     }
 
 

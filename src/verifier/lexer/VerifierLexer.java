@@ -241,7 +241,7 @@ public class VerifierLexer {
                 //check if next char is ']' to match []globally reserved words
                 if(nextChar == ']') {
                     nextChar = getChar();
-                    return new Token(TokenType.GLOBALLY,new TokenAttribute(),lineNumber,columnNumber-2);
+                    return new Token(TokenType.GLOBALLY,new TokenAttribute(),lineNumber,columnNumber-1);
                 } else {
                     return new Token(TokenType.UNKNOWN, new TokenAttribute(), lineNumber, columnNumber - 1);
                 }
@@ -255,7 +255,7 @@ public class VerifierLexer {
                 // check if next char is '<' to match '<=' binop
                 if(nextChar == '>') {
                     nextChar = getChar();
-                    return new Token(TokenType.EVENTUALLY,new TokenAttribute(),lineNumber,columnNumber-2);
+                    return new Token(TokenType.EVENTUALLY,new TokenAttribute(),lineNumber,columnNumber-1);
                 } else if (nextChar == '=') {
                     nextChar = getChar();
                     return new Token(TokenType.LT_EQ, new TokenAttribute(), lineNumber, columnNumber - 2);

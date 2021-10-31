@@ -4,6 +4,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.ListIterator;
 
 public class CustomTableRenderer extends DefaultTableCellRenderer {
     JLabel label = new JLabel();
@@ -16,9 +18,9 @@ public class CustomTableRenderer extends DefaultTableCellRenderer {
     }
 
     public void removeColors() {
-        for (int i =1; i<desiredColors.size();i++) {
-            desiredColors.remove(i);
-        }
+        desiredColors = new ArrayList<>();
+        desiredColors.add(Color.black);
+
     }
 
 

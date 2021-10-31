@@ -115,6 +115,11 @@ public class App extends JPanel {
 	public static Program FinalProgram;
 
 	/**
+	 * Compilables elements contains ids, invariants, declarations and conditions...
+	 */
+	public static HashMap<Compilables, ArrayList<String>> COMPILABLES_ELEMENTS;
+
+	/**
 	 * Flag indicating whether the current graph has been modified
 	 */
 	protected boolean modified = false;
@@ -734,6 +739,7 @@ public class App extends JPanel {
 			// FETCH DIFFERENTS TOKENS
 			consolePanel.printSuccess("Récupération des tokens...\n");
 			HashMap<Compilables, ArrayList<String>> elements = XmlHandler.getCompilables(currentFile);
+			COMPILABLES_ELEMENTS = elements;
 			long step1Time = System.currentTimeMillis();
 			consolePanel.success("\nTerminé en " + (step1Time - compilationStartTime) + "ms");
 

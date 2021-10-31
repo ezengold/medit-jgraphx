@@ -5,6 +5,7 @@ import verifier.ast.*;
 import verifier.lexer.Lexer;
 import verifier.lexer.Token;
 import verifier.lexer.TokenType;
+import verifier.lexer.VerifierLexer;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -14,7 +15,7 @@ import java.util.Map;
 
 
 public class VerifierParser {
-    private Lexer lexer;
+    private VerifierLexer lexer;
     private Token token;
     private Token errorToken;
     private StatusVerifier statusVerifier;
@@ -48,7 +49,7 @@ public class VerifierParser {
     }
 
     public VerifierParser(FileReader file, StatusVerifier statusVerifier) throws IOException {
-        this.lexer = new Lexer(file);
+        this.lexer = new VerifierLexer(file);
         this.token = lexer.getToken();
         this.decelarations = new ArrayList<VarDecl>();
         this.identifiers = new ArrayList<Identifier>();
@@ -75,8 +76,8 @@ public class VerifierParser {
             return;
         // print error report
 
-        statusVerifier.error("ERROR: " + token.getType()+" at line " + token.getLineNumber() + ", column " + token.getColumnNumber());
-        statusVerifier.error("; Expected " + type);
+        statusVerifier.error("ERROR: " + token.getType()+" at line " + token.getLineNumber() + ", column " + token.getColumnNumber()
+        +"; Expected " + type);
 //        System.err.print("ERROR: " + token.getType());
 //        System.err.print(" at line " + token.getLineNumber() + ", column " + token.getColumnNumber());
 //        System.err.println("; Expected " + type);
@@ -326,6 +327,11 @@ public class VerifierParser {
             else if(token.getType() == TokenType.NEXT) {
                 eat(TokenType.NEXT);
                 return new AlwaysNext(parseExp());
+            } else {
+                statusVerifier.error("Syntax is incorrect");
+                eat(TokenType.TEMPORAL_PROPERTY);
+                token = lexer.getToken();
+                return null;
             }
         } else if(token.getType() == TokenType.EXISTS) {
             eat(TokenType.EXISTS);
@@ -339,11 +345,19 @@ public class VerifierParser {
             } else if(token.getType() == TokenType.NEXT) {
                 eat(TokenType.NEXT);
                 return new ExistsNext(parseExp());
+            } else {
+                statusVerifier.error("Syntax is incorrect");
+                eat(TokenType.TEMPORAL_PROPERTY);
+                token = lexer.getToken();
+
+                return null;
             }
         } else {
+            eat(TokenType.QUANTIFIER);
+            token = lexer.getToken();
             statusVerifier.error("Syntax is incorrect");
+            return null;
         }
-        return  null;
     }
 
 

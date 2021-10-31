@@ -11,6 +11,7 @@ public class StatusVerifier extends JPanel {
     Object[][] statusData = {};
     String title[] = { "Status" };
     ModelRequest modelRequest = new ModelRequest(statusData, title);
+
     CustomTableRenderer colouringTable = new CustomTableRenderer();
     JTable tableRequest = new JTable(modelRequest){
         @Override
@@ -31,6 +32,8 @@ public class StatusVerifier extends JPanel {
 
     };
 
+
+
     public void clearStatus() {
         int rowCount = modelRequest.getRowCount();
         //Remove rows one by one from the end of the table
@@ -39,6 +42,7 @@ public class StatusVerifier extends JPanel {
                 modelRequest.removeRow(i);
             }
             colouringTable.removeColors();
+
         }
     }
 
@@ -61,6 +65,7 @@ public class StatusVerifier extends JPanel {
         System.out.println(msg);
         colouringTable.setColors(Color.decode("#00b44f"));
     }
+
 
 
     public StatusVerifier() {
