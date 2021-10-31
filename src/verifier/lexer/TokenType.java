@@ -5,8 +5,21 @@ public enum TokenType {
 	INV, // invariant
 	
 	//For verifier specially
-	ALWAYS, //Quantifier A
-	EXISTS, //Quantifier R
+	//verifier tokens
+	ALWAYS, //Always A
+	EXISTS,//Exists E
+	CHEVRON_LEFT, //<
+	CHEVRON_RIGHT, //>
+	NEXT, //Next
+	EVENTUALLY,// <>
+	GLOBALLY,// []
+	DEADLOCK,
+
+
+
+
+
+
 	ID, // [a-zA-Z][a-zA-Z0-9_]*
 	CLOCK_CONST, // [0-9]+
 	INT_CONST, // [0-9]+

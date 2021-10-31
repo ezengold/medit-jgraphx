@@ -31,20 +31,34 @@ public class StatusVerifier extends JPanel {
 
     };
 
+    public void clearStatus() {
+        int rowCount = modelRequest.getRowCount();
+        //Remove rows one by one from the end of the table
+        if(rowCount>1) {
+            for (int i = rowCount - 1; i >= 1; i--) {
+                modelRequest.removeRow(i);
+            }
+            colouringTable.removeColors();
+        }
+    }
+
 
     public void normal(String msg){
         modelRequest.addRow(new Object[]{msg});
         colouringTable.setColors(Color.black);
+        System.out.println(msg);
     }
 
     public void error(String msg) {
-        modelRequest.addRow(new Object[] {"test-success"});
+        modelRequest.addRow(new Object[] {msg});
+        System.out.println(msg);
         colouringTable.setColors(Color.decode("#f90700"));
     }
 
     public void success(String msg) {
 
-        modelRequest.addRow(new Object[] {"test-success"});
+        modelRequest.addRow(new Object[] {msg});
+        System.out.println(msg);
         colouringTable.setColors(Color.decode("#00b44f"));
     }
 
@@ -68,7 +82,7 @@ public class StatusVerifier extends JPanel {
 
 
         JScrollPane scrollStatus = new JScrollPane(tableRequest);
-//        scrollStatus.setPreferredSize(new Dimension(this.getWidth(), this.getHeight()));
+        scrollStatus.setPreferredSize(new Dimension(this.getWidth(), 200));
         statusContent.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.lightGray));
         statusContent.setLayout(new GridLayout(1,1));
         statusContent.add(scrollStatus);
@@ -81,6 +95,6 @@ public class StatusVerifier extends JPanel {
 
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension(this.getWidth(),200);
+        return new Dimension(this.getWidth(),300);
     }
 }
