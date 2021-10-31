@@ -69,25 +69,25 @@ public class Console extends JPanel {
 	public void error(String message) {
 		isError = true;
 		content.setForeground(Color.RED);
-		content.setText(content.getText() + message);
+		content.setText(message + "\n\n[ERROR] : " + content.getText());
 	}
 
 	public void printError(String message) {
 		isError = true;
 		content.setForeground(Color.RED);
-		content.setText(message);
+		content.setText("\n[ERROR] : " + message);
 	}
 
 	public void success(String message) {
 		isError = false;
 		content.setForeground(Color.decode("#9099ae"));
-		content.setText(content.getText() + message);
+		content.setText(message + "\n\n[LOG] : " + content.getText());
 	}
 
 	public void printSuccess(String message) {
 		isError = false;
 		content.setForeground(Color.decode("#9099ae"));
-		content.setText(message);
+		content.setText("\n[LOG] : " + message);
 	}
 
 	public void clearConsole() {

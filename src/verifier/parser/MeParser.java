@@ -109,9 +109,8 @@ public class MeParser {
 		if (token == errorToken)
 			return;
 		// print error report
-		log.error("\nERROR: " + token.getType());
-		log.error(" at line " + token.getLineNumber() + ", column " + token.getColumnNumber());
-		log.error("; Expected " + type);
+		log.error(token.getType().toString() + " at line " + token.getLineNumber() + ", column "
+				+ token.getColumnNumber() + "; Expected " + type);
 		errorToken = token; // set error token to prevent cascading
 		errors++; // increment error counter
 	}
