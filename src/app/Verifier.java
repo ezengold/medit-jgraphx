@@ -6,6 +6,7 @@ import javax.swing.border.MatteBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import ui.DialogUtils;
 import ui.ModelRequest;
 
 import java.awt.*;
@@ -22,10 +23,11 @@ public class Verifier extends JPanel {
 	
 	private JPanel topContainer = new JPanel();
 	private JPanel middleContainer = new JPanel();
-	private JPanel bottomContainer = new JPanel();
+	private StatusVerifier statusVerifier = new StatusVerifier();
 
 	// table to view request
 	Object[][] data = { { "" } };
+
 	// Les titres des colonnes
 	String title[] = { "Requete" };
 	ModelRequest modelRequest = new ModelRequest(data, title);
@@ -53,13 +55,14 @@ public class Verifier extends JPanel {
 		apercu.setFont(new Font("Times New Roman", Font.BOLD, 13));
 		JPanel contentApercu = new JPanel();
 		contentApercu.setBackground(Color.white);
-		contentApercu.setPreferredSize(new Dimension(1000, 120));
+		contentApercu.setPreferredSize(this.getPreferredSize());
 		contentApercu.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.lightGray));
 		// table to view dynamically request
 		tableRequest.setRowSelectionInterval(0, 0);
-		tableRequest.setPreferredSize(new Dimension(1000, 120));
+		tableRequest.setPreferredSize(new Dimension(800, 120));
 		tableRequest.setShowGrid(false);
 		tableRequest.setRowHeight(30);
+		tableRequest.setTableHeader(null);
 //		tableRequest.setSelectionBackground(Color.GRAY);
 		tableRequest.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			@Override
@@ -80,7 +83,7 @@ public class Verifier extends JPanel {
 		contentApercu.setLayout(new BorderLayout());
 		contentApercu.add(jScrollPane, BorderLayout.WEST);
 
-		contentApercu.setPreferredSize(new Dimension(1000, 100));
+		contentApercu.setPreferredSize(new Dimension(800, 100));
 		contentApercu.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.lightGray));
 
 		JPanel viewContainer = new JPanel(new BorderLayout(0, 0));
@@ -91,6 +94,20 @@ public class Verifier extends JPanel {
 		JButton verifier = new JButton("Verifier");
 		verifier.setPreferredSize(new Dimension(150, 20));
 		verifier.setBackground(Color.black);
+		verifier.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent actionEvent) {
+				if(propertie.isEnabled() && !propertie.getText().isEmpty()) {
+					statusVerifier.normal(propertie.getText());
+				} else {
+					DialogUtils.errorDialog("Veuillez renseigner une propriete");
+				}
+			}
+		});
+
+
+
+
 		JButton inserer = new JButton("Inserer");
 		inserer.addActionListener(new ActionListener() {
 			@Override
@@ -177,31 +194,14 @@ public class Verifier extends JPanel {
 		middleContainer.add(requete, BorderLayout.NORTH);
 		middleContainer.add(new JScrollPane(propertie), BorderLayout.CENTER);
 
-		/*
-		 * bottom component
-		 */
-		bottomContainer.setLayout(new BorderLayout(0, 0));
-		JLabel statusLabel = new JLabel("Status");
-		statusLabel.setFont(new Font("Times New Roman", Font.BOLD, 13));
-		JPanel statusContent = new JPanel();
-//		statusContent.setBackground(Color.white);
-//		statusContent.setPreferredSize(new Dimension(1000,100));
-		JScrollPane scrollStatus = new JScrollPane(statusContent);
-		scrollStatus.setPreferredSize(new Dimension(1000, 200));
-		statusContent.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.lightGray));
-		bottomContainer.add(statusLabel, BorderLayout.NORTH);
-		bottomContainer.add(scrollStatus, BorderLayout.CENTER);
-		bottomContainer.setBorder(BorderFactory.createEmptyBorder(5, 5, 10, 10));
+
 
 		Box b = Box.createVerticalBox();
 		b.add(topContainer);
 		b.add(middleContainer);
-		b.add(bottomContainer);
-//		JSplitPane jSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,b,bottomContainer);
+		b.add(statusVerifier);
 		this.add(b);
 
-//		this.add(middleContainer);
-//		this.add(bottomContainer);
 
 	}
 
