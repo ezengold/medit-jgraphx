@@ -29,7 +29,7 @@ public class Compiler {
 		MeLexer lexer = new MeLexer(file);
 
 		// start tokenizing file
-		log.success("\nTokenizing " + inputFile.getAbsolutePath() + "...\n");
+		log.success("Tokenizing " + inputFile.getAbsolutePath() + "...");
 		long startTime = System.currentTimeMillis();
 		int numTokens = 0;
 		Token token;
@@ -39,33 +39,34 @@ public class Compiler {
 
 			if (token.getType() == TokenType.UNKNOWN) {
 				// print token type and location
-				log.error(token.getType().toString());
-				log.error(" (" + token.getLineNumber() + "," + token.getColumnNumber() + ")");
-				log.error("\n");
+				log.error(token.getType().toString() + " (" + token.getLineNumber() + "," + token.getColumnNumber()
+						+ ")");
 				continue;
 			}
 
-			log.success(token.getType().toString());
-			log.success(" (" + token.getLineNumber() + "," + token.getColumnNumber() + ")");
+			String msg = "";
+			
+			msg = token.getType().toString() + " (" + token.getLineNumber() + "," + token.getColumnNumber() + ")";
 
 			// print out semantic values for ID and INT_CONST tokens
 			if (token.getType() == TokenType.ID)
-				log.success(": " + token.getAttribute().getIdVal());
+				msg += " : " + token.getAttribute().getIdVal();
 			else if (token.getType() == TokenType.INT_CONST)
-				log.success(": " + token.getAttribute().getIntVal());
+				msg += " : " + token.getAttribute().getIntVal();
 			else if (token.getType() == TokenType.BOOLEAN_CONST)
-				log.success(": " + token.getAttribute().getBooleanVal());
+				msg += " : " + token.getAttribute().getBooleanVal();
 			else
-				log.success("\n");
+				msg += "";
+			
+			log.success(msg);
 
 		} while (token.getType() != TokenType.EOF);
 
 		long endTime = System.currentTimeMillis();
 
 		// print out statistics
-		log.success("\n---");
-		log.success("\nNumber of tokens: " + numTokens);
-		log.success("\nExecution time: " + (endTime - startTime) + "ms\n");
+		log.success("Number of tokens : " + numTokens);
+		log.success("Execution time : " + (endTime - startTime) + "ms\n");
 	}
 
 	public static void testParser(File inputFile, Console log) throws IOException {
@@ -75,7 +76,7 @@ public class Compiler {
 		try {
 			file = new FileReader(inputFile);
 		} catch (FileNotFoundException e) {
-			log.error("Compilaton generated file was not found!");
+			log.error("Compilaton generated file was not found !");
 		}
 
 		// create parser
@@ -88,9 +89,9 @@ public class Compiler {
 		long endTime = System.currentTimeMillis();
 
 		// print out statistics
-		log.success("File has finished parsing ! \n");
-		log.success("Execution time: " + (endTime - startTime) + "ms");
-		log.success(parser.getErrors() + " errors reported \n");
+		log.success("File has finished parsing !");
+		log.success("Execution time : " + (endTime - startTime) + "ms");
+		log.success(parser.getErrors() + " errors reported");
 
 		// print out ASTs
 		PrintVisitor printer = new PrintVisitor();
@@ -121,7 +122,7 @@ public class Compiler {
 		log.success("File has finished analyzing!");
 		log.success("Execution time: " + (endTime - startTime) + "ms");
 		log.success(semantic.getErrors() + " errors reported");
-		
+
 		return semantic.getFinalProgram();
 	}
 }
