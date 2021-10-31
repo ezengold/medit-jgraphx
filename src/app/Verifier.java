@@ -24,6 +24,7 @@ public class Verifier extends JPanel {
 	private JPanel topContainer = new JPanel();
 	private JPanel middleContainer = new JPanel();
 	private StatusVerifier statusVerifier = new StatusVerifier();
+	private VerifierAnalyzer verifierAnalyzer = new VerifierAnalyzer(statusVerifier);
 
 	// table to view request
 	Object[][] data = { { "" } };
@@ -98,9 +99,12 @@ public class Verifier extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent actionEvent) {
 				if(propertie.isEnabled() && !propertie.getText().isEmpty()) {
+					statusVerifier.clearStatus();
 					statusVerifier.normal(propertie.getText());
+					verifierAnalyzer.analyze(propertie.getText());
+
 				} else {
-					DialogUtils.errorDialog("Veuillez renseigner une propriete");
+					DialogUtils.errorDialog("Veuillez renseigner une proprieté");
 				}
 			}
 		});
@@ -108,7 +112,7 @@ public class Verifier extends JPanel {
 
 
 
-		JButton inserer = new JButton("Inserer");
+		JButton inserer = new JButton("Insérer");
 		inserer.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent actionEvent) {
@@ -171,6 +175,7 @@ public class Verifier extends JPanel {
 			@Override
 			public void keyTyped(KeyEvent keyEvent) {
 				if (tableRequest.getSelectedRow() != -1) {
+					//set value at line selected; column 0
 					modelRequest.setValueAt(propertie.getText() + keyEvent.getKeyChar(), tableRequest.getSelectedRow(),
 							0);
 				}

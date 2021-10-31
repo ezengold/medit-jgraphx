@@ -410,4 +410,45 @@ public class PrintVisitor implements Visitor {
 			invStm.getValue().accept(this);
 	}
 
+	/**
+	 * Verifier methods
+	 */
+	@Override
+	public void visit(AlwaysGlobally expression) {
+		System.out.print("A[]");
+		if(expression.getExp() !=null) expression.getExp().accept(this);
+	}
+
+	@Override
+	public void visit(AlwaysEventually expression) {
+		System.out.print("A<>");
+		if(expression.getExp() !=null) expression.getExp().accept(this);
+	}
+
+	@Override
+	public void visit(ExistsGlobally expression) {
+		System.out.print("E[]");
+		if(expression.getExp() !=null) expression.getExp().accept(this);
+	}
+
+	@Override
+	public void visit(ExistsEventually expression) {
+		System.out.print("E<>");
+		if(expression.getExp() !=null) expression.getExp().accept(this);
+	}
+
+	@Override
+	public void visit(AlwaysNext expression) {
+		System.out.print("Always Next");
+		if(expression.getExp() !=null) expression.getExp().accept(this);
+	}
+
+	@Override
+	public void visit(ExistsNext expression) {
+		System.out.print("Exists Next");
+		if(expression.getExp() !=null) expression.getExp().accept(this);
+	}
+
+
+
 }

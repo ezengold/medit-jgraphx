@@ -470,7 +470,6 @@ public class App extends JPanel {
 
 	public JPanel createNavComponent() {
 		JPanel nav = new JPanel();
-
 		nav.setLayout(new BorderLayout(5, 5));
 
 		JLabel title = new JLabel("Déclarations globales");
@@ -785,7 +784,6 @@ public class App extends JPanel {
 		File outputFile = createCurrentTempFile();
 		try {
 			FileWriter writer = new FileWriter(outputFile);
-
 			writer.write(fullProgram);
 			writer.close();
 		} catch (IOException e) {

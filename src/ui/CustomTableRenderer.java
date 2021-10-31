@@ -15,6 +15,12 @@ public class CustomTableRenderer extends DefaultTableCellRenderer {
         desiredColors.add(incomingColor);
     }
 
+    public void removeColors() {
+        for (int i =1; i<desiredColors.size();i++) {
+            desiredColors.remove(i);
+        }
+    }
+
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {

@@ -52,4 +52,10 @@ public interface Visitor {
 	public void visit(ClockType clock);
 	public void visit(ClockLiteral clock);
 	public void visit(Invariant invStm);
+	public void visit(AlwaysGlobally exp);
+	public void visit(AlwaysEventually exp);
+	public void visit(ExistsGlobally expression);
+	public void visit(ExistsEventually expression);
+	public void visit(AlwaysNext expression);
+	public void visit(ExistsNext expression);
 }
