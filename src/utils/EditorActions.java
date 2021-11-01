@@ -5,6 +5,7 @@ import java.awt.Container;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
@@ -97,7 +98,16 @@ public class EditorActions {
 											JOptionPane.ERROR_MESSAGE);
 								}
 							} else if (fc.getSelectedFile().getAbsolutePath().toLowerCase().endsWith(".ysc")) {
-								//
+								try {
+									((mxGraphModel) graphComponent.getGraph().getModel()).clear();
+
+									YakinduHanlder yscHandler = new YakinduHanlder(app);
+									
+									app.updateGraph(yscHandler.readYakinduFile(fc.getSelectedFile()));
+								} catch (IOException e1) {
+									e1.printStackTrace();
+								}
+
 							}
 						}
 					}

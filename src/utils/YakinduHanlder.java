@@ -15,7 +15,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.mxgraph.model.mxCell;
+import com.mxgraph.model.mxGeometry;
 import com.mxgraph.util.mxConstants;
+import com.mxgraph.util.mxPoint;
 import com.mxgraph.view.mxGraph;
 
 import app.App;
@@ -196,8 +199,56 @@ public class YakinduHanlder {
 				}
 			}
 
+			setStatePositions((Element) doc.getElementsByTagName("notation:Diagram").item(0), stateList);
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+
+		// create the graph
+		this.app.setGlobalDeclarations(globalDeclations);
+
+		graph.getModel().beginUpdate();
+		try {
+			graph.removeCells(graph.getChildCells(graph.getDefaultParent()));
+
+			// Hold all the vertices created
+			HashMap<String, Object> verticesArray = new HashMap<String, Object>();
+
+			// GET LOCATIONS
+			State.NB = 0;
+			for (State s : stateList) {
+				Object vertex = graph.insertVertex(graph.getDefaultParent(), s.getStateId(), s, s.getPosition().getX(),
+						s.getPosition().getY(), 20, 20);
+
+				if (s.isInitial()) {
+					((mxCell) vertex).setStyle("fillColor=#888888;strokeColor=#dddddd");
+				}
+
+				verticesArray.put(s.getStateId(), vertex);
+			}
+
+			// GET EDGES
+			for (Transition t : transitionList) {
+				mxCell source = (mxCell) verticesArray.get(t.getSourceStateId());
+				State sourceState = (State) source.getValue();
+				float sourceX = sourceState.getPosition().getX();
+				float sourceY = sourceState.getPosition().getY();
+
+				mxCell target = (mxCell) verticesArray.get(t.getTargetStateId());
+				State targetState = (State) target.getValue();
+				float targetX = targetState.getPosition().getX();
+				float targetY = targetState.getPosition().getY();
+
+				mxCell newEdge = (mxCell) graph.insertEdge(graph.getDefaultParent(), t.getGuard(), t, source, target);
+
+				mxGeometry edgeGeometry = new mxGeometry();
+				edgeGeometry.setTerminalPoint(new mxPoint(sourceX, sourceY), true);
+				edgeGeometry.setTerminalPoint(new mxPoint(targetX, targetY), false);
+				edgeGeometry.setRelative(true);
+				newEdge.setGeometry(edgeGeometry);
+			}
+		} finally {
+			graph.getModel().endUpdate();
 		}
 
 		return graph;
@@ -251,5 +302,72 @@ public class YakinduHanlder {
 			output = output.replaceAll(excepts.get(token), token);
 		}
 		return output;
+	}
+
+	private void setStatePositions(Element diagramEle, ArrayList<State> stateList) {
+		NodeList automataPositionEleList = diagramEle.getElementsByTagName("children");
+
+		if (automataPositionEleList != null) {
+
+			for (int i = 0; i < automataPositionEleList.getLength(); i++) {
+
+				Element automataPositionEle = (Element) automataPositionEleList.item(i);
+
+				if (automataPositionEle.getAttribute("type").equals("Region")) {
+
+					NodeList automataCompartmentPositionEleList = automataPositionEle.getElementsByTagName("children");
+					for (int j = 0; j < automataCompartmentPositionEleList.getLength(); j++) {
+
+						Element automataCompartmentPositionEle = (Element) automataCompartmentPositionEleList.item(j);
+
+						if (automataCompartmentPositionEle.getAttribute("type").equals("RegionCompartment")) {
+
+							NodeList statePositionEleList = automataCompartmentPositionEle
+									.getElementsByTagName("children");
+							for (int k = 0; k < statePositionEleList.getLength(); k++) {
+
+								Element statePositionEle = (Element) statePositionEleList.item(k);
+
+								if (statePositionEle.getAttribute("type").equals("State")
+										|| statePositionEle.getAttribute("type").equals("Entry")) {
+
+									String stateID = statePositionEle.getAttribute("element");
+									State state = null;
+									for (int l = 0; l < stateList.size(); l++) {
+										if (((State) stateList.get(l)).getStateId().equals(stateID)) {
+											state = stateList.get(l);
+
+											break;
+										}
+									}
+									if (state != null) {
+
+										NodeList statePositionLayoutEleList = statePositionEle
+												.getElementsByTagName("layoutConstraint");
+
+										if (statePositionLayoutEleList != null) {
+											for (int m = 0; m < statePositionLayoutEleList.getLength(); m++) {
+												Element statePositionLayoutEle = (Element) statePositionLayoutEleList
+														.item(m);
+
+												if (statePositionLayoutEle.getParentNode().equals(statePositionEle)) {
+
+													float x = Float.parseFloat(
+															statePositionLayoutEle.getAttribute("x").trim());
+													float y = Float.parseFloat(
+															statePositionLayoutEle.getAttribute("y").trim());
+
+													state.setPosition(x, y);
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }
