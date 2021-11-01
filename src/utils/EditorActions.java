@@ -69,6 +69,11 @@ public class EditorActions {
 
 						JFileChooser fc = new JFileChooser(wd);
 						EditorFileFilter xmlFilter = new EditorFileFilter(".xml", "Fichier XML");
+						EditorFileFilter yscFilter = new EditorFileFilter(".ysc", "Fichier Yakindu");
+
+						fc.addChoosableFileFilter(xmlFilter);
+						fc.addChoosableFileFilter(yscFilter);
+
 						fc.setAcceptAllFileFilterUsed(false);
 						fc.setFileFilter(xmlFilter);
 						setFileChooserFont(fc.getComponents());
@@ -78,17 +83,21 @@ public class EditorActions {
 						if (response == JFileChooser.APPROVE_OPTION) {
 							lastDir = fc.getSelectedFile().getParent();
 
-							// Read in the file
-							try {
-								app.setCurrentFile(fc.getSelectedFile());
-								((mxGraphModel) graphComponent.getGraph().getModel()).clear();
+							if (fc.getSelectedFile().getAbsolutePath().toLowerCase().endsWith(".xml")) {
+								// Read in the file
+								try {
+									app.setCurrentFile(fc.getSelectedFile());
+									((mxGraphModel) graphComponent.getGraph().getModel()).clear();
 
-								XmlHandler xmlHandler = new XmlHandler(app);
-								app.updateGraph(xmlHandler.readXml(fc.getSelectedFile()));
-							} catch (Throwable exception) {
-								exception.printStackTrace();
-								JOptionPane.showMessageDialog(graphComponent, exception.toString(), "Erreur",
-										JOptionPane.ERROR_MESSAGE);
+									XmlHandler xmlHandler = new XmlHandler(app);
+									app.updateGraph(xmlHandler.readXml(fc.getSelectedFile()));
+								} catch (Throwable exception) {
+									exception.printStackTrace();
+									JOptionPane.showMessageDialog(graphComponent, exception.toString(), "Erreur",
+											JOptionPane.ERROR_MESSAGE);
+								}
+							} else if (fc.getSelectedFile().getAbsolutePath().toLowerCase().endsWith(".ysc")) {
+								//
 							}
 						}
 					}
