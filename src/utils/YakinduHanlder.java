@@ -118,7 +118,7 @@ public class YakinduHanlder {
 									String transitionId = transition.getAttribute("xmi:id").trim();
 
 									// create the transition
-									Transition tr = new Transition(id, transition.getAttribute("target"));
+									Transition tr = new Transition(transitionId, transition.getAttribute("target"));
 
 									// there is no guard and update on the entry state, we add it to the array
 									transitionList.add(tr);
