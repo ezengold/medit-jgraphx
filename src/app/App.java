@@ -107,11 +107,11 @@ public class App extends JPanel {
 	 * Current file where the changes are saved to
 	 */
 	protected File currentFile;
-	
+
 	public static File automateFile;
 
 	public static File currentTempFile;
-	
+
 	public static Program FinalProgram;
 
 	/**
@@ -412,8 +412,8 @@ public class App extends JPanel {
 
 						mainTab.setSelectedIndex(0);
 						int response = JOptionPane.showConfirmDialog(graphComponent,
-								"Vous devez d'abord sauvegarder l'automate courant afin de continuer ! Proccéder ?",
-								"Attention", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+								"Vous devez d'abord sauvegarder l'automate courant afin de continuer ! Proccéder ?", "Attention",
+								JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
 								new ImageIcon(App.class.getResource("/about.png")));
 
 						if (response == JOptionPane.OK_OPTION) {
@@ -450,8 +450,7 @@ public class App extends JPanel {
 							// Write in the file
 							try {
 								XmlHandler xmlHandler = new XmlHandler(getInstance());
-								mxUtils.writeFile(xmlHandler.getAsXml((mxGraph) getGraphComponent().getGraph()),
-										filename);
+								mxUtils.writeFile(xmlHandler.getAsXml((mxGraph) getGraphComponent().getGraph()), filename);
 								status("Fichier sauvegardé avec succès");
 
 								setModified(false);
@@ -562,8 +561,8 @@ public class App extends JPanel {
 					status("Repaint all" + buffer);
 				} else {
 					// When an area is selected for repaint
-					status("Repaint: x=" + (int) (dirty.getX()) + " y=" + (int) (dirty.getY()) + " w="
-							+ (int) (dirty.getWidth()) + " h=" + (int) (dirty.getHeight()) + buffer);
+					status("Repaint: x=" + (int) (dirty.getX()) + " y=" + (int) (dirty.getY()) + " w=" + (int) (dirty.getWidth())
+							+ " h=" + (int) (dirty.getHeight()) + buffer);
 				}
 			}
 		});
@@ -589,7 +588,7 @@ public class App extends JPanel {
 		graphOutline.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
 				if (e.isPopupTrigger()) {
-//					showOutlinePopupMenu(e);
+					// showOutlinePopupMenu(e);
 				}
 			}
 		});

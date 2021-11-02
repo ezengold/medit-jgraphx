@@ -2,7 +2,6 @@ package verifier.parser;
 
 import app.StatusVerifier;
 import verifier.ast.*;
-import verifier.lexer.Lexer;
 import verifier.lexer.Token;
 import verifier.lexer.TokenType;
 import verifier.lexer.VerifierLexer;

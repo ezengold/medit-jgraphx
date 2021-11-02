@@ -1,7 +1,5 @@
 package ui;
 
-import javax.swing.event.TableModelListener;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 
 public class ModelRequest extends DefaultTableModel {

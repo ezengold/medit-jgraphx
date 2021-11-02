@@ -2,7 +2,6 @@ package verifier.semantic;
 
 import app.App;
 import app.StatusVerifier;
-import app.Verifier;
 import verifier.ast.*;
 import verifier.parser.VerifierParser;
 

@@ -4,8 +4,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.ListIterator;
 
 public class CustomTableRenderer extends DefaultTableCellRenderer {
     JLabel label = new JLabel();

@@ -1,11 +1,10 @@
 package models;
 
-import java.io.Serializable;
 import java.util.UUID;
 
 import org.jgrapht.graph.DefaultEdge;
 
-public class Transition extends DefaultEdge implements Serializable {
+public class Transition extends DefaultEdge {
 	
 	private static final long serialVersionUID = 4467909557424652342L;
 

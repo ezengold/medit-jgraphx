@@ -56,26 +56,23 @@ public class XmlHandler {
 			if (cell.isVertex()) {
 				State state = (State) cell.getValue();
 
-				xmlStr += "\t\t<location id=\"" + cell.getId() + "\" stateId=\""
-						+ (state != null ? state.getStateId() : "") + "\" x=\"" + cell.getGeometry().getX() + "\" y=\""
-						+ cell.getGeometry().getY() + "\" isInitial=\""
+				xmlStr += "\t\t<location id=\"" + cell.getId() + "\" stateId=\"" + (state != null ? state.getStateId() : "")
+						+ "\" x=\"" + cell.getGeometry().getX() + "\" y=\"" + cell.getGeometry().getY() + "\" isInitial=\""
 						+ (state != null && state.isInitial() ? "1" : "0") + "\">\n";
 				xmlStr += "\t\t\t<name>" + (state != null ? escapeStr(state.getName()) : "") + "</name>\n";
-				xmlStr += "\t\t\t<invariant>" + (state != null ? escapeStr(state.getInvariant()) : "")
-						+ "</invariant>\n";
+				xmlStr += "\t\t\t<invariant>" + (state != null ? escapeStr(state.getInvariant()) : "") + "</invariant>\n";
 				xmlStr += "\t\t</location>\n";
 			} else if (cell.isEdge()) {
 				Transition transition = (Transition) cell.getValue();
 
 				xmlStr += "\t\t<transition id=\"" + cell.getId() + "\" transitionId=\""
-						+ (transition != null ? transition.getTransitionId() : "") + "\" source=\""
-						+ cell.getSource().getId() + "\" sourceX=\"" + cell.getGeometry().getSourcePoint().getX()
-						+ "\" sourceY=\"" + cell.getGeometry().getSourcePoint().getY() + "\" target=\""
-						+ cell.getTarget().getId() + "\" targetX=\"" + cell.getGeometry().getTargetPoint().getX()
-						+ "\" targetY=\"" + cell.getGeometry().getTargetPoint().getY() + "\">\n";
+						+ (transition != null ? transition.getTransitionId() : "") + "\" source=\"" + cell.getSource().getId()
+						+ "\" sourceX=\"" + cell.getGeometry().getSourcePoint().getX() + "\" sourceY=\""
+						+ cell.getGeometry().getSourcePoint().getY() + "\" target=\"" + cell.getTarget().getId() + "\" targetX=\""
+						+ cell.getGeometry().getTargetPoint().getX() + "\" targetY=\"" + cell.getGeometry().getTargetPoint().getY()
+						+ "\">\n";
 				xmlStr += "\t\t\t<guard>" + (transition != null ? escapeStr(transition.getGuard()) : "") + "</guard>\n";
-				xmlStr += "\t\t\t<updates>" + (transition != null ? escapeStr(transition.getUpdate()) : "")
-						+ "</updates>\n";
+				xmlStr += "\t\t\t<updates>" + (transition != null ? escapeStr(transition.getUpdate()) : "") + "</updates>\n";
 				xmlStr += "\t\t</transition>\n";
 			}
 		}
@@ -100,8 +97,7 @@ public class XmlHandler {
 		edgeStyle.put(mxConstants.STYLE_ROUNDED, "1");
 		graph.getStylesheet().setDefaultEdgeStyle(edgeStyle);
 
-		Hashtable<String, Object> vertexStyle = (Hashtable<String, Object>) graph.getStylesheet()
-				.getDefaultVertexStyle();
+		Hashtable<String, Object> vertexStyle = (Hashtable<String, Object>) graph.getStylesheet().getDefaultVertexStyle();
 		vertexStyle.put(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_ELLIPSE);
 		vertexStyle.put(mxConstants.STYLE_FILLCOLOR, "#78c4fc");
 		graph.getStylesheet().setDefaultVertexStyle(vertexStyle);
@@ -134,16 +130,16 @@ public class XmlHandler {
 						String id = location.getAttribute("id");
 						String stateId = location.getAttribute("stateId");
 						boolean isInitial = location.getAttribute("isInitial").equals("1") ? true : false;
-						double x = Double.parseDouble(location.getAttribute("x"));
-						double y = Double.parseDouble(location.getAttribute("y"));
+						float x = Float.parseFloat(location.getAttribute("x"));
+						float y = Float.parseFloat(location.getAttribute("y"));
 						String name = restoreStr(location.getElementsByTagName("name").item(0).getTextContent());
-						String invariant = restoreStr(
-								location.getElementsByTagName("invariant").item(0).getTextContent());
+						String invariant = restoreStr(location.getElementsByTagName("invariant").item(0).getTextContent());
 
 						State s = new State(name);
 						s.setStateId(stateId);
 						s.setInitial(isInitial);
 						s.setInvariant(invariant);
+						s.setPosition(x, y);
 
 						Object vertex = graph.insertVertex(graph.getDefaultParent(), id, s, x, y, 20, 20);
 
@@ -193,8 +189,7 @@ public class XmlHandler {
 						transition.setGuard(guard);
 						transition.setUpdate(updates);
 
-						mxCell newEdge = (mxCell) graph.insertEdge(graph.getDefaultParent(), id, transition, source,
-								target);
+						mxCell newEdge = (mxCell) graph.insertEdge(graph.getDefaultParent(), id, transition, source, target);
 
 						mxGeometry edgeGeometry = new mxGeometry();
 						edgeGeometry.setTerminalPoint(new mxPoint(sourceX, sourceY), true);

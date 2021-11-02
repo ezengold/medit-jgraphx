@@ -24,7 +24,6 @@ import com.mxgraph.view.mxGraph;
 import app.App;
 import models.State;
 import models.Transition;
-import sun.security.provider.certpath.Vertex;
 
 public class YakinduHanlder {
 	private App app;
@@ -42,8 +41,8 @@ public class YakinduHanlder {
 	public YakinduHanlder(App parent) {
 		this.app = parent;
 
-//		excepts.put("[", "");
-//		excepts.put("]", "");
+		// excepts.put("[", "");
+		// excepts.put("]", "");
 		excepts.put("_", ".");
 		excepts.put("always", "");
 
@@ -66,8 +65,7 @@ public class YakinduHanlder {
 		edgeStyle.put(mxConstants.STYLE_ROUNDED, "1");
 		graph.getStylesheet().setDefaultEdgeStyle(edgeStyle);
 
-		Hashtable<String, Object> vertexStyle = (Hashtable<String, Object>) graph.getStylesheet()
-				.getDefaultVertexStyle();
+		Hashtable<String, Object> vertexStyle = (Hashtable<String, Object>) graph.getStylesheet().getDefaultVertexStyle();
 		vertexStyle.put(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_ELLIPSE);
 		vertexStyle.put(mxConstants.STYLE_FILLCOLOR, "#78c4fc");
 		graph.getStylesheet().setDefaultVertexStyle(vertexStyle);
@@ -202,14 +200,12 @@ public class YakinduHanlder {
 			e.printStackTrace();
 		}
 
-		for (State debugState:stateList) {
+		for (State debugState : stateList) {
 			System.out.println(debugState.debug());
 		}
-		for (Transition debugTransition:transitionList) {
+		for (Transition debugTransition : transitionList) {
 			System.out.println(debugTransition.debug());
 		}
-
-
 
 		// create the graph
 		this.app.setGlobalDeclarations(globalDeclations);
@@ -263,27 +259,19 @@ public class YakinduHanlder {
 
 	public void setTransitionUpdate(String transitionId, String update) {
 		if (this.transitionUpdates.containsKey(transitionId)) {
-
 			String oldValue = this.transitionUpdates.get(transitionId);
 			this.transitionUpdates.replace(transitionId, oldValue + ";" + update);
-
 		} else {
-
 			this.transitionUpdates.put(transitionId, update);
-
 		}
 	}
 
 	public void setTransitionGuard(String transitionId, String guard) {
 		if (this.transitionGuards.containsKey(transitionId)) {
-
 			String oldValue = this.transitionGuards.get(transitionId);
 			this.transitionGuards.replace(transitionId, oldValue + ";" + guard);
-
 		} else {
-
 			this.transitionGuards.put(transitionId, guard);
-
 		}
 	}
 
@@ -329,8 +317,7 @@ public class YakinduHanlder {
 
 						if (automataCompartmentPositionEle.getAttribute("type").equals("RegionCompartment")) {
 
-							NodeList statePositionEleList = automataCompartmentPositionEle
-									.getElementsByTagName("children");
+							NodeList statePositionEleList = automataCompartmentPositionEle.getElementsByTagName("children");
 							for (int k = 0; k < statePositionEleList.getLength(); k++) {
 
 								Element statePositionEle = (Element) statePositionEleList.item(k);
@@ -349,20 +336,16 @@ public class YakinduHanlder {
 									}
 									if (state != null) {
 
-										NodeList statePositionLayoutEleList = statePositionEle
-												.getElementsByTagName("layoutConstraint");
+										NodeList statePositionLayoutEleList = statePositionEle.getElementsByTagName("layoutConstraint");
 
 										if (statePositionLayoutEleList != null) {
 											for (int m = 0; m < statePositionLayoutEleList.getLength(); m++) {
-												Element statePositionLayoutEle = (Element) statePositionLayoutEleList
-														.item(m);
+												Element statePositionLayoutEle = (Element) statePositionLayoutEleList.item(m);
 
 												if (statePositionLayoutEle.getParentNode().equals(statePositionEle)) {
 
-													float x = Float.parseFloat(
-															statePositionLayoutEle.getAttribute("x").trim());
-													float y = Float.parseFloat(
-															statePositionLayoutEle.getAttribute("y").trim());
+													float x = Float.parseFloat(statePositionLayoutEle.getAttribute("x").trim());
+													float y = Float.parseFloat(statePositionLayoutEle.getAttribute("y").trim());
 
 													state.setPosition(x, y);
 												}
