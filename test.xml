@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DTD GOES HERE -->
+<content>
+	<declarations>// Use the event driven execution model.
+// Switch to cycle based behavior
+// by specifying '@CycleBased(200)'.
+@EventDriven
+
+// Use @SuperSteps(yes) to enable
+// super step semantics.
+@SuperSteps(no)
+
+interface:
+	// Define events and variables here. 
+	// Use CTRL + Space for content assist.
+	in event myEvent</declarations>
+	<model>
+		<location id="_Z-KuVC0tEeyOqu0nH-Cweg" stateId="_Z-KuVC0tEeyOqu0nH-Cweg" x="49.0" y="22.0" isInitial="1">
+			<name>s2</name>
+			<invariant></invariant>
+		</location>
+		<location id="_Z-L8cC0tEeyOqu0nH-Cweg" stateId="_Z-L8cC0tEeyOqu0nH-Cweg" x="40.0" y="80.0" isInitial="0">
+			<name>StateA</name>
+			<invariant></invariant>
+		</location>
+		<location id="_Z-OYsy0tEeyOqu0nH-Cweg" stateId="_Z-OYsy0tEeyOqu0nH-Cweg" x="198.0" y="82.0" isInitial="0">
+			<name>StateB</name>
+			<invariant></invariant>
+		</location>
+		<transition id="" transitionId="013ef80b-4b06-405c-9549-9d0ffcfc5a08" source="_Z-KuVC0tEeyOqu0nH-Cweg" sourceX="49.0" sourceY="22.0" target="_Z-L8cC0tEeyOqu0nH-Cweg" targetX="40.0" targetY="80.0">
+			<guard></guard>
+			<updates></updates>
+		</transition>
+		<transition id="2" transitionId="ac6edcbe-33f9-4811-b61e-22799082b7a2" source="_Z-L8cC0tEeyOqu0nH-Cweg" sourceX="40.0" sourceY="80.0" target="_Z-OYsy0tEeyOqu0nH-Cweg" targetX="198.0" targetY="82.0">
+			<guard></guard>
+			<updates></updates>
+		</transition>
+		<transition id="3" transitionId="aa1cc47d-f439-4d67-a102-94cd1f5f0a89" source="_Z-OYsy0tEeyOqu0nH-Cweg" sourceX="198.0" sourceY="82.0" target="_Z-L8cC0tEeyOqu0nH-Cweg" targetX="40.0" targetY="80.0">
+			<guard></guard>
+			<updates></updates>
+		</transition>
+	</model>
+</content>
