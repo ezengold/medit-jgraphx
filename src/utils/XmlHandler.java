@@ -284,6 +284,7 @@ public class XmlHandler {
 
 	public static String escapeStr(final String input) {
 		String output = input;
+		System.out.println("INPUT: "+input);
 		for (String token : excepts.keySet()) {
 			output = output.replaceAll(token, excepts.get(token));
 		}
