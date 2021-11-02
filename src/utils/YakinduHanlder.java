@@ -40,7 +40,6 @@ public class YakinduHanlder {
         excepts.put("_", ".");
         excepts.put("always", "");
 
-
         globalDeclarationsExcepts.put("&#xA;", "\n");
         globalDeclarationsExcepts.put("&#xD;", "\n");
         globalDeclarationsExcepts.put("&#x9;", "\n");
@@ -84,11 +83,11 @@ public class YakinduHanlder {
         edgeStyle.put(mxConstants.STYLE_ROUNDED, "1");
         graph.getStylesheet().setDefaultEdgeStyle(edgeStyle);
 
-        Hashtable<String, Object> vertexStyle = (Hashtable<String, Object>) graph.getStylesheet().getDefaultVertexStyle();
+        Hashtable<String, Object> vertexStyle = (Hashtable<String, Object>) graph.getStylesheet()
+                .getDefaultVertexStyle();
         vertexStyle.put(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_ELLIPSE);
         vertexStyle.put(mxConstants.STYLE_FILLCOLOR, "#78c4fc");
         graph.getStylesheet().setDefaultVertexStyle(vertexStyle);
-
 
         // get all states and edges
         try {
@@ -203,12 +202,12 @@ public class YakinduHanlder {
                                         String[] elmts = transitionSpecification.split("/");
 
                                         if (elmts.length > 0) {
-//											tr.setGuard(elmts[0]);
+                                            // tr.setGuard(elmts[0]);
                                             setTransitionGuard(transitionId, escapeStr(elmts[0]));
                                         }
 
                                         if (elmts.length > 1) {
-//											tr.setUpdate(escapeStr(elmts[1]));
+                                            // tr.setUpdate(escapeStr(elmts[1]));
                                             setTransitionUpdate(transitionId, escapeStr(elmts[1]));
                                         }
 
@@ -226,10 +225,12 @@ public class YakinduHanlder {
             e.printStackTrace();
         }
 
-        //assign guards and updates to transitions
+        // assign guards and updates to transitions
         for (Transition transition : transitionList) {
-            transition.setGuard(transitionGuards.get(transition.getTransitionId()) == null ? "" : transitionGuards.get(transition.getTransitionId()));
-            transition.setUpdate(transitionUpdates.get(transition.getTransitionId()) == null ? "" : transitionUpdates.get(transition.getTransitionId()));
+            transition.setGuard(transitionGuards.get(transition.getTransitionId()) == null ? ""
+                    : transitionGuards.get(transition.getTransitionId()));
+            transition.setUpdate(transitionUpdates.get(transition.getTransitionId()) == null ? ""
+                    : transitionUpdates.get(transition.getTransitionId()));
         }
 
         // create the graph
@@ -246,7 +247,7 @@ public class YakinduHanlder {
             State.NB = 0;
             for (State s : stateList) {
                 Object vertex = graph.insertVertex(graph.getDefaultParent(), s.getStateId(), s, s.getPosition().getX(),
-                        s.getPosition().getY(), 20, 20);
+                        s.getPosition().getY(), 40, 40);
 
                 if (s.isInitial()) {
                     ((mxCell) vertex).setStyle("fillColor=#888888;strokeColor=#dddddd");
@@ -255,18 +256,17 @@ public class YakinduHanlder {
                 verticesArray.put(s.getStateId(), vertex);
             }
 
-
             // GET EDGES
             for (Transition t : transitionList) {
                 mxCell source = (mxCell) verticesArray.get(t.getSourceStateId());
                 State sourceState = (State) source.getValue();
-                float sourceX = sourceState.getPosition().getX();
-                float sourceY = sourceState.getPosition().getY();
+                double sourceX = sourceState.getPosition().getX();
+                double sourceY = sourceState.getPosition().getY();
 
                 mxCell target = (mxCell) verticesArray.get(t.getTargetStateId());
                 State targetState = (State) target.getValue();
-                float targetX = targetState.getPosition().getX();
-                float targetY = targetState.getPosition().getY();
+                double targetX = targetState.getPosition().getX();
+                double targetY = targetState.getPosition().getY();
 
                 mxCell newEdge = (mxCell) graph.insertEdge(graph.getDefaultParent(), t.getGuard(), t, source, target);
 
@@ -327,7 +327,6 @@ public class YakinduHanlder {
 
                         if (automataCompartmentPositionEle.getAttribute("type").equals("RegionCompartment")) {
 
-
                             NodeList statePositionEleList = automataCompartmentPositionEle
                                     .getElementsByTagName("children");
                             for (int k = 0; k < statePositionEleList.getLength(); k++) {
@@ -348,7 +347,6 @@ public class YakinduHanlder {
                                     }
                                     if (state != null) {
 
-
                                         NodeList statePositionLayoutEleList = statePositionEle
                                                 .getElementsByTagName("layoutConstraint");
 
@@ -358,7 +356,6 @@ public class YakinduHanlder {
                                                         .item(m);
 
                                                 if (statePositionLayoutEle.getParentNode().equals(statePositionEle)) {
-
 
                                                     float x = Float.parseFloat(
                                                             statePositionLayoutEle.getAttribute("x").trim());

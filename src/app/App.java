@@ -40,6 +40,7 @@ import com.mxgraph.util.mxEventSource.mxIEventListener;
 import com.mxgraph.util.mxUndoableEdit.mxUndoableChange;
 import com.mxgraph.view.mxGraph;
 
+import models.Automata;
 import models.State;
 import models.Transition;
 import ui.ConfigStateDialog;
@@ -60,6 +61,11 @@ public class App extends JPanel {
 	}
 
 	private static final long serialVersionUID = -8150527452734294724L;
+
+	/**
+	 * Hold the current automata model
+	 */
+	protected Automata automata;
 
 	/*
 	 * Panel showing the working tree
@@ -207,7 +213,7 @@ public class App extends JPanel {
 
 			if (remains.length == 0) {
 				State newState = new State();
-				graph.insertVertex(graph.getDefaultParent(), newState.getName(), newState, 20, 20, 20, 20);
+				graph.insertVertex(graph.getDefaultParent(), newState.getName(), newState, 20, 20, 40, 40);
 			}
 		}
 	};
@@ -236,6 +242,8 @@ public class App extends JPanel {
 		mxCodecRegistry.register(new mxObjectCodec(new State()));
 		mxCodecRegistry.register(new mxObjectCodec(new Transition()));
 
+		automata = new Automata();
+
 		this.appTitle = "Medit";
 
 		State s0 = new State();
@@ -244,7 +252,7 @@ public class App extends JPanel {
 
 		this.graphComponent = new MeGraphComponent(graph);
 
-		graph.insertVertex(graph.getDefaultParent(), s0.getName(), s0, 20, 20, 20, 20);
+		graph.insertVertex(graph.getDefaultParent(), s0.getName(), s0, 20, 20, 40, 40);
 
 		undoManager = createUndoManager();
 
@@ -412,8 +420,8 @@ public class App extends JPanel {
 
 						mainTab.setSelectedIndex(0);
 						int response = JOptionPane.showConfirmDialog(graphComponent,
-								"Vous devez d'abord sauvegarder l'automate courant afin de continuer ! Proccéder ?", "Attention",
-								JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+								"Vous devez d'abord sauvegarder l'automate courant afin de continuer ! Proccéder ?",
+								"Attention", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
 								new ImageIcon(App.class.getResource("/about.png")));
 
 						if (response == JOptionPane.OK_OPTION) {
@@ -450,7 +458,8 @@ public class App extends JPanel {
 							// Write in the file
 							try {
 								XmlHandler xmlHandler = new XmlHandler(getInstance());
-								mxUtils.writeFile(xmlHandler.getAsXml((mxGraph) getGraphComponent().getGraph()), filename);
+								mxUtils.writeFile(xmlHandler.getAsXml((mxGraph) getGraphComponent().getGraph()),
+										filename);
 								status("Fichier sauvegardé avec succès");
 
 								setModified(false);
@@ -561,8 +570,8 @@ public class App extends JPanel {
 					status("Repaint all" + buffer);
 				} else {
 					// When an area is selected for repaint
-					status("Repaint: x=" + (int) (dirty.getX()) + " y=" + (int) (dirty.getY()) + " w=" + (int) (dirty.getWidth())
-							+ " h=" + (int) (dirty.getHeight()) + buffer);
+					status("Repaint: x=" + (int) (dirty.getX()) + " y=" + (int) (dirty.getY()) + " w="
+							+ (int) (dirty.getWidth()) + " h=" + (int) (dirty.getHeight()) + buffer);
 				}
 			}
 		});
@@ -678,6 +687,14 @@ public class App extends JPanel {
 		}
 	}
 
+	public Automata getAutomata() {
+		return automata;
+	}
+
+	public void setAutomata(Automata automata) {
+		this.automata = automata;
+	}
+
 	protected mxUndoManager createUndoManager() {
 		return new mxUndoManager();
 	}
@@ -746,7 +763,9 @@ public class App extends JPanel {
 			File file = getCompilablesFile(elements);
 
 			// PROCEED TO PARSER WITH THE GENERATED FILE
-			FinalProgram = Compiler.testSementic(file, consolePanel);
+			FinalProgram = Compiler.testSementic(file, consolePanel, automata);
+
+			automata.debug();
 
 			removeCurrentTempFile();
 

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import app.Console;
+import models.Automata;
 import verifier.ast.And;
 import verifier.ast.ArrayLookup;
 import verifier.ast.Assign;
@@ -54,6 +55,8 @@ public class MeParser {
 
 	private Console log;
 
+	private Automata automata;
+
 	// hash table for operator precedence levels
 	private final static Map<TokenType, Integer> binopLevels;
 
@@ -82,7 +85,7 @@ public class MeParser {
 		binopLevels.put(TokenType.LBRACKET, 50);
 	}
 
-	public MeParser(FileReader file, Console log) throws IOException {
+	public MeParser(FileReader file, Automata automata, Console log) throws IOException {
 		this.lexer = new MeLexer(file);
 		this.token = lexer.getToken();
 		this.decelarations = new ArrayList<VarDecl>();
@@ -90,6 +93,7 @@ public class MeParser {
 		this.assigns = new ArrayList<Assign>();
 		this.conditions = new ArrayList<Exp>();
 		this.log = log;
+		this.automata = automata;
 	}
 
 	// verifies current token type and grabs next token or reports error
@@ -216,7 +220,35 @@ public class MeParser {
 
 			Exp value = parseExp();
 
+			if (type instanceof IntegerType) {
+				if (value instanceof IntegerLiteral) {
+					this.automata.addIntVariable(id.getName(), ((IntegerLiteral) value).getValue());
+				} else {
+					this.automata.addIntVariable(id.getName());
+				}
+			} else if (type instanceof BooleanType) {
+				if (value instanceof BooleanLiteral) {
+					this.automata.addBooleanVariable(id.getName(), ((BooleanLiteral) value).getValue());
+				} else {
+					this.automata.addBooleanVariable(id.getName());
+				}
+			} else if (type instanceof ClockType) {
+				if (value instanceof ClockLiteral) {
+					this.automata.addClockVariable(id.getName(), ((ClockLiteral) value).getValue());
+				} else {
+					this.automata.addClockVariable(id.getName());
+				}
+			}
+
 			return new VarDecl(type, id, value);
+		}
+
+		if (type instanceof IntegerType) {
+			this.automata.addIntVariable(id.getName());
+		} else if (type instanceof BooleanType) {
+			this.automata.addBooleanVariable(id.getName());
+		} else if (type instanceof ClockType) {
+			this.automata.addClockVariable(id.getName());
 		}
 
 		return new VarDecl(type, id);

@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import app.Console;
+import models.Automata;
 import verifier.ast.Program;
 import verifier.lexer.MeLexer;
 import verifier.lexer.Token;
@@ -69,7 +70,7 @@ public class Compiler {
 		log.success("Execution time : " + (endTime - startTime) + "ms\n");
 	}
 
-	public static void testParser(File inputFile, Console log) throws IOException {
+	public static void testParser(File inputFile, Automata automata, Console log) throws IOException {
 		FileReader file = null;
 
 		// attempt to open file
@@ -80,7 +81,7 @@ public class Compiler {
 		}
 
 		// create parser
-		MeParser parser = new MeParser(file, log);
+		MeParser parser = new MeParser(file, automata, log);
 		log.success("Parsing...");
 
 		// initiate parse and clock time
@@ -99,7 +100,7 @@ public class Compiler {
 		System.out.println();
 	}
 
-	public static Program testSementic(File inputFile, Console log) throws IOException {
+	public static Program testSementic(File inputFile, Console log, Automata automata) throws IOException {
 		FileReader file = null;
 
 		// attempt to open file
@@ -110,7 +111,7 @@ public class Compiler {
 		}
 
 		// create semantic analyzer
-		MeSemanticAnalyzer semantic = new MeSemanticAnalyzer(file, log);
+		MeSemanticAnalyzer semantic = new MeSemanticAnalyzer(file, automata, log);
 		log.success("Analyzing...");
 
 		// initiate parse and clock time

@@ -39,51 +39,82 @@ public class XmlHandler {
 		excepts.put("&", "&amp;");
 	}
 
+	/**
+	 * Fill the automata model with the states and edges while looping on the graph
+	 * 
+	 * @param graph
+	 * @return String
+	 */
 	public String getAsXml(final mxGraph graph) {
+		// restore the automata arrays of states and transitions
+		this.app.getAutomata().setStatesList(new ArrayList<State>());
+		this.app.getAutomata().setTransitionsList(new ArrayList<Transition>());
+		this.app.getAutomata().setDeclarationsList(new ArrayList<String>());
+
 		String globalDeclarations = escapeStr((this.app.getGlobalDeclarations()));
 		String xmlStr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" + "<!-- DTD GOES HERE -->\n" + "<content>\n";
 
-		// START Add global declarations
+		// add global declarations
 		xmlStr += "\t<declarations>" + globalDeclarations + "</declarations>\n";
-		// END Add global declarations
 
-		// START Add model
+		// save declarations in the automata model
+		for (String str : globalDeclarations.split(";")) {
+			this.app.getAutomata().addDeclaration(str);
+		}
+
+		// add model
 		xmlStr += "\t<model>\n";
 		Object[] cells = graph.getChildCells(graph.getDefaultParent());
 
 		for (Object el : cells) {
 			mxCell cell = (mxCell) el;
 			if (cell.isVertex()) {
-				State state = (State) cell.getValue();
+				if (cell.getValue() instanceof State) {
+					State state = (State) cell.getValue();
+					state.setPosition(cell.getGeometry().getX(), cell.getGeometry().getY());
 
-				xmlStr += "\t\t<location id=\"" + cell.getId() + "\" stateId=\"" + (state != null ? state.getStateId() : "")
-						+ "\" x=\"" + cell.getGeometry().getX() + "\" y=\"" + cell.getGeometry().getY() + "\" isInitial=\""
-						+ (state != null && state.isInitial() ? "1" : "0") + "\">\n";
-				xmlStr += "\t\t\t<name>" + (state != null ? escapeStr(state.getName()) : "") + "</name>\n";
-				xmlStr += "\t\t\t<invariant>" + (state != null ? escapeStr(state.getInvariant()) : "") + "</invariant>\n";
-				xmlStr += "\t\t</location>\n";
+					xmlStr += "\t\t<location id=\"" + cell.getId() + "\" stateId=\""
+							+ (state != null ? state.getStateId() : "") + "\" x=\"" + cell.getGeometry().getX()
+							+ "\" y=\"" + cell.getGeometry().getY() + "\" isInitial=\""
+							+ (state != null && state.isInitial() ? "1" : "0") + "\">\n";
+					xmlStr += "\t\t\t<name>" + (state != null ? escapeStr(state.getName()) : "") + "</name>\n";
+					xmlStr += "\t\t\t<invariant>" + (state != null ? escapeStr(state.getInvariant()) : "")
+							+ "</invariant>\n";
+					xmlStr += "\t\t</location>\n";
+
+					// save the state in the automata model
+					this.app.getAutomata().addState(state);
+				}
 			} else if (cell.isEdge()) {
 				Transition transition = (Transition) cell.getValue();
 
 				xmlStr += "\t\t<transition id=\"" + cell.getId() + "\" transitionId=\""
-						+ (transition != null ? transition.getTransitionId() : "") + "\" source=\"" + cell.getSource().getId()
-						+ "\" sourceX=\"" + cell.getGeometry().getSourcePoint().getX() + "\" sourceY=\""
-						+ cell.getGeometry().getSourcePoint().getY() + "\" target=\"" + cell.getTarget().getId() + "\" targetX=\""
-						+ cell.getGeometry().getTargetPoint().getX() + "\" targetY=\"" + cell.getGeometry().getTargetPoint().getY()
-						+ "\">\n";
+						+ (transition != null ? transition.getTransitionId() : "") + "\" source=\""
+						+ cell.getSource().getId() + "\" sourceX=\"" + cell.getGeometry().getSourcePoint().getX()
+						+ "\" sourceY=\"" + cell.getGeometry().getSourcePoint().getY() + "\" target=\""
+						+ cell.getTarget().getId() + "\" targetX=\"" + cell.getGeometry().getTargetPoint().getX()
+						+ "\" targetY=\"" + cell.getGeometry().getTargetPoint().getY() + "\">\n";
 				xmlStr += "\t\t\t<guard>" + (transition != null ? escapeStr(transition.getGuard()) : "") + "</guard>\n";
-				xmlStr += "\t\t\t<updates>" + (transition != null ? escapeStr(transition.getUpdate()) : "") + "</updates>\n";
+				xmlStr += "\t\t\t<updates>" + (transition != null ? escapeStr(transition.getUpdate()) : "")
+						+ "</updates>\n";
 				xmlStr += "\t\t</transition>\n";
+
+				// save the transition in the automata model
+				this.app.getAutomata().addTransition(transition);
 			}
 		}
 
 		xmlStr += "\t</model>\n";
-		// END Add model
 
 		return xmlStr + "</content>\n";
 	}
 
 	public mxGraph readXml(File file) throws IOException {
+		// restore the automata arrays of states and transitions
+		this.app.getAutomata().setStatesList(new ArrayList<State>());
+		this.app.getAutomata().setTransitionsList(new ArrayList<Transition>());
+		this.app.getAutomata().setDeclarationsList(new ArrayList<String>());
+
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		mxGraph graph = new mxGraph();
 
@@ -97,7 +128,8 @@ public class XmlHandler {
 		edgeStyle.put(mxConstants.STYLE_ROUNDED, "1");
 		graph.getStylesheet().setDefaultEdgeStyle(edgeStyle);
 
-		Hashtable<String, Object> vertexStyle = (Hashtable<String, Object>) graph.getStylesheet().getDefaultVertexStyle();
+		Hashtable<String, Object> vertexStyle = (Hashtable<String, Object>) graph.getStylesheet()
+				.getDefaultVertexStyle();
 		vertexStyle.put(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_ELLIPSE);
 		vertexStyle.put(mxConstants.STYLE_FILLCOLOR, "#78c4fc");
 		graph.getStylesheet().setDefaultVertexStyle(vertexStyle);
@@ -109,8 +141,13 @@ public class XmlHandler {
 			doc.getDocumentElement().normalize();
 
 			// GET DECLARATIONS
-			String declarations = doc.getElementsByTagName("declarations").item(0).getTextContent();
+			String declarations = escapeStr(doc.getElementsByTagName("declarations").item(0).getTextContent());
 			this.app.setGlobalDeclarations(declarations);
+
+			// save declarations in the automata model
+			for (String str : declarations.split(";")) {
+				this.app.getAutomata().addDeclaration(str);
+			}
 
 			graph.getModel().beginUpdate();
 			try {
@@ -130,10 +167,11 @@ public class XmlHandler {
 						String id = location.getAttribute("id");
 						String stateId = location.getAttribute("stateId");
 						boolean isInitial = location.getAttribute("isInitial").equals("1") ? true : false;
-						float x = Float.parseFloat(location.getAttribute("x"));
-						float y = Float.parseFloat(location.getAttribute("y"));
+						double x = Double.parseDouble(location.getAttribute("x"));
+						double y = Double.parseDouble(location.getAttribute("y"));
 						String name = restoreStr(location.getElementsByTagName("name").item(0).getTextContent());
-						String invariant = restoreStr(location.getElementsByTagName("invariant").item(0).getTextContent());
+						String invariant = restoreStr(
+								location.getElementsByTagName("invariant").item(0).getTextContent());
 
 						State s = new State(name);
 						s.setStateId(stateId);
@@ -141,13 +179,16 @@ public class XmlHandler {
 						s.setInvariant(invariant);
 						s.setPosition(x, y);
 
-						Object vertex = graph.insertVertex(graph.getDefaultParent(), id, s, x, y, 20, 20);
+						Object vertex = graph.insertVertex(graph.getDefaultParent(), id, s, x, y, 40, 40);
 
 						if (isInitial) {
 							((mxCell) vertex).setStyle("fillColor=#888888;strokeColor=#dddddd");
 						}
 
 						verticesArray.put(id, vertex);
+
+						// save the state in the automata model
+						this.app.getAutomata().addState(s);
 					}
 				}
 
@@ -189,13 +230,17 @@ public class XmlHandler {
 						transition.setGuard(guard);
 						transition.setUpdate(updates);
 
-						mxCell newEdge = (mxCell) graph.insertEdge(graph.getDefaultParent(), id, transition, source, target);
+						mxCell newEdge = (mxCell) graph.insertEdge(graph.getDefaultParent(), id, transition, source,
+								target);
 
 						mxGeometry edgeGeometry = new mxGeometry();
 						edgeGeometry.setTerminalPoint(new mxPoint(sourceX, sourceY), true);
 						edgeGeometry.setTerminalPoint(new mxPoint(targetX, targetY), false);
 						edgeGeometry.setRelative(true);
 						newEdge.setGeometry(edgeGeometry);
+
+						// save the transition in the automata model
+						this.app.getAutomata().addTransition(transition);
 					}
 				}
 			} finally {
@@ -284,7 +329,7 @@ public class XmlHandler {
 
 	public static String escapeStr(final String input) {
 		String output = input;
-		System.out.println("INPUT: "+input);
+		System.out.println("INPUT: " + input);
 		for (String token : excepts.keySet()) {
 			output = output.replaceAll(token, excepts.get(token));
 		}

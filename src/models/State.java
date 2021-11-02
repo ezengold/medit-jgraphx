@@ -69,7 +69,7 @@ public class State implements Serializable {
 		return position;
 	}
 
-	public void setPosition(float x, float y) {
+	public void setPosition(double x, double y) {
 		if (this.position != null) {
 			this.position.setX(x);
 			this.position.setY(y);

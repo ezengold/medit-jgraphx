@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import app.Console;
+import models.Automata;
 import verifier.ast.Assign;
 import verifier.ast.BooleanArrayType;
 import verifier.ast.BooleanLiteral;
@@ -46,8 +47,8 @@ public class MeSemanticAnalyzer {
 	
 	private Program finalProgram;
 
-	public MeSemanticAnalyzer(FileReader file, Console log) throws IOException{
-		this.parser = new MeParser(file, log);
+	public MeSemanticAnalyzer(FileReader file, Automata automata, Console log) throws IOException{
+		this.parser = new MeParser(file, automata, log);
 		this.log = log;
 	}
 

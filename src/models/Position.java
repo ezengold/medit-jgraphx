@@ -3,32 +3,32 @@ package models;
 import java.io.Serializable;
 
 public class Position implements Serializable {
-	private float x;
-	private float y;
+	private double x;
+	private double y;
 
 	public Position() {
 		this.setX(0);
 		this.setY(0);
 	}
 
-	public Position(float x, float y) {
+	public Position(double x, double y) {
 		this.setX(0);
 		this.setY(0);
 	}
 
-	public float getX() {
+	public double getX() {
 		return x;
 	}
 
-	public void setX(float x) {
+	public void setX(double x) {
 		this.x = x;
 	}
 
-	public float getY() {
+	public double getY() {
 		return y;
 	}
 
-	public void setY(float y) {
+	public void setY(double y) {
 		this.y = y;
 	}
 }
