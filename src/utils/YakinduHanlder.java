@@ -24,6 +24,7 @@ import com.mxgraph.view.mxGraph;
 import app.App;
 import models.State;
 import models.Transition;
+import sun.security.provider.certpath.Vertex;
 
 public class YakinduHanlder {
 	private App app;
@@ -41,14 +42,14 @@ public class YakinduHanlder {
 	public YakinduHanlder(App parent) {
 		this.app = parent;
 
-		excepts.put("[", "");
-		excepts.put("]", "");
+//		excepts.put("[", "");
+//		excepts.put("]", "");
 		excepts.put("_", ".");
 		excepts.put("always", "");
 
-		excepts.put("&#xA;", "\n");
-		excepts.put("&#xD;", "\n");
-		excepts.put("&#x9;", "\n");
+		globalDeclarationsExcepts.put("&#xA;", "\n");
+		globalDeclarationsExcepts.put("&#xD;", "\n");
+		globalDeclarationsExcepts.put("&#x9;", "\n");
 	}
 
 	public mxGraph readYakinduFile(File file) throws IOException {
@@ -114,11 +115,8 @@ public class YakinduHanlder {
 
 								if (transitionNode.getNodeType() == Node.ELEMENT_NODE) {
 									Element transition = (Element) transitionNode;
-
-									String transitionId = transition.getAttribute("xmi:id").trim();
-
 									// create the transition
-									Transition tr = new Transition(transitionId, transition.getAttribute("target"));
+									Transition tr = new Transition(id, transition.getAttribute("target"));
 
 									// there is no guard and update on the entry state, we add it to the array
 									transitionList.add(tr);
@@ -203,6 +201,15 @@ public class YakinduHanlder {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		for (State debugState:stateList) {
+			System.out.println(debugState.debug());
+		}
+		for (Transition debugTransition:transitionList) {
+			System.out.println(debugTransition.debug());
+		}
+
+
 
 		// create the graph
 		this.app.setGlobalDeclarations(globalDeclations);

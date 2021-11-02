@@ -68,6 +68,13 @@ public class Transition extends DefaultEdge implements Serializable {
 	public void setUpdate(String update) {
 		this.update = update;
 	}
+
+	public String debug() {
+		String verb = "";
+		verb += "TransitionId ="+ this.getTransitionId()+" || Guard = "+this.getGuard()+" || Update = "+this.getUpdate()+
+				" || Source State Id = "+this.getSourceStateId()+" || Target State Id = "+this.getTargetStateId()+ "\n";
+		return verb;
+	}
 	
 	@Override
 	public String toString() {
