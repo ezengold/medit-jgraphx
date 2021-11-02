@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.UUID;
 
+import utils.Engine;
+
 /**
  * Hold the model of an automata
  */
@@ -19,6 +21,9 @@ public class Automata {
 	protected Hashtable<String, BooleanVariable> boolVariablesList;
 	protected Hashtable<String, ClockVariable> clockVariablesList;
 
+	// hold the engine for computations
+	protected Engine engine;
+
 	public Automata() {
 		this.name = "automata_" + UUID.randomUUID().toString();
 
@@ -29,6 +34,8 @@ public class Automata {
 		this.intVariablesList = new Hashtable<String, IntVariable>();
 		this.boolVariablesList = new Hashtable<String, BooleanVariable>();
 		this.clockVariablesList = new Hashtable<String, ClockVariable>();
+
+		this.engine = new Engine();
 	}
 
 	public Automata(String name) {
@@ -41,6 +48,8 @@ public class Automata {
 		this.intVariablesList = new Hashtable<String, IntVariable>();
 		this.boolVariablesList = new Hashtable<String, BooleanVariable>();
 		this.clockVariablesList = new Hashtable<String, ClockVariable>();
+
+		this.engine = new Engine();
 	}
 
 	public void addState(State state) {
@@ -87,8 +96,22 @@ public class Automata {
 		return incomingTransitionList;
 	}
 
+	public ArrayList<State> findIncomingStates(String stateId) {
+		ArrayList<State> incomingStatesList = new ArrayList<>();
+		Transition transition = null;
+
+		for (int i = 0; i < this.transitionsList.size(); i++) {
+			transition = this.transitionsList.get(i);
+
+			if (transition.getTargetStateId().equals(stateId)) {
+				incomingStatesList.add(findState(transition.getSourceStateId()));
+			}
+		}
+		return incomingStatesList;
+	}
+
 	public ArrayList<Transition> findOutgoingTransitions(String stateId) {
-		ArrayList<Transition> incomingTransitionList = new ArrayList<>();
+		ArrayList<Transition> outgoingTransitionList = new ArrayList<>();
 		Transition transition = null;
 
 		for (int i = 0; i < this.transitionsList.size(); i++) {
@@ -96,10 +119,33 @@ public class Automata {
 			transition = this.transitionsList.get(i);
 
 			if (transition.getSourceStateId().equals(stateId)) {
-				incomingTransitionList.add(transition);
+				outgoingTransitionList.add(transition);
 			}
 		}
-		return incomingTransitionList;
+		return outgoingTransitionList;
+	}
+
+	public ArrayList<State> findOutgoingStates(String stateId) {
+		ArrayList<State> outgoingStatesList = new ArrayList<>();
+		Transition transition = null;
+
+		for (int i = 0; i < this.transitionsList.size(); i++) {
+
+			transition = this.transitionsList.get(i);
+
+			if (transition.getSourceStateId().equals(stateId)) {
+				outgoingStatesList.add(findState(transition.getTargetStateId()));
+			}
+		}
+		return outgoingStatesList;
+	}
+
+	public boolean evaluateCondition(String condition) {
+		return this.engine.evaluateCondition(condition.trim());
+	}
+
+	public void executeUpdates(String statement) {
+		//
 	}
 
 	public String getName() {
