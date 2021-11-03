@@ -15,6 +15,7 @@ import ui.TraceCellRenderer;
 import ui.TracesTableModel;
 import ui.TransitionsTableModel;
 import ui.TransitonCellRenderer;
+import ui.VariablesTree;
 
 public class Simulator extends JPanel {
 
@@ -50,6 +51,8 @@ public class Simulator extends JPanel {
 
 	private JPanel variablesPanel;
 
+	private VariablesTree variablesTree;
+
 	private JPanel apercuPanel;
 
 	public Simulator(App app) {
@@ -60,12 +63,14 @@ public class Simulator extends JPanel {
 		this.activeTransitionsPanel = new JPanel(new BorderLayout());
 		activeTransitionsPanel.setBorder(BorderFactory.createTitledBorder(" Transitions actives "));
 
-		this.activeTransitionsTableModel = new TransitionsTableModel(activeTransitions, ACTIVES_TRANSITIONS_TABLE_COLUMNS);
+		this.activeTransitionsTableModel = new TransitionsTableModel(activeTransitions,
+				ACTIVES_TRANSITIONS_TABLE_COLUMNS);
 		this.activeTransitionsTable = new JTable(activeTransitionsTableModel);
 		activeTransitionsTable.setRowHeight(35);
 		activeTransitionsTable.setTableHeader(null);
 		setFileChooserFont(activeTransitionsTable.getComponents());
-		activeTransitionsTable.getColumn(ACTIVES_TRANSITIONS_TABLE_COLUMNS[0]).setCellRenderer(new TransitonCellRenderer());
+		activeTransitionsTable.getColumn(ACTIVES_TRANSITIONS_TABLE_COLUMNS[0])
+				.setCellRenderer(new TransitonCellRenderer());
 
 		JScrollPane activeTransitionsTableScrollPane = new JScrollPane(activeTransitionsTable);
 		activeTransitionsTableScrollPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -105,8 +110,12 @@ public class Simulator extends JPanel {
 		leftInnerSplit.setDividerSize(3);
 		leftInnerSplit.setBorder(null);
 
+		// VARIABLES
 		this.variablesPanel = new JPanel();
 		this.variablesPanel.setBorder(BorderFactory.createTitledBorder(" Variables "));
+
+		this.variablesTree = new VariablesTree(automata);
+		this.variablesPanel.add(variablesTree);
 
 		JSplitPane leftSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftInnerSplit, variablesPanel);
 		leftSplit.setDividerLocation(350);
@@ -212,6 +221,14 @@ public class Simulator extends JPanel {
 
 	public void setVariablesPanel(JPanel variablesPanel) {
 		this.variablesPanel = variablesPanel;
+	}
+
+	public VariablesTree getVariablesTree() {
+		return variablesTree;
+	}
+
+	public void setVariablesTree(VariablesTree variablesTree) {
+		this.variablesTree = variablesTree;
 	}
 
 	public JPanel getApercuPanel() {

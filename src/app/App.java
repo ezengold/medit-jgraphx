@@ -49,6 +49,7 @@ import ui.MeGraphComponent;
 import utils.Compiler;
 import utils.EditorFileFilter;
 import utils.EditorKeyboardHandler;
+import utils.Observer;
 import utils.XmlHandler;
 import verifier.ast.Program;
 import ui.MeMenuBar;
@@ -377,6 +378,15 @@ public class App extends JPanel {
 		installListeners();
 
 		updateTitle();
+
+		automata.addObserver(new Observer() {
+			@Override
+			public void update(Object data) {
+				if (simulatorPanel != null) {
+					simulatorPanel.getVariablesTree().recreateTree();
+				}
+			}
+		});
 	}
 
 	public App getInstance() {
@@ -402,12 +412,13 @@ public class App extends JPanel {
 		mainTab.add("Vérificateur", verifierPanel);
 		mainTab.setBorder(new EmptyBorder(10, 0, 0, 0));
 		mainTab.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
-		
+
 		mainTab.addChangeListener(new ChangeListener() {
 
 			@Override
 			public void stateChanged(ChangeEvent event) {
 				if (mainTab.getSelectedIndex() != 0) {
+
 					wantedTabIndex = mainTab.getSelectedIndex();
 
 					// Continue unless there is a currentFile and no modifications

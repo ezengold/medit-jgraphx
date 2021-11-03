@@ -5,11 +5,13 @@ import java.util.Hashtable;
 import java.util.UUID;
 
 import utils.Engine;
+import utils.Observable;
+import utils.Observer;
 
 /**
  * Hold the model of an automata
  */
-public class Automata {
+public class Automata implements Observable {
 	protected String name;
 	protected ArrayList<State> statesList;
 	protected ArrayList<Transition> transitionsList;
@@ -23,6 +25,11 @@ public class Automata {
 
 	// hold the engine for computations
 	protected Engine engine;
+
+	/**
+	 * List of observers to the object
+	 */
+	private ArrayList<Observer> observersList = new ArrayList<Observer>();
 
 	public Automata() {
 		this.name = "automata_" + UUID.randomUUID().toString();
@@ -54,14 +61,17 @@ public class Automata {
 
 	public void addState(State state) {
 		this.statesList.add(state);
+		updateObservers();
 	}
 
 	public void addTransition(Transition transition) {
 		this.transitionsList.add(transition);
+		updateObservers();
 	}
 
 	public void addDeclaration(String declaration) {
 		this.declarationsList.add(declaration);
+		updateObservers();
 	}
 
 	public Transition findTransition(String transitionId) {
@@ -154,6 +164,7 @@ public class Automata {
 
 	public void setName(String name) {
 		this.name = name;
+		updateObservers();
 	}
 
 	public ArrayList<State> getStatesList() {
@@ -162,6 +173,7 @@ public class Automata {
 
 	public void setStatesList(ArrayList<State> statesList) {
 		this.statesList = statesList;
+		updateObservers();
 	}
 
 	public ArrayList<Transition> getTransitionsList() {
@@ -170,10 +182,12 @@ public class Automata {
 
 	public void setTransitionsList(ArrayList<Transition> transitionsList) {
 		this.transitionsList = transitionsList;
+		updateObservers();
 	}
 
 	public void setInitialStateId(String initialStateId) {
 		this.initialStateId = initialStateId;
+		updateObservers();
 	}
 
 	public String getInitialStateId() {
@@ -182,6 +196,7 @@ public class Automata {
 
 	public void setDeclarationsList(ArrayList<String> declarationsList) {
 		this.declarationsList = declarationsList;
+		updateObservers();
 	}
 
 	public ArrayList<String> getDeclarationsList() {
@@ -194,6 +209,7 @@ public class Automata {
 
 	public void setEngine(Engine engine) {
 		this.engine = engine;
+		updateObservers();
 	}
 
 	// variables handling
@@ -201,43 +217,76 @@ public class Automata {
 	public void addIntVariable(String name) {
 		this.intVariablesList.put(name, new IntVariable(name));
 		this.engine.setVariable(name, 0);
+		updateObservers();
 	}
 
 	public void addIntVariable(String name, int value) {
 		this.intVariablesList.put(name, new IntVariable(name, value));
 		this.engine.setVariable(name, value);
+		updateObservers();
 	}
 
 	public IntVariable findIntVariable(String name) {
 		return this.intVariablesList.get(name);
 	}
 
+	public Hashtable<String, IntVariable> getIntVariablesList() {
+		return intVariablesList;
+	}
+
+	public void setIntVariablesList(Hashtable<String, IntVariable> intVariablesList) {
+		this.intVariablesList = intVariablesList;
+		updateObservers();
+	}
+
 	public void addBooleanVariable(String name) {
 		this.boolVariablesList.put(name, new BooleanVariable(name));
 		this.engine.setVariable(name, true);
+		updateObservers();
 	}
-	
+
 	public void addBooleanVariable(String name, boolean value) {
 		this.boolVariablesList.put(name, new BooleanVariable(name, value));
 		this.engine.setVariable(name, value);
+		updateObservers();
 	}
 
 	public BooleanVariable findBooleanVariable(String name) {
 		return this.boolVariablesList.get(name);
 	}
 
+	public Hashtable<String, BooleanVariable> getBoolVariablesList() {
+		return boolVariablesList;
+	}
+
+	public void setBoolVariablesList(Hashtable<String, BooleanVariable> boolVariablesList) {
+		this.boolVariablesList = boolVariablesList;
+		updateObservers();
+	}
+
 	public void addClockVariable(String name) {
 		this.clockVariablesList.put(name, new ClockVariable(name));
 		this.engine.setVariable(name, 0);
+		updateObservers();
 	}
 
 	public void addClockVariable(String name, long value) {
 		this.clockVariablesList.put(name, new ClockVariable(name, value));
 		this.engine.setVariable(name, value);
+		updateObservers();
 	}
 
 	public ClockVariable findClockVariable(String name) {
 		return this.clockVariablesList.get(name);
+	}
+
+	public Hashtable<String, ClockVariable> getClockVariablesList() {
+		return clockVariablesList;
+	}
+
+	public void setClockVariablesList(Hashtable<String, ClockVariable> clockVariablesList) {
+		this.clockVariablesList = clockVariablesList;
+		updateObservers();
 	}
 
 	public void debug() {
@@ -266,5 +315,22 @@ public class Automata {
 		}
 
 		System.out.println("==================================================\n");
+	}
+
+	@Override
+	public void addObserver(Observer observer) {
+		this.observersList.add(observer);
+	}
+
+	@Override
+	public void updateObservers() {
+		for (Observer observer : this.observersList) {
+			observer.update(this);
+		}
+	}
+
+	@Override
+	public void removeObserver() {
+		this.observersList.clear();
 	}
 }
