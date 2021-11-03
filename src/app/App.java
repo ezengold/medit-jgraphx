@@ -26,8 +26,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import com.mxgraph.io.mxCodecRegistry;
-import com.mxgraph.io.mxObjectCodec;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.swing.mxGraphComponent;
@@ -52,6 +50,7 @@ import utils.EditorKeyboardHandler;
 import utils.Observer;
 import utils.XmlHandler;
 import verifier.ast.Program;
+import verifier.semantic.MeSemanticAnalyzer;
 import ui.MeMenuBar;
 
 public class App extends JPanel {
@@ -62,7 +61,7 @@ public class App extends JPanel {
 
 	private static final long serialVersionUID = -8150527452734294724L;
 
-	/**
+	/*
 	 * Hold the current automata model
 	 */
 	protected Automata automata;
@@ -72,7 +71,15 @@ public class App extends JPanel {
 	 */
 	protected JPanel navComponent;
 
+	/*
+	 * Input holding the global declarations
+	 */
 	protected JTextArea area = new JTextArea();
+
+	/*
+	 * Global declarations
+	 */
+	protected String globalDeclarations = "";
 
 	/*
 	 * Console panel to view errors and status
@@ -80,16 +87,11 @@ public class App extends JPanel {
 	protected Console consolePanel;
 
 	/*
-	 * Global declarations
-	 */
-	protected String globalDeclarations = "";
-
-	/**
-	 * 
+	 * Component that wrap the mxGraph
 	 */
 	protected mxGraphComponent graphComponent;
 
-	/**
+	/*
 	 * UI that display an outline of the graph, help to resize the paper
 	 */
 	protected mxGraphOutline graphOutline;
@@ -104,20 +106,26 @@ public class App extends JPanel {
 	 */
 	protected String appTitle;
 
-	/**
+	/*
 	 * Label displayed at the bottom to show the status of the Application
 	 */
 	protected JLabel statusBar;
 
-	/**
+	/*
 	 * Current file where the changes are saved to
 	 */
 	protected File currentFile;
 
 	public static File automateFile;
 
+	/*
+	 * Temporary file used to store compiled code
+	 */
 	public static File currentTempFile;
 
+	/*
+	 * Final program after semantic analyze
+	 */
 	public static Program FinalProgram;
 
 	/**
@@ -238,10 +246,6 @@ public class App extends JPanel {
 	}
 
 	public App() {
-		mxCodecRegistry.addPackage("models");
-		mxCodecRegistry.register(new mxObjectCodec(new State()));
-		mxCodecRegistry.register(new mxObjectCodec(new Transition()));
-
 		automata = new Automata();
 
 		this.appTitle = "Medit";
@@ -382,9 +386,7 @@ public class App extends JPanel {
 		automata.addObserver(new Observer() {
 			@Override
 			public void update(Object data) {
-				if (simulatorPanel != null) {
-					simulatorPanel.getVariablesTree().recreateTree();
-				}
+				//
 			}
 		});
 	}
@@ -519,6 +521,7 @@ public class App extends JPanel {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				globalDeclarations = area.getText();
+				setModified(true);
 			}
 
 			@Override
@@ -769,14 +772,22 @@ public class App extends JPanel {
 			File file = getCompilablesFile(elements);
 
 			// PROCEED TO PARSER WITH THE GENERATED FILE
-			FinalProgram = Compiler.testSementic(file, consolePanel, automata);
+			MeSemanticAnalyzer analyze = Compiler.testSementic(file, consolePanel, automata);
+
+			FinalProgram = analyze.getFinalProgram();
 
 			automata.getEngine().debug();
 
 			removeCurrentTempFile();
 
-			if (wantedTabIndex != 0)
+			
+			if (analyze.getErrors() < 1) {
+				if (wantedTabIndex != 0)
 				mainTab.setSelectedIndex(wantedTabIndex);
+			} else {
+				System.out.println("NB_ERRORS : " + analyze.getErrors());
+				mainTab.setSelectedIndex(0);
+			}
 		} catch (IOException e) {
 			consolePanel.printError(e.getMessage());
 		}

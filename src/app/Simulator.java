@@ -2,6 +2,7 @@ package app;
 
 import java.awt.*;
 
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -16,6 +17,7 @@ import ui.TracesTableModel;
 import ui.TransitionsTableModel;
 import ui.TransitonCellRenderer;
 import ui.VariablesTree;
+import utils.Observer;
 
 public class Simulator extends JPanel {
 
@@ -49,8 +51,6 @@ public class Simulator extends JPanel {
 
 	private TracesTableModel tracesTableModel;
 
-	private JPanel variablesPanel;
-
 	private VariablesTree variablesTree;
 
 	private JPanel apercuPanel;
@@ -61,7 +61,8 @@ public class Simulator extends JPanel {
 
 		// ACTIVES TRANSITIONS
 		this.activeTransitionsPanel = new JPanel(new BorderLayout());
-		activeTransitionsPanel.setBorder(BorderFactory.createTitledBorder(" Transitions actives "));
+		activeTransitionsPanel.setBorder(new CompoundBorder(BorderFactory.createTitledBorder(" Transitions actives "),
+				new EmptyBorder(0, 5, 5, 5)));
 
 		this.activeTransitionsTableModel = new TransitionsTableModel(activeTransitions,
 				ACTIVES_TRANSITIONS_TABLE_COLUMNS);
@@ -73,7 +74,7 @@ public class Simulator extends JPanel {
 				.setCellRenderer(new TransitonCellRenderer());
 
 		JScrollPane activeTransitionsTableScrollPane = new JScrollPane(activeTransitionsTable);
-		activeTransitionsTableScrollPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		activeTransitionsTableScrollPane.setBorder(new EmptyBorder(10, 10, 10, 10));
 		activeTransitionsPanel.add(activeTransitionsTableScrollPane, BorderLayout.CENTER);
 
 		this.nextTransitionButton = new Button("Suivant");
@@ -83,7 +84,7 @@ public class Simulator extends JPanel {
 		previousTransitionButton.setBackground(Color.decode("#9099ae"));
 
 		JPanel activesTransitionsButtonsContainer = new JPanel();
-		activesTransitionsButtonsContainer.setBorder(new EmptyBorder(0, 5, 5, 5));
+		activesTransitionsButtonsContainer.setBorder(new EmptyBorder(5, 10, 0, 10));
 		activesTransitionsButtonsContainer.add(previousTransitionButton);
 		activesTransitionsButtonsContainer.add(nextTransitionButton);
 
@@ -91,7 +92,8 @@ public class Simulator extends JPanel {
 
 		// SIMULATION TRACES
 		this.tracesPanel = new JPanel(new BorderLayout());
-		this.tracesPanel.setBorder(BorderFactory.createTitledBorder(" Traces de simulation "));
+		this.tracesPanel.setBorder(new CompoundBorder(BorderFactory.createTitledBorder(" Traces de simulation "),
+				new EmptyBorder(0, 5, 5, 5)));
 
 		this.tracesTableModel = new TracesTableModel(traces, TRACES_TABLE_COLUMNS);
 		this.tracesTable = new JTable(tracesTableModel);
@@ -101,7 +103,7 @@ public class Simulator extends JPanel {
 		tracesTable.getColumn(TRACES_TABLE_COLUMNS[0]).setCellRenderer(new TraceCellRenderer());
 
 		JScrollPane tracesTableScrollPane = new JScrollPane(tracesTable);
-		tracesTableScrollPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		tracesTableScrollPane.setBorder(new EmptyBorder(10, 10, 10, 10));
 		tracesPanel.add(tracesTableScrollPane, BorderLayout.CENTER);
 
 		JSplitPane leftInnerSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, activeTransitionsPanel, tracesPanel);
@@ -111,13 +113,9 @@ public class Simulator extends JPanel {
 		leftInnerSplit.setBorder(null);
 
 		// VARIABLES
-		this.variablesPanel = new JPanel();
-		this.variablesPanel.setBorder(BorderFactory.createTitledBorder(" Variables "));
-
 		this.variablesTree = new VariablesTree(automata);
-		this.variablesPanel.add(variablesTree);
 
-		JSplitPane leftSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftInnerSplit, variablesPanel);
+		JSplitPane leftSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftInnerSplit, variablesTree);
 		leftSplit.setDividerLocation(350);
 		leftSplit.setResizeWeight(1);
 		leftSplit.setDividerSize(3);
@@ -133,6 +131,17 @@ public class Simulator extends JPanel {
 
 		this.setLayout(new BorderLayout());
 		this.add(mainSplit, BorderLayout.CENTER);
+
+		// listen to changes on automata
+		automata.addObserver(new Observer() {
+			@Override
+			public void update(Object data) {
+				if (data instanceof Automata) {
+					setAutomata((Automata) data);
+				}
+				variablesTree.recreateTree();
+			}
+		});
 	}
 
 	public App getApp() {
@@ -213,14 +222,6 @@ public class Simulator extends JPanel {
 
 	public void setTracesTableModel(TracesTableModel tracesTableModel) {
 		this.tracesTableModel = tracesTableModel;
-	}
-
-	public JPanel getVariablesPanel() {
-		return variablesPanel;
-	}
-
-	public void setVariablesPanel(JPanel variablesPanel) {
-		this.variablesPanel = variablesPanel;
 	}
 
 	public VariablesTree getVariablesTree() {

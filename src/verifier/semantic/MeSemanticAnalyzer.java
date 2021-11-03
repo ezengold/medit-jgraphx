@@ -42,12 +42,12 @@ public class MeSemanticAnalyzer {
 	private ArrayList<Exp> conditions;
 
 	private int errors;
-	
+
 	private Console log;
-	
+
 	private Program finalProgram;
 
-	public MeSemanticAnalyzer(FileReader file, Automata automata, Console log) throws IOException{
+	public MeSemanticAnalyzer(FileReader file, Automata automata, Console log) throws IOException {
 		this.parser = new MeParser(file, automata, log);
 		this.log = log;
 	}
@@ -56,7 +56,7 @@ public class MeSemanticAnalyzer {
 	public int getErrors() {
 		return errors;
 	}
-	
+
 	public Program getFinalProgram() {
 		return finalProgram;
 	}
@@ -65,8 +65,8 @@ public class MeSemanticAnalyzer {
 		this.finalProgram = finalProgram;
 	}
 
-	//start semantic analyzer
-	public void analyzeProgram() throws IOException{
+	// start semantic analyzer
+	public void analyzeProgram() throws IOException {
 		this.finalProgram = this.parser.parseProgram();
 		this.declerations = this.parser.getDecelarations();
 		checkDeclerations();
@@ -75,89 +75,89 @@ public class MeSemanticAnalyzer {
 		this.assigns = this.parser.getAssigns();
 		checkAssigns();
 		this.conditions = this.parser.getConditions();
-		checkConditions();	
+		checkConditions();
 	}
 
 	// check program declarations
-	private void checkDeclerations(){
-		for(int i = 0; i < declerations.size(); i++){
+	private void checkDeclerations() {
+		for (int i = 0; i < declerations.size(); i++) {
 			VarDecl varDecl = declerations.get(i);
 			String idName = varDecl.getId().getName();
 
-			for(int j = i + 1; j < declerations.size(); j ++){
+			for (int j = i + 1; j < declerations.size(); j++) {
 				VarDecl _varDecl = declerations.get(j);
 				String _idName = _varDecl.getId().getName();
 
-				if(idName.equals(_idName))
+				if (idName.equals(_idName))
 					error(ErrorType.MULTIPLE_DECLARATION, _idName);
 			}
 		}
 	}
 
 	// check program identifiers
-	private void checkIdenifiers(){
+	private void checkIdenifiers() {
 		for (Identifier identifier : identifiers) {
-			if(!isIdentifierExists(identifier.getName()))
+			if (!isIdentifierExists(identifier.getName()))
 				error(ErrorType.NO_DECLARATION, identifier.getName());
 		}
 	}
-	
+
 	// check program conditions
-	private void checkConditions(){
+	private void checkConditions() {
 		for (Exp exp : conditions) {
-			if((exp instanceof MoreThan || exp instanceof MoreThanEqual ||exp instanceof LessThan ||
-					exp instanceof LessThanEqual || exp instanceof NotEqual || exp instanceof Equal))
+			if (!(exp instanceof MoreThan || exp instanceof MoreThanEqual || exp instanceof LessThan
+					|| exp instanceof LessThanEqual || exp instanceof NotEqual || exp instanceof Equal
+					|| exp instanceof BooleanLiteral))
 				error(ErrorType.INVALID_CONDITION, null);
 		}
-		
 	}
-	
+
 	// check if a specific identifier name is exists
-	private boolean isIdentifierExists(String name){
+	private boolean isIdentifierExists(String name) {
 		for (VarDecl varDecl : declerations) {
 			String idName = varDecl.getId().getName();
 
-			if(idName.equals(name))
+			if (idName.equals(name))
 				return true;
 		}
 		return false;
 	}
 
 	// type checking of all the assign expressions
-	private void checkAssigns(){
+	private void checkAssigns() {
 		for (Assign assign : assigns) {
 			Exp type = assign.getValue();
 			String idName = assign.getId().getName();
 			Type idType = getIdentifierType(idName);
 
 			// assign to int
-			if(idType != null && (idType instanceof IntegerType)){
+			if (idType != null && (idType instanceof IntegerType)) {
 
 				// boolean to int
-				if(type instanceof BooleanLiteral)
+				if (type instanceof BooleanLiteral)
 					error(ErrorType.BOOLEAN_INT_CASTING, idName);
 
 				// type(id) to int
-				if(type instanceof IdentifierExp){
+				if (type instanceof IdentifierExp) {
 					String _idName = ((IdentifierExp) type).getName();
 					Type _idType = getIdentifierType(_idName);
 
-					if(_idType != null){
+					if (_idType != null) {
 						// float to int
 						if (_idType instanceof FloatType)
 							error(ErrorType.FLOAT_INT_CASTING, idName);
 
 						// boolean to int
-						else if( _idType instanceof BooleanType)
+						else if (_idType instanceof BooleanType)
 							error(ErrorType.BOOLEAN_INT_CASTING, idName);
 
-						if(idType instanceof IntegerType)
+						if (idType instanceof IntegerType)
 							// identifier with array type
 							if (_idType instanceof FloatArrayType || _idType instanceof BooleanArrayType
 									|| _idType instanceof IntegerArrayType || _idType instanceof CharArrayType)
 								error(ErrorType.ARRAY_TO_SINGLE, idName);
 
-						if(idType instanceof IntegerArrayType)
+						if (idType instanceof IntegerArrayType)
 							// identifier with single type
 							if (_idType instanceof FloatType || _idType instanceof BooleanType
 									|| _idType instanceof IntegerType || _idType instanceof CharType)
@@ -169,37 +169,37 @@ public class MeSemanticAnalyzer {
 			}
 
 			// assign to float
-			if(idType != null && (idType instanceof FloatType || idType instanceof FloatArrayType)){
+			if (idType != null && (idType instanceof FloatType || idType instanceof FloatArrayType)) {
 
 				// boolean to float
-				if(type instanceof BooleanLiteral)
+				if (type instanceof BooleanLiteral)
 					error(ErrorType.BOOLEAN_FLOAT_CASTING, idName);
 
 				// char to float
-				if(type instanceof CharLiteral)
+				if (type instanceof CharLiteral)
 					error(ErrorType.CHAR_FLOAT_CASTING, idName);
 
-				if(type instanceof IdentifierExp){
+				if (type instanceof IdentifierExp) {
 
 					String _idName = ((IdentifierExp) type).getName();
 					Type _idType = getIdentifierType(_idName);
 
-					if(_idType != null){
+					if (_idType != null) {
 						// boolean to float
 						if (_idType instanceof BooleanType)
 							error(ErrorType.BOOLEAN_FLOAT_CASTING, idName);
 
 						// char to float
-						else if( _idType instanceof CharType)
+						else if (_idType instanceof CharType)
 							error(ErrorType.CHAR_FLOAT_CASTING, idName);
 
-						if(idType instanceof FloatType)
+						if (idType instanceof FloatType)
 							// identifier with array type
 							if (_idType instanceof FloatArrayType || _idType instanceof BooleanArrayType
 									|| _idType instanceof IntegerArrayType || _idType instanceof CharArrayType)
 								error(ErrorType.ARRAY_TO_SINGLE, idName);
 
-						if(idType instanceof FloatArrayType)
+						if (idType instanceof FloatArrayType)
 							// identifier with single type
 							if (_idType instanceof FloatType || _idType instanceof BooleanType
 									|| _idType instanceof IntegerType || _idType instanceof CharType)
@@ -209,26 +209,26 @@ public class MeSemanticAnalyzer {
 			}
 
 			// assign to char
-			if(idType != null && (idType instanceof CharType || idType instanceof CharArrayType)){
+			if (idType != null && (idType instanceof CharType || idType instanceof CharArrayType)) {
 
-				//int to char
-				if(type instanceof IntegerLiteral)
+				// int to char
+				if (type instanceof IntegerLiteral)
 					error(ErrorType.INT_CHAR_CASTING, idName);
 
 				// float to char
-				if(type instanceof FloatLiteral)
+				if (type instanceof FloatLiteral)
 					error(ErrorType.FLOAT_CHAR_CASTING, idName);
 
 				// boolean to char
-				if(type instanceof BooleanLiteral)
+				if (type instanceof BooleanLiteral)
 					error(ErrorType.BOOLEAN_CHAR_CASTING, idName);
 
 				// type(id) to int
-				if(type instanceof IdentifierExp){
+				if (type instanceof IdentifierExp) {
 					String _idName = ((IdentifierExp) type).getName();
 					Type _idType = getIdentifierType(_idName);
 
-					if(_idType != null){
+					if (_idType != null) {
 
 						// float to char
 						if (_idType instanceof FloatType)
@@ -239,16 +239,16 @@ public class MeSemanticAnalyzer {
 							error(ErrorType.INT_CHAR_CASTING, idName);
 
 						// boolean to char
-						else if( _idType instanceof BooleanType)
+						else if (_idType instanceof BooleanType)
 							error(ErrorType.BOOLEAN_CHAR_CASTING, idName);
 
-						if(idType instanceof CharType)
+						if (idType instanceof CharType)
 							// identifier with array type
 							if (_idType instanceof FloatArrayType || _idType instanceof BooleanArrayType
 									|| _idType instanceof IntegerArrayType || _idType instanceof CharArrayType)
 								error(ErrorType.ARRAY_TO_SINGLE, idName);
 
-						if(idType instanceof CharArrayType)
+						if (idType instanceof CharArrayType)
 							// identifier with single type
 							if (_idType instanceof FloatType || _idType instanceof BooleanType
 									|| _idType instanceof IntegerType || _idType instanceof CharType)
@@ -259,25 +259,25 @@ public class MeSemanticAnalyzer {
 			}
 
 			// assign to boolean
-			if(idType != null && (idType instanceof BooleanType || idType instanceof BooleanArrayType)){
-				//int to boolean
-				if(type instanceof IntegerLiteral)
+			if (idType != null && (idType instanceof BooleanType || idType instanceof BooleanArrayType)) {
+				// int to boolean
+				if (type instanceof IntegerLiteral)
 					error(ErrorType.INT_BOOLEAN_CASTING, idName);
 
 				// float to boolean
-				if(type instanceof FloatLiteral)
+				if (type instanceof FloatLiteral)
 					error(ErrorType.FLOAT_BOOLEAN_CASTING, idName);
 
 				// char to boolean
-				if(type instanceof CharLiteral)
+				if (type instanceof CharLiteral)
 					error(ErrorType.CHAR_BOOLEAN_CASTING, idName);
 
 				// type(id) to int
-				if(type instanceof IdentifierExp){
+				if (type instanceof IdentifierExp) {
 					String _idName = ((IdentifierExp) type).getName();
 					Type _idType = getIdentifierType(_idName);
 
-					if(_idType != null){
+					if (_idType != null) {
 
 						// float to boolean
 						if (_idType instanceof FloatType)
@@ -288,16 +288,16 @@ public class MeSemanticAnalyzer {
 							error(ErrorType.INT_CHAR_CASTING, idName);
 
 						// char to boolean
-						else if( _idType instanceof CharType)
+						else if (_idType instanceof CharType)
 							error(ErrorType.CHAR_BOOLEAN_CASTING, idName);
 
-						if(idType instanceof BooleanType)
+						if (idType instanceof BooleanType)
 							// identifier with array type
 							if (_idType instanceof FloatArrayType || _idType instanceof BooleanArrayType
 									|| _idType instanceof IntegerArrayType || _idType instanceof CharArrayType)
 								error(ErrorType.ARRAY_TO_SINGLE, idName);
 
-						if(_idType instanceof BooleanArrayType)
+						if (_idType instanceof BooleanArrayType)
 							// identifier with single type
 							if (_idType instanceof FloatType || _idType instanceof BooleanType
 									|| _idType instanceof IntegerType || _idType instanceof CharType)
@@ -310,11 +310,12 @@ public class MeSemanticAnalyzer {
 		}
 	}
 
-	// get identifier type (IntegerType | IntegerArrayType | FloatType | FloatArrayType | CharType | CharArrayType)
-	private Type getIdentifierType(String name){
+	// get identifier type (IntegerType | IntegerArrayType | FloatType |
+	// FloatArrayType | CharType | CharArrayType)
+	private Type getIdentifierType(String name) {
 		for (VarDecl dec : declerations) {
 			Identifier id = dec.getId();
-			if(id.getName().equals(name))
+			if (id.getName().equals(name))
 				return dec.getType();
 		}
 
@@ -322,7 +323,7 @@ public class MeSemanticAnalyzer {
 	}
 
 	// print errors report
-	private void error(ErrorType errorType, Object parm){
+	private void error(ErrorType errorType, Object parm) {
 		errors++;
 		switch (errorType) {
 		case MULTIPLE_DECLARATION:
