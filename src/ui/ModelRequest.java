@@ -6,16 +6,11 @@ public class ModelRequest extends DefaultTableModel {
     private Object[][] data;
     private String[] title;
 
-    public ModelRequest(Object[][] data,String[]title) {
-        super(data,title);
+    public ModelRequest(Object[][] data, String[] title) {
+        super(data, title);
         this.data = data;
         this.title = title;
-
     }
-
-
-
-
 
     @Override
     public int getRowCount() {
@@ -36,8 +31,6 @@ public class ModelRequest extends DefaultTableModel {
     public String getColumnName(int i) {
         return super.getColumnName(i);
     }
-
-    
 
     @Override
     public boolean isCellEditable(int i, int i1) {

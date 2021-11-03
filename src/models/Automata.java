@@ -188,14 +188,24 @@ public class Automata {
 		return declarationsList;
 	}
 
+	public Engine getEngine() {
+		return engine;
+	}
+
+	public void setEngine(Engine engine) {
+		this.engine = engine;
+	}
+
 	// variables handling
 
 	public void addIntVariable(String name) {
 		this.intVariablesList.put(name, new IntVariable(name));
+		this.engine.setVariable(name, 0);
 	}
 
 	public void addIntVariable(String name, int value) {
 		this.intVariablesList.put(name, new IntVariable(name, value));
+		this.engine.setVariable(name, value);
 	}
 
 	public IntVariable findIntVariable(String name) {
@@ -204,10 +214,12 @@ public class Automata {
 
 	public void addBooleanVariable(String name) {
 		this.boolVariablesList.put(name, new BooleanVariable(name));
+		this.engine.setVariable(name, true);
 	}
-
+	
 	public void addBooleanVariable(String name, boolean value) {
 		this.boolVariablesList.put(name, new BooleanVariable(name, value));
+		this.engine.setVariable(name, value);
 	}
 
 	public BooleanVariable findBooleanVariable(String name) {
@@ -216,10 +228,12 @@ public class Automata {
 
 	public void addClockVariable(String name) {
 		this.clockVariablesList.put(name, new ClockVariable(name));
+		this.engine.setVariable(name, 0);
 	}
 
 	public void addClockVariable(String name, long value) {
 		this.clockVariablesList.put(name, new ClockVariable(name, value));
+		this.engine.setVariable(name, value);
 	}
 
 	public ClockVariable findClockVariable(String name) {

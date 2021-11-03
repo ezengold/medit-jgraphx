@@ -19,13 +19,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import javax.sound.midi.SysexMessage;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
@@ -51,7 +47,6 @@ import models.Transition;
 import ui.ConfigStateDialog;
 import ui.ConfigTransitionDialog;
 import ui.MeGraphComponent;
-import ui.MeToolBar;
 import utils.Compiler;
 import utils.EditorFileFilter;
 import utils.EditorKeyboardHandler;
@@ -546,10 +541,6 @@ public class App extends JPanel {
 		this.setModified(false);
 	}
 
-	protected void installToolBar() {
-		this.add(new MeToolBar(this, JToolBar.HORIZONTAL), BorderLayout.NORTH);
-	}
-
 	public void setFileChooserFont(Component[] comps) {
 		for (Component comp : comps) {
 			if (comp instanceof Container) {
@@ -770,9 +761,9 @@ public class App extends JPanel {
 			// PROCEED TO PARSER WITH THE GENERATED FILE
 			FinalProgram = Compiler.testSementic(file, consolePanel, automata);
 
-			automata.debug();
+			automata.getEngine().debug();
 
-			removeCurrentTempFile();
+			// removeCurrentTempFile();
 
 			if (wantedTabIndex != 0)
 				mainTab.setSelectedIndex(wantedTabIndex);

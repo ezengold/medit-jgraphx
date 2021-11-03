@@ -84,6 +84,9 @@ public class XmlHandler {
 
 					// save the state in the automata model
 					this.app.getAutomata().addState(state);
+
+					if (state.isInitial())
+						this.app.getAutomata().setInitialStateId(state.getStateId());
 				}
 			} else if (cell.isEdge()) {
 				Transition transition = (Transition) cell.getValue();

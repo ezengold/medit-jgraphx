@@ -34,4 +34,15 @@ public class Engine {
 			return false;
 		}
 	}
+
+	public void debug() {
+		System.out.println("\n===================== ENGINE =====================\n");
+
+		for (String key : this.engine.getBindings(ScriptContext.ENGINE_SCOPE).keySet()) {
+			System.out
+					.println("[ " + key + " ] " + this.engine.getBindings(ScriptContext.ENGINE_SCOPE).get(key) + "\n");
+		}
+
+		System.out.println("\n==================================================\n");
+	}
 }
