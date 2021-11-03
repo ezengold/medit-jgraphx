@@ -7,16 +7,23 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTable;
 
 import models.Automata;
 import ui.Button;
-import ui.TransitionsTable;
+import ui.TraceCellRenderer;
+import ui.TracesTableModel;
+import ui.TransitionsTableModel;
+import ui.TransitonCellRenderer;
+import ui.VariablesTree;
 
 public class Simulator extends JPanel {
 
 	private static final long serialVersionUID = 8364570541969774335L;
 
 	private static String[] ACTIVES_TRANSITIONS_TABLE_COLUMNS = { "Transitions" };
+
+	private static String[] TRACES_TABLE_COLUMNS = { "Liste des traces" };
 
 	private App app;
 
@@ -26,7 +33,9 @@ public class Simulator extends JPanel {
 
 	private Object[][] activeTransitions = { { "Transition 0" }, { "Transition 1" }, { "Transition 2" } };
 
-	private TransitionsTable activeTransitionsTable;
+	private JTable activeTransitionsTable;
+
+	private TransitionsTableModel activeTransitionsTableModel;
 
 	private Button nextTransitionButton;
 
@@ -34,7 +43,15 @@ public class Simulator extends JPanel {
 
 	private JPanel tracesPanel;
 
+	private Object[][] traces = { { "" } };
+
+	private JTable tracesTable;
+
+	private TracesTableModel tracesTableModel;
+
 	private JPanel variablesPanel;
+
+	private VariablesTree variablesTree;
 
 	private JPanel apercuPanel;
 
@@ -42,13 +59,22 @@ public class Simulator extends JPanel {
 		this.app = app;
 		this.automata = app.getAutomata();
 
+		// ACTIVES TRANSITIONS
 		this.activeTransitionsPanel = new JPanel(new BorderLayout());
 		activeTransitionsPanel.setBorder(BorderFactory.createTitledBorder(" Transitions actives "));
 
-		this.activeTransitionsTable = new TransitionsTable(this.activeTransitions, ACTIVES_TRANSITIONS_TABLE_COLUMNS);
-		JScrollPane tableScrollPane = new JScrollPane(activeTransitionsTable);
-		tableScrollPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		activeTransitionsPanel.add(tableScrollPane, BorderLayout.CENTER);
+		this.activeTransitionsTableModel = new TransitionsTableModel(activeTransitions,
+				ACTIVES_TRANSITIONS_TABLE_COLUMNS);
+		this.activeTransitionsTable = new JTable(activeTransitionsTableModel);
+		activeTransitionsTable.setRowHeight(35);
+		activeTransitionsTable.setTableHeader(null);
+		setFileChooserFont(activeTransitionsTable.getComponents());
+		activeTransitionsTable.getColumn(ACTIVES_TRANSITIONS_TABLE_COLUMNS[0])
+				.setCellRenderer(new TransitonCellRenderer());
+
+		JScrollPane activeTransitionsTableScrollPane = new JScrollPane(activeTransitionsTable);
+		activeTransitionsTableScrollPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		activeTransitionsPanel.add(activeTransitionsTableScrollPane, BorderLayout.CENTER);
 
 		this.nextTransitionButton = new Button("Suivant");
 		nextTransitionButton.setBackground(Color.decode("#9099ae"));
@@ -63,8 +89,20 @@ public class Simulator extends JPanel {
 
 		activeTransitionsPanel.add(activesTransitionsButtonsContainer, BorderLayout.SOUTH);
 
-		this.tracesPanel = new JPanel();
+		// SIMULATION TRACES
+		this.tracesPanel = new JPanel(new BorderLayout());
 		this.tracesPanel.setBorder(BorderFactory.createTitledBorder(" Traces de simulation "));
+
+		this.tracesTableModel = new TracesTableModel(traces, TRACES_TABLE_COLUMNS);
+		this.tracesTable = new JTable(tracesTableModel);
+		tracesTable.setRowHeight(35);
+		tracesTable.setTableHeader(null);
+		setFileChooserFont(tracesTable.getComponents());
+		tracesTable.getColumn(TRACES_TABLE_COLUMNS[0]).setCellRenderer(new TraceCellRenderer());
+
+		JScrollPane tracesTableScrollPane = new JScrollPane(tracesTable);
+		tracesTableScrollPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		tracesPanel.add(tracesTableScrollPane, BorderLayout.CENTER);
 
 		JSplitPane leftInnerSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, activeTransitionsPanel, tracesPanel);
 		leftInnerSplit.setDividerLocation(350);
@@ -72,8 +110,12 @@ public class Simulator extends JPanel {
 		leftInnerSplit.setDividerSize(3);
 		leftInnerSplit.setBorder(null);
 
+		// VARIABLES
 		this.variablesPanel = new JPanel();
 		this.variablesPanel.setBorder(BorderFactory.createTitledBorder(" Variables "));
+
+		this.variablesTree = new VariablesTree(automata);
+		this.variablesPanel.add(variablesTree);
 
 		JSplitPane leftSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftInnerSplit, variablesPanel);
 		leftSplit.setDividerLocation(350);
@@ -117,12 +159,12 @@ public class Simulator extends JPanel {
 		this.activeTransitionsPanel = activeTransitionsPanel;
 	}
 
-	public TransitionsTable getActiveTransitionsTable() {
-		return activeTransitionsTable;
+	public TransitionsTableModel getActiveTransitionsTableModel() {
+		return activeTransitionsTableModel;
 	}
 
-	public void setActiveTransitionsTable(TransitionsTable activeTransitionsTable) {
-		this.activeTransitionsTable = activeTransitionsTable;
+	public void setActiveTransitionsTableModel(TransitionsTableModel activeTransitionsTableModel) {
+		this.activeTransitionsTableModel = activeTransitionsTableModel;
 	}
 
 	public Button getNextTransitionButton() {
@@ -149,6 +191,30 @@ public class Simulator extends JPanel {
 		this.tracesPanel = tracesPanel;
 	}
 
+	public Object[][] getTraces() {
+		return traces;
+	}
+
+	public void setTraces(Object[][] traces) {
+		this.traces = traces;
+	}
+
+	public JTable getTracesTable() {
+		return tracesTable;
+	}
+
+	public void setTracesTable(JTable tracesTable) {
+		this.tracesTable = tracesTable;
+	}
+
+	public TracesTableModel getTracesTableModel() {
+		return tracesTableModel;
+	}
+
+	public void setTracesTableModel(TracesTableModel tracesTableModel) {
+		this.tracesTableModel = tracesTableModel;
+	}
+
 	public JPanel getVariablesPanel() {
 		return variablesPanel;
 	}
@@ -157,11 +223,33 @@ public class Simulator extends JPanel {
 		this.variablesPanel = variablesPanel;
 	}
 
+	public VariablesTree getVariablesTree() {
+		return variablesTree;
+	}
+
+	public void setVariablesTree(VariablesTree variablesTree) {
+		this.variablesTree = variablesTree;
+	}
+
 	public JPanel getApercuPanel() {
 		return apercuPanel;
 	}
 
 	public void setApercuPanel(JPanel apercuPanel) {
 		this.apercuPanel = apercuPanel;
+	}
+
+	public void setFileChooserFont(Component[] comps) {
+		for (Component comp : comps) {
+			if (comp instanceof Container) {
+				setFileChooserFont(((Container) comp).getComponents());
+			}
+
+			try {
+				comp.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
+			} catch (Exception e) {
+				//
+			}
+		}
 	}
 }
