@@ -100,7 +100,7 @@ public class Compiler {
 		System.out.println();
 	}
 
-	public static Program testSementic(File inputFile, Console log, Automata automata) throws IOException {
+	public static MeSemanticAnalyzer testSementic(File inputFile, Console log, Automata automata) throws IOException {
 		FileReader file = null;
 
 		// attempt to open file
@@ -124,6 +124,6 @@ public class Compiler {
 		log.success("Execution time: " + (endTime - startTime) + "ms");
 		log.success(semantic.getErrors() + " errors reported");
 
-		return semantic.getFinalProgram();
+		return semantic;
 	}
 }

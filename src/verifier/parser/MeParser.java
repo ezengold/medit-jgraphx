@@ -366,6 +366,7 @@ public class MeParser {
 			eat(TokenType.INV);
 
 			Exp value = parseExp();
+			conditions.add(value);
 
 			eat(TokenType.SEMI);
 

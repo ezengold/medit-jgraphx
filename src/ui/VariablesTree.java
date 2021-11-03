@@ -1,32 +1,35 @@
 package ui;
 
-import javax.swing.JScrollPane;
+import java.awt.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
 import javax.swing.JTree;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 
 import models.Automata;
 import models.BooleanVariable;
 import models.ClockVariable;
 import models.IntVariable;
 
-public class VariablesTree extends JScrollPane {
+public class VariablesTree extends JPanel {
 	private Automata automata;
 
 	private JTree tree;
 
 	public VariablesTree(Automata automata) {
 		this.automata = automata;
-
-		setBorder(new EmptyBorder(5, 5, 5, 5));
-
+		setBorder(new CompoundBorder(BorderFactory.createTitledBorder(" Variables "), new EmptyBorder(0, 5, 5, 5)));
 		buildTree();
 	}
 
 	public void buildTree() {
 		removeAll();
 
-		DefaultMutableTreeNode root = new DefaultMutableTreeNode("Variables");
+		DefaultMutableTreeNode root = new DefaultMutableTreeNode("Déclarations");
 
 		// add clock variables branch
 		DefaultMutableTreeNode clocksBranch = new DefaultMutableTreeNode("Horloges");
@@ -68,8 +71,19 @@ public class VariablesTree extends JScrollPane {
 		root.add(booleansBranch);
 
 		this.tree = new JTree(root);
+		tree.setBorder(new EmptyBorder(5, 10, 10, 10));
 
-		add(tree);
+		// remove folder and file icon on tree
+		DefaultTreeCellRenderer cellRenderer = (DefaultTreeCellRenderer) tree.getCellRenderer();
+		cellRenderer.setLeafIcon(null);
+		cellRenderer.setClosedIcon(null);
+		cellRenderer.setOpenIcon(null);
+		cellRenderer.setDisabledIcon(null);
+
+		setLayout(new BorderLayout());
+		add(tree, BorderLayout.CENTER);
+		revalidate();
+		repaint();
 	}
 
 	public void recreateTree() {
