@@ -763,7 +763,7 @@ public class App extends JPanel {
 
 			automata.getEngine().debug();
 
-			// removeCurrentTempFile();
+			removeCurrentTempFile();
 
 			if (wantedTabIndex != 0)
 				mainTab.setSelectedIndex(wantedTabIndex);
