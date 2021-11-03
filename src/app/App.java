@@ -19,7 +19,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 
 import javax.swing.*;
@@ -403,7 +402,7 @@ public class App extends JPanel {
 		mainTab.add("Vérificateur", verifierPanel);
 		mainTab.setBorder(new EmptyBorder(10, 0, 0, 0));
 		mainTab.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
-
+		
 		mainTab.addChangeListener(new ChangeListener() {
 
 			@Override
