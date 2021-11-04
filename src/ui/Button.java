@@ -27,7 +27,7 @@ public class Button extends JButton {
 		setOpaque(true);
 		setFocusPainted(false);
 		setBorderPainted(false);
-		setBackground(new Color(0, 0, 0, 40));
+		setBackground(Color.decode("#dddddd"));
 		addFocusListener(buttonFocusListener);
 		addMouseListener(buttonMouseListener);
 	}
@@ -39,7 +39,7 @@ public class Button extends JButton {
 		setOpaque(true);
 		setFocusPainted(false);
 		setBorderPainted(false);
-		setBackground(new Color(0, 0, 0, 40));
+		setBackground(Color.decode("#dddddd"));
 		addFocusListener(buttonFocusListener);
 		addMouseListener(buttonMouseListener);
 	}
@@ -51,7 +51,7 @@ public class Button extends JButton {
 		setOpaque(true);
 		setFocusPainted(false);
 		setBorderPainted(false);
-		setBackground(new Color(0, 0, 0, 40));
+		setBackground(Color.decode("#dddddd"));
 		addFocusListener(buttonFocusListener);
 		addMouseListener(buttonMouseListener);
 	}
