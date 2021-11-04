@@ -409,6 +409,7 @@ public class App extends JPanel {
 		verifierPanel = new Verifier(getInstance());
 
 		mainTab = new JTabbedPane();
+
 		mainTab.add("Editeur", this);
 		mainTab.add("Simulateur", simulatorPanel);
 		mainTab.add("Vérificateur", verifierPanel);
@@ -780,16 +781,19 @@ public class App extends JPanel {
 
 			removeCurrentTempFile();
 
-			
 			if (analyze.getErrors() < 1) {
-				if (wantedTabIndex != 0)
-				mainTab.setSelectedIndex(wantedTabIndex);
+				if (wantedTabIndex != 0) {
+					mainTab.setSelectedIndex(wantedTabIndex);
+
+					if (wantedTabIndex == 1) {
+						simulatorPanel.setCurrentState(automata.getInitialState());
+					}
+				}
 			} else {
-				System.out.println("NB_ERRORS : " + analyze.getErrors());
 				mainTab.setSelectedIndex(0);
 			}
 		} catch (IOException e) {
-			consolePanel.printError(e.getMessage());
+			consolePanel.error(e.getMessage());
 		}
 	}
 

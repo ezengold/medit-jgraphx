@@ -61,6 +61,8 @@ public class Automata implements Observable {
 
 	public void addState(State state) {
 		this.statesList.add(state);
+		if (state.isInitial() && initialStateId != null)
+			setInitialStateId(state.getStateId());
 		updateObservers();
 	}
 
@@ -194,6 +196,17 @@ public class Automata implements Observable {
 		return initialStateId;
 	}
 
+	public State getInitialState() {
+		for (State s : statesList) {
+			if (s.isInitial()) {
+				setInitialStateId(s.getStateId());
+				return s;
+			}
+		}
+
+		return null;
+	}
+
 	public void setDeclarationsList(ArrayList<String> declarationsList) {
 		this.declarationsList = declarationsList;
 		updateObservers();
@@ -292,6 +305,11 @@ public class Automata implements Observable {
 	public void debug() {
 		System.out.println("==================================================\n");
 		System.out.println("\nStructure of " + getName() + "\n");
+
+		System.out.println("                    INIT STATE                    \n");
+		System.out.println("\nInitial State (" + getInitialState() != null ? getInitialState().getName() : "No state" + ")");
+		System.out.println("");
+
 		System.out.println("                      STATES                      \n");
 		for (State state : statesList) {
 			System.out.println(

@@ -87,7 +87,6 @@ public class ConfigTransitionDialog extends JDialog {
 		});
 
 		Button cancelButton = new Button("Annuler");
-		cancelButton.setBackground(new Color(0, 0, 0, 50));
 		cancelButton.addActionListener(new ActionListener() {
 
 			@Override

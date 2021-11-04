@@ -11,6 +11,8 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 
 import models.Automata;
+import models.State;
+import models.Transition;
 import ui.Button;
 import ui.TraceCellRenderer;
 import ui.TracesTableModel;
@@ -31,9 +33,15 @@ public class Simulator extends JPanel {
 
 	private Automata automata;
 
+	// handle active transaction
+
+	private Transition currentTransition;
+
+	private State currentState;
+
 	private JPanel activeTransitionsPanel;
 
-	private Object[][] activeTransitions = { { "Transition 0" }, { "Transition 1" }, { "Transition 2" } };
+	private Object[][] activeTransitions = { { "" } };
 
 	private JTable activeTransitionsTable;
 
@@ -42,6 +50,8 @@ public class Simulator extends JPanel {
 	private Button nextTransitionButton;
 
 	private Button previousTransitionButton;
+
+	// handle simulation traces
 
 	private JPanel tracesPanel;
 
@@ -59,6 +69,8 @@ public class Simulator extends JPanel {
 		this.app = app;
 		this.automata = app.getAutomata();
 
+		this.setCurrentState(automata.getInitialState());
+
 		// ACTIVES TRANSITIONS
 		this.activeTransitionsPanel = new JPanel(new BorderLayout());
 		activeTransitionsPanel.setBorder(new CompoundBorder(BorderFactory.createTitledBorder(" Transitions actives "),
@@ -71,7 +83,7 @@ public class Simulator extends JPanel {
 		activeTransitionsTable.setTableHeader(null);
 		setFileChooserFont(activeTransitionsTable.getComponents());
 		activeTransitionsTable.getColumn(ACTIVES_TRANSITIONS_TABLE_COLUMNS[0])
-				.setCellRenderer(new TransitonCellRenderer());
+				.setCellRenderer(new TransitonCellRenderer(automata));
 
 		JScrollPane activeTransitionsTableScrollPane = new JScrollPane(activeTransitionsTable);
 		activeTransitionsTableScrollPane.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -81,7 +93,6 @@ public class Simulator extends JPanel {
 		nextTransitionButton.setBackground(Color.decode("#9099ae"));
 
 		this.previousTransitionButton = new Button("Previous");
-		previousTransitionButton.setBackground(Color.decode("#9099ae"));
 
 		JPanel activesTransitionsButtonsContainer = new JPanel();
 		activesTransitionsButtonsContainer.setBorder(new EmptyBorder(5, 10, 0, 10));
@@ -136,9 +147,6 @@ public class Simulator extends JPanel {
 		automata.addObserver(new Observer() {
 			@Override
 			public void update(Object data) {
-				if (data instanceof Automata) {
-					setAutomata((Automata) data);
-				}
 				variablesTree.recreateTree();
 			}
 		});
@@ -158,6 +166,30 @@ public class Simulator extends JPanel {
 
 	public void setAutomata(Automata automata) {
 		this.automata = automata;
+	}
+
+	public void setCurrentTransition(Transition currentTransition) {
+		this.currentTransition = currentTransition;
+	}
+
+	public Transition getCurrentTransition() {
+		return currentTransition;
+	}
+
+	public void setCurrentState(State currentState) {
+		this.currentState = currentState;
+
+		if (currentState != null) {
+			System.out.println(currentState.debug());
+
+			for (Transition tr : automata.findOutgoingTransitions(currentState.getStateId())) {
+				activeTransitionsTableModel.addTransition(tr.getTransitionId());
+			}
+		}
+	}
+
+	public State getCurrentState() {
+		return currentState;
 	}
 
 	public JPanel getActiveTransitionsPanel() {

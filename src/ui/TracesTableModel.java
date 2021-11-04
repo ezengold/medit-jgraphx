@@ -8,7 +8,7 @@ public class TracesTableModel extends DefaultTableModel {
 		super(data, columns);
 	}
 
-	public void pushTrace(String trace) {
+	public void addTrace(String trace) {
 		insertRow(0, new Object[] { trace });
 	}
 }
