@@ -1,6 +1,7 @@
 package models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class State implements Serializable {
@@ -17,10 +18,13 @@ public class State implements Serializable {
 
 	private boolean isInitial = false;
 
+	private ArrayList<String> propertiesVerified = new ArrayList<>();
+
 	private Position position;
 
 	public State() {
 		this.name = "s" + NB.toString();
+		addProperty(this.name);
 		NB++;
 		this.setStateId(UUID.randomUUID().toString());
 		this.setPosition(0, 0);
@@ -28,6 +32,7 @@ public class State implements Serializable {
 
 	public State(String name) {
 		this.name = name;
+		addProperty(name);
 		NB++;
 		this.setStateId(UUID.randomUUID().toString());
 		this.setPosition(0, 0);
@@ -46,7 +51,12 @@ public class State implements Serializable {
 	}
 
 	public void setName(String name) {
+		if (!isPropertySatisfy(name)) {
+			removeProperty(this.name);
+			addProperty(name);
+		}
 		this.name = name;
+
 	}
 
 	public String getInvariant() {
@@ -77,6 +87,22 @@ public class State implements Serializable {
 			this.position = new Position(x, y);
 		}
 	}
+
+
+	public void addProperty(String property) {
+		if (!isPropertySatisfy(property)) {
+			this.propertiesVerified.add(property);
+		}
+	}
+
+	public void removeProperty(String property) {
+		this.propertiesVerified.remove(property);
+	}
+
+	public boolean isPropertySatisfy(String property) {
+		return this.propertiesVerified.contains(property);
+	}
+
 
 	public String debug() {
 		String verb = "";
