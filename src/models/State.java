@@ -113,7 +113,10 @@ public class State implements Serializable {
 	}
 
 	public boolean isPropertySatisfy(String property) {
-		return this.propertiesVerified.contains(property) && this.propertiesVerified.get(property);
+		if(this.propertiesVerified.get(property) !=null) {
+			return this.propertiesVerified.get(property);
+		}
+		return false;
 	}
 
 

@@ -17,33 +17,21 @@ public class ModelCheckerCTL {
     }
 
 
-    private Boolean isAtomSatisfy(State state,IdentifierExp expression) {
-       Hashtable<String,ArrayList<String>> labels =  automata.getLabelProperties();
-       if (labels.get(state.getStateId()).contains(expression.toString())) {
-           return true;
-       }
-       return false;
-    }
 
-    private void resetAllStates() {
-        for (State state:automata.getStatesList()) {
-            if (state.getPropertiesVerified().size()>1) {
-                state.resetProperties();
-            }
-
-        }
-
-    }
 
     private void markingStates(Exp expression) {
         if(expression instanceof IdentifierExp) {  //Identifier
 
             for (State state:automata.getStatesList()) {
+
+
+
                 if (isAtomSatisfy(state,(IdentifierExp) expression)) {
                     state.addProperty(expression.toString(),true);
                 } else {
                     state.addProperty(expression.toString(),false);
                 }
+
             }
 
         } else if(expression instanceof  BooleanLiteral) {
@@ -92,6 +80,7 @@ public class ModelCheckerCTL {
             for (State state:automata.getStatesList()) {
                 state.removeProperty(expression.toString());
             }
+
 
             for (Transition transition: automata.getTransitionsList()) {
                 State nextState = automata.findState(transition.getTargetStateId());
@@ -187,9 +176,24 @@ public class ModelCheckerCTL {
             }
 
         } else if(expression instanceof ExistsEventually) {
-            markingStates(new ExistsUntil(new BooleanLiteral(true),((ExistsEventually) expression).getExp()));
+            ExistsUntil expTemp = new ExistsUntil(new BooleanLiteral(true),((ExistsEventually) expression).getExp());
+            markingStates(expTemp);
+            for (State state:automata.getStatesList()) {
+                if(state.getPropertiesVerified().get(expTemp.toString()) !=null) {
+                    state.addProperty(expression.toString(),state.getPropertiesVerified().get(expTemp.toString()));
+
+                }
+            }
+
         }else if(expression instanceof AlwaysEventually) {
-            markingStates(new AlwaysUntil(new BooleanLiteral(true),((AlwaysEventually) expression).getExp()));
+            AlwaysUntil expTemp = new AlwaysUntil(new BooleanLiteral(true),((AlwaysEventually) expression).getExp());
+            markingStates(expTemp);
+            for (State state:automata.getStatesList()) {
+                if(state.getPropertiesVerified().get(expTemp.toString()) !=null) {
+                    state.addProperty(expression.toString(),state.getPropertiesVerified().get(expTemp.toString()));
+
+                }
+            }
         }
     }
 
@@ -200,12 +204,31 @@ public class ModelCheckerCTL {
         }
     }
 
+    private Boolean isAtomSatisfy(State state,IdentifierExp expression) {
+        Hashtable<String,ArrayList<String>> labels =  automata.getLabelProperties();
+//        System.out.println(labels);
+        if (labels.get(state.getStateId()).contains(expression.toString())) {
+            return true;
+        }
+        return false;
+    }
+
+    private void resetAllStates() {
+
+        for (State state:automata.getStatesList()) {
+            state.resetProperties();
+            automata.addLabelProperty(state.getStateId(),state.getName());
+        }
+
+    }
+
 
     public ArrayList<State> checkingModel(Exp exp) {
         ArrayList<State> statesPropertyVerified = new ArrayList<>();
         resetAllStates();
         markingStates(exp);
         for (State state:automata.getStatesList()) {
+            System.out.println("STATE "+state.getName()+":: "+state.getPropertiesVerified().get(exp));
             if (state.isPropertySatisfy(exp.toString())) {
                 statesPropertyVerified.add(state);
             }
