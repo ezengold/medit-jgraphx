@@ -1,5 +1,7 @@
 package app;
 
+import models.ModelCheckerCTL;
+import models.State;
 import utils.Compiler;
 import utils.XmlHandler;
 import verifier.ast.*;
@@ -18,12 +20,14 @@ import java.util.HashMap;
 public class VerifierAnalyzer {
     private StatusVerifier statusVerifier;
     private String expression;
+    private App app;
 
 
 
 
-    public VerifierAnalyzer(StatusVerifier statusVerifier) {
+    public VerifierAnalyzer(StatusVerifier statusVerifier,App app) {
         this.statusVerifier = statusVerifier;
+        this.app = app;
     }
 
     public void analyze(String expression) {
@@ -34,7 +38,7 @@ public class VerifierAnalyzer {
             File file = getCompilablesFile();
 
             // PROCEED TO LEXER FOR THE GENERATED FILE
-           testSemantic(file);
+             testSemantic(file);
             App.removeCurrentTempFile();
 
         } catch (IOException e) {
@@ -175,7 +179,32 @@ public class VerifierAnalyzer {
 
         // initiate parse and clock time
         long startTime = System.currentTimeMillis();
-        semantic.analyzeProgram();
+        Exp expression = semantic.analyzeProgram();
+        if(expression != null) {
+            //Model checking
+            ModelCheckerCTL modelCheckerCTL = new ModelCheckerCTL(app.getAutomata());
+           ArrayList<State> statesVerified =  modelCheckerCTL.checkingModel(expression);
+
+            System.out.println("=====START DEBUGG======");
+
+            for (State state:app.getAutomata().getStatesList()) {
+                System.out.println("State Name "+state.getName()+"|| "+state.getPropertiesVerified());
+            }
+            System.out.println("=====END DEBUGG======");
+
+
+           if (!statesVerified.isEmpty()) {
+               statusVerifier.success("The property is satisfied");
+               for (State state: statesVerified) {
+                   System.out.println(state.debug());
+               }
+
+
+           } else {
+               statusVerifier.error("The property is not satisfied");
+           }
+
+        }
         long endTime = System.currentTimeMillis();
 
         // print out statistics

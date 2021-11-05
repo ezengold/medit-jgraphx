@@ -24,7 +24,7 @@ public class Verifier extends JPanel {
 	private JPanel topContainer = new JPanel();
 	private JPanel middleContainer = new JPanel();
 	private StatusVerifier statusVerifier = new StatusVerifier();
-	private VerifierAnalyzer verifierAnalyzer = new VerifierAnalyzer(statusVerifier);
+	private VerifierAnalyzer verifierAnalyzer;
 
 	// table to view request
 	Object[][] data = { { "" } };
@@ -39,7 +39,9 @@ public class Verifier extends JPanel {
 
 	public Verifier(App app) {
 		this.app = app;
-		
+		verifierAnalyzer = new VerifierAnalyzer(statusVerifier,app);
+
+
 		// app.FinalProgram gives the final program after compilation and null otherwise
 		
 		initComponent();

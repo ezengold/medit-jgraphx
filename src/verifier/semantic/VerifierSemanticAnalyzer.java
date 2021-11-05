@@ -2,6 +2,7 @@ package verifier.semantic;
 
 import app.App;
 import app.StatusVerifier;
+import models.ModelCheckerCTL;
 import verifier.ast.*;
 import verifier.parser.VerifierParser;
 
@@ -13,11 +14,12 @@ import java.util.HashMap;
 public class VerifierSemanticAnalyzer {
     private StatusVerifier statusVerifier;
     private VerifierParser parser;
-    private int errors;
+    private int errors = 0;
     private Program program;
     private Exp expVerifier;
     private  HashMap<App.Compilables, ArrayList<String>> elements;
     private ArrayList<Identifier> identifiers;
+
 
 
     public VerifierSemanticAnalyzer(FileReader file, StatusVerifier statusVerifier) throws IOException {
@@ -32,29 +34,37 @@ public class VerifierSemanticAnalyzer {
         return errors;
     }
 
-    public void analyzeProgram() throws IOException {
+    public Exp analyzeProgram() throws IOException {
         program = App.FinalProgram;
         expVerifier = parser.parseExpVerifier();
         identifiers = parser.getIdentifiers();
         checkIdentifiers();
-        if (expVerifier instanceof AlwaysGlobally) {
-            // A[] x>3
-            Exp exp = ((AlwaysGlobally) expVerifier).getExp();
-
-
-        } else if (expVerifier instanceof AlwaysEventually) {
-
-        } else if (expVerifier instanceof AlwaysNext) {
-
-        } else if (expVerifier instanceof ExistsGlobally) {
-
-        } else if (expVerifier instanceof ExistsEventually) {
-
-        } else if (expVerifier instanceof ExistsNext) {
-
+        if (errors == 0) {
+            return expVerifier;
         } else {
-
+            return null;
         }
+
+
+//        if (expVerifier instanceof AlwaysGlobally) {
+//            // A[] x>3
+//            Exp exp = ((AlwaysGlobally) expVerifier).getExp();
+//
+//
+//        } else if (expVerifier instanceof AlwaysEventually) {
+//
+//        } else if (expVerifier instanceof AlwaysNext) {
+//
+//        } else if (expVerifier instanceof ExistsGlobally) {
+//
+//        } else if (expVerifier instanceof ExistsEventually) {
+//
+//        } else if (expVerifier instanceof ExistsNext) {
+//
+//        } else {
+//
+//        }
+
 
     }
 

@@ -2,6 +2,7 @@ package models;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.UUID;
 
 public class State implements Serializable {
@@ -18,13 +19,16 @@ public class State implements Serializable {
 
 	private boolean isInitial = false;
 
-	private ArrayList<String> propertiesVerified = new ArrayList<>();
+	//for verifier
+	private Hashtable<String,Boolean> propertiesVerified = new Hashtable<>();
+	private boolean seenBefore = false;
+	private int degrees = 0;
+
 
 	private Position position;
 
 	public State() {
 		this.name = "s" + NB.toString();
-		addProperty(this.name);
 		NB++;
 		this.setStateId(UUID.randomUUID().toString());
 		this.setPosition(0, 0);
@@ -32,7 +36,6 @@ public class State implements Serializable {
 
 	public State(String name) {
 		this.name = name;
-		addProperty(name);
 		NB++;
 		this.setStateId(UUID.randomUUID().toString());
 		this.setPosition(0, 0);
@@ -53,7 +56,6 @@ public class State implements Serializable {
 	public void setName(String name) {
 		if (!isPropertySatisfy(name)) {
 			removeProperty(this.name);
-			addProperty(name);
 		}
 		this.name = name;
 
@@ -89,18 +91,29 @@ public class State implements Serializable {
 	}
 
 
-	public void addProperty(String property) {
+	public void addProperty(String property,Boolean value) {
 		if (!isPropertySatisfy(property)) {
-			this.propertiesVerified.add(property);
+			this.propertiesVerified.put(property,value);
 		}
 	}
 
 	public void removeProperty(String property) {
-		this.propertiesVerified.remove(property);
+		if(isPropertySatisfy(property)) {
+			this.propertiesVerified.remove(property);
+		}
+
+	}
+
+	public void resetProperties() {
+		this.propertiesVerified = new Hashtable<>();
+	}
+
+	public Hashtable<String,Boolean> getPropertiesVerified() {
+		return propertiesVerified;
 	}
 
 	public boolean isPropertySatisfy(String property) {
-		return this.propertiesVerified.contains(property);
+		return this.propertiesVerified.contains(property) && this.propertiesVerified.get(property);
 	}
 
 
@@ -115,5 +128,21 @@ public class State implements Serializable {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	public boolean isSeenBefore() {
+		return seenBefore;
+	}
+
+	public void setSeenBefore(boolean seenBefore) {
+		this.seenBefore = seenBefore;
+	}
+
+	public int getDegrees() {
+		return degrees;
+	}
+
+	public void setDegrees(int degrees) {
+		this.degrees = degrees;
 	}
 }

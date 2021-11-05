@@ -26,6 +26,7 @@ public class VerifierLexer {
         reservedWords.put("E", TokenType.EXISTS);
         reservedWords.put("->", TokenType.NEXT);
         reservedWords.put("deadlock", TokenType.DEADLOCK);
+        reservedWords.put("until", TokenType.UNTIL);
 
 
 

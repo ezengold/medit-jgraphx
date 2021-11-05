@@ -327,10 +327,18 @@ public class VerifierParser {
                 eat(TokenType.NEXT);
                 return new AlwaysNext(parseExp());
             } else {
-                statusVerifier.error("Syntax is incorrect");
-                eat(TokenType.TEMPORAL_PROPERTY);
-                token = lexer.getToken();
-                return null;
+                Exp lhs = parseExp();
+                if (token.getType() == TokenType.UNTIL) {
+                    eat(TokenType.UNTIL);
+                    Exp rhs = parseExp();
+                    return new AlwaysUntil(lhs,rhs);
+                } else {
+                    statusVerifier.error("Syntax is incorrect");
+                    eat(TokenType.TEMPORAL_PROPERTY);
+                    token = lexer.getToken();
+                    return null;
+                }
+
             }
         } else if(token.getType() == TokenType.EXISTS) {
             eat(TokenType.EXISTS);
@@ -345,11 +353,17 @@ public class VerifierParser {
                 eat(TokenType.NEXT);
                 return new ExistsNext(parseExp());
             } else {
-                statusVerifier.error("Syntax is incorrect");
-                eat(TokenType.TEMPORAL_PROPERTY);
-                token = lexer.getToken();
-
-                return null;
+                Exp lhs = parseExp();
+                if (token.getType() == TokenType.UNTIL) {
+                    eat(TokenType.UNTIL);
+                    Exp rhs = parseExp();
+                    return new ExistsUntil(lhs,rhs);
+                } else {
+                    statusVerifier.error("Syntax is incorrect");
+                    eat(TokenType.TEMPORAL_PROPERTY);
+                    token = lexer.getToken();
+                    return null;
+                }
             }
         } else {
             eat(TokenType.QUANTIFIER);

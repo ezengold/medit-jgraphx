@@ -58,4 +58,6 @@ public interface Visitor {
 	public void visit(ExistsEventually expression);
 	public void visit(AlwaysNext expression);
 	public void visit(ExistsNext expression);
+	public void visit(ExistsUntil expression);
+	public void visit(AlwaysUntil expression);
 }

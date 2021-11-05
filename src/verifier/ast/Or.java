@@ -21,4 +21,9 @@ public class Or implements Exp {
 	public void accept(Visitor v) {
 		v.visit(this);
 	}
+
+	@Override
+	public String toString() {
+		return lhs+" OR "+rhs;
+	}
 }

@@ -20,4 +20,9 @@ public class ExistsNext implements Exp {
         v.visit(this);
     }
 
+    @Override
+    public String toString() {
+        return "E-> "+exp.toString();
+    }
+
 }

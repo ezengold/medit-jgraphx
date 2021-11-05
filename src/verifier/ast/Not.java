@@ -12,7 +12,12 @@ public class Not implements Exp {
 	public Exp getExp() {
 		return exp;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "Not "+exp.toString();
+	}
+
 	public void accept(Visitor v) {
 		v.visit(this);
 	}

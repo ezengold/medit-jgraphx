@@ -26,6 +26,10 @@ public class Automata implements Observable {
 	// hold the engine for computations
 	protected Engine engine;
 
+	//label which map each state to atom properties
+	protected Hashtable<String,ArrayList<String>> labelProperties;
+
+
 	/**
 	 * List of observers to the object
 	 */
@@ -41,6 +45,7 @@ public class Automata implements Observable {
 		this.intVariablesList = new Hashtable<String, IntVariable>();
 		this.boolVariablesList = new Hashtable<String, BooleanVariable>();
 		this.clockVariablesList = new Hashtable<String, ClockVariable>();
+		this.labelProperties = new Hashtable<String,ArrayList<String>>();
 
 		this.engine = new Engine();
 	}
@@ -241,6 +246,17 @@ public class Automata implements Observable {
 
 	public IntVariable findIntVariable(String name) {
 		return this.intVariablesList.get(name);
+	}
+
+
+	public void addLabelProperty(String stateId,String property) {
+		ArrayList<String> properties = new ArrayList<>();
+		properties.add(property);
+		labelProperties.put(stateId,properties);
+	}
+
+	public Hashtable<String, ArrayList<String>> getLabelProperties() {
+		return labelProperties;
 	}
 
 	public Hashtable<String, IntVariable> getIntVariablesList() {

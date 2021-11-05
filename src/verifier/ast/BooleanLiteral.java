@@ -17,4 +17,9 @@ public class BooleanLiteral implements Exp {
 	public void accept(Visitor v) {
 		v.visit(this);
 	}
+
+	@Override
+	public String toString() {
+		return value ?"True":"False";
+	}
 }

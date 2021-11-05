@@ -49,6 +49,7 @@ public class YakinduHanlder {
 		String output = input;
 		for (String token : excepts.keySet()) {
 			output = output.replaceAll(token, excepts.get(token));
+
 		}
 		return output;
 	}
