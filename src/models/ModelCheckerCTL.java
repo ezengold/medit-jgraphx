@@ -194,6 +194,28 @@ public class ModelCheckerCTL {
 
                 }
             }
+        } else if(expression instanceof  AlwaysGlobally) {
+            //AGφ = ¬EF¬φ
+            Not exp = new Not(new ExistsEventually(new Not(((AlwaysGlobally) expression).getExp())));
+            markingStates(exp);
+            for (State state:automata.getStatesList()) {
+                if(state.getPropertiesVerified().get(exp.toString()) !=null) {
+                    state.addProperty(expression.toString(),state.getPropertiesVerified().get(exp.toString()));
+
+                }
+            }
+
+        } else if(expression instanceof  ExistsGlobally) {
+            //EGφ ≣ ¬AF¬φ
+
+            Not notExpression = new Not(new AlwaysEventually(new Not(((ExistsGlobally) expression).getExp())));
+            markingStates(notExpression);
+            for (State state:automata.getStatesList()) {
+                if(state.getPropertiesVerified().get(notExpression.toString()) !=null) {
+                    state.addProperty(expression.toString(),state.getPropertiesVerified().get(notExpression.toString()));
+
+                }
+            }
         }
     }
 
