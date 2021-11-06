@@ -5,7 +5,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-public class Engine {
+public class Engine implements Cloneable {
 	private ScriptEngineManager manager;
 	private ScriptEngine engine;
 
@@ -27,11 +27,25 @@ public class Engine {
 		this.engine = this.manager.getEngineByName("JavaScript");
 	}
 
-	public boolean evaluateCondition(String condition) {
+	public boolean isConditionSatisfied(String condition) {
 		try {
-			return (boolean) this.engine.eval(condition);
+			if (condition.isEmpty() || condition.isBlank()) {
+				return true;
+			} else {
+				return (boolean) ((Object) this.engine.eval(condition));
+			}
 		} catch (ScriptException e) {
 			return false;
+		}
+	}
+
+	@Override
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
 		}
 	}
 

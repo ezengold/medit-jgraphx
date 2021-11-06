@@ -137,6 +137,22 @@ public class Automata implements Observable {
 		return outgoingTransitionList;
 	}
 
+	// return transitions which guards are evaluated true
+	public ArrayList<Transition> findOutgoingValidTransitions(String stateId) {
+		ArrayList<Transition> outgoingTransitionList = new ArrayList<>();
+		Transition transition = null;
+
+		for (int i = 0; i < this.transitionsList.size(); i++) {
+
+			transition = this.transitionsList.get(i);
+
+			if (transition.getSourceStateId().equals(stateId) && isConditionSatisfied(transition.getGuard())) {
+				outgoingTransitionList.add(transition);
+			}
+		}
+		return outgoingTransitionList;
+	}
+
 	public ArrayList<State> findOutgoingStates(String stateId) {
 		ArrayList<State> outgoingStatesList = new ArrayList<>();
 		Transition transition = null;
@@ -152,8 +168,8 @@ public class Automata implements Observable {
 		return outgoingStatesList;
 	}
 
-	public boolean evaluateCondition(String condition) {
-		return this.engine.evaluateCondition(condition.trim());
+	public boolean isConditionSatisfied(String condition) {
+		return this.engine.isConditionSatisfied(condition.trim());
 	}
 
 	public void executeUpdates(String statement) {
@@ -307,7 +323,8 @@ public class Automata implements Observable {
 		System.out.println("\nStructure of " + getName() + "\n");
 
 		System.out.println("                    INIT STATE                    \n");
-		System.out.println("\nInitial State (" + getInitialState() != null ? getInitialState().getName() : "No state" + ")");
+		System.out.println(
+				"\nInitial State (" + getInitialState() != null ? getInitialState().getName() : "No state" + ")");
 		System.out.println("");
 
 		System.out.println("                      STATES                      \n");

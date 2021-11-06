@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.*;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -43,7 +44,7 @@ import models.State;
 import models.Transition;
 import ui.ConfigStateDialog;
 import ui.ConfigTransitionDialog;
-import ui.MeGraphComponent;
+import ui.GraphComponent;
 import utils.Compiler;
 import utils.EditorFileFilter;
 import utils.EditorKeyboardHandler;
@@ -51,7 +52,7 @@ import utils.Observer;
 import utils.XmlHandler;
 import verifier.ast.Program;
 import verifier.semantic.MeSemanticAnalyzer;
-import ui.MeMenuBar;
+import ui.MenuBar;
 
 public class App extends JPanel {
 
@@ -240,7 +241,7 @@ public class App extends JPanel {
 
 				App app = new App();
 
-				app.createFrame(new MeMenuBar(app)).setVisible(true);
+				app.createFrame(new MenuBar(app)).setVisible(true);
 			}
 		});
 	}
@@ -254,7 +255,12 @@ public class App extends JPanel {
 
 		final mxGraph graph = new mxGraph();
 
-		this.graphComponent = new MeGraphComponent(graph);
+		this.graphComponent = new GraphComponent(graph);
+		graphComponent.setBorder(null);
+
+		JPanel graphComponentPanel = new JPanel(new BorderLayout());
+		graphComponentPanel.setBorder(new CompoundBorder(BorderFactory.createTitledBorder(" Zone de dessin "), new EmptyBorder(0, 5, 5, 5)));
+		graphComponentPanel.add(graphComponent, BorderLayout.CENTER);
 
 		graph.insertVertex(graph.getDefaultParent(), s0.getName(), s0, 20, 20, 40, 40);
 
@@ -342,12 +348,16 @@ public class App extends JPanel {
 		// Creates the graph outline component
 		this.graphOutline = new mxGraphOutline(graphComponent);
 
+		JPanel graphOutlinePanel = new JPanel(new BorderLayout());
+		graphOutlinePanel.setBorder(new CompoundBorder(BorderFactory.createTitledBorder(" Zoom "), new EmptyBorder(0, 5, 5, 5)));
+		graphOutlinePanel.add(graphOutline, BorderLayout.CENTER);
+
 		this.navComponent = createNavComponent();
 
-		JSplitPane leftInner = new JSplitPane(JSplitPane.VERTICAL_SPLIT, this.navComponent, this.graphOutline);
+		JSplitPane leftInner = new JSplitPane(JSplitPane.VERTICAL_SPLIT, this.navComponent, graphOutlinePanel);
 		leftInner.setDividerLocation(350);
 		leftInner.setResizeWeight(1);
-		leftInner.setDividerSize(3);
+		leftInner.setDividerSize(5);
 		leftInner.setBorder(null);
 
 		JPanel leftWrapper = new JPanel(new BorderLayout());
@@ -356,23 +366,24 @@ public class App extends JPanel {
 
 		this.consolePanel = createConsolePanel();
 
-		JSplitPane consoleSpliter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, graphComponent, consolePanel);
-		consoleSpliter.setOneTouchExpandable(true);
+		JSplitPane consoleSpliter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, graphComponentPanel, consolePanel);
 		consoleSpliter.setDividerLocation(600);
-		consoleSpliter.setDividerSize(10);
+		consoleSpliter.setResizeWeight(1);
+		consoleSpliter.setDividerSize(5);
 		consoleSpliter.setBorder(null);
 
 		JSplitPane mainWrapper = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftWrapper, consoleSpliter);
-		mainWrapper.setOneTouchExpandable(true);
 		mainWrapper.setDividerLocation(250);
+		mainWrapper.setResizeWeight(1);
 		mainWrapper.setDividerSize(5);
+		mainWrapper.setBorder(null);
 
 		// Creates the status bar
 		statusBar = createStatusBar();
 
-		this.setLayout(new BorderLayout());
-		this.add(mainWrapper, BorderLayout.CENTER);
-		this.add(statusBar, BorderLayout.SOUTH);
+		setLayout(new BorderLayout());
+		add(mainWrapper, BorderLayout.CENTER);
+		add(statusBar, BorderLayout.SOUTH);
 
 		// Handle when graph repaint Event
 		installRepaintListener();
@@ -395,7 +406,7 @@ public class App extends JPanel {
 		return this;
 	}
 
-	public JFrame createFrame(MeMenuBar menuBar) {
+	public JFrame createFrame(MenuBar menuBar) {
 		this.mainFrame = new JFrame(this.appTitle);
 		mainFrame.setLocationRelativeTo(null);
 		mainFrame.setSize(1200, 700);
@@ -496,12 +507,9 @@ public class App extends JPanel {
 
 	public JPanel createNavComponent() {
 		JPanel nav = new JPanel();
-		nav.setLayout(new BorderLayout(5, 5));
-
-		JLabel title = new JLabel("Déclarations globales");
-		title.setBorder(new EmptyBorder(10, 10, 10, 10));
-		title.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
-		nav.add(title, BorderLayout.NORTH);
+		nav.setLayout(new BorderLayout());
+		nav.setBorder(new CompoundBorder(BorderFactory.createTitledBorder(" Déclarations globales "),
+				new EmptyBorder(0, 5, 5, 5)));
 
 		this.area = new JTextArea();
 		area.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -509,7 +517,7 @@ public class App extends JPanel {
 		area.setWrapStyleWord(true);
 		area.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
 		JScrollPane scrollArea = new JScrollPane(area);
-		scrollArea.setBorder(new EmptyBorder(3, 3, 3, 3));
+		scrollArea.setBorder(new EmptyBorder(5, 5, 5, 5));
 		nav.add(scrollArea, BorderLayout.CENTER);
 
 		area.addKeyListener(new KeyListener() {
@@ -552,6 +560,7 @@ public class App extends JPanel {
 		newGraph.addListener(mxEvent.CELLS_REMOVED, cellsRemovedHandler);
 
 		this.graphComponent.setGraph(newGraph);
+		this.graphOutline.setGraphComponent(graphComponent);
 		this.setModified(false);
 	}
 
@@ -786,7 +795,7 @@ public class App extends JPanel {
 					mainTab.setSelectedIndex(wantedTabIndex);
 
 					if (wantedTabIndex == 1) {
-						simulatorPanel.setCurrentState(automata.getInitialState());
+						refreshSimulator();
 					}
 				}
 			} else {
@@ -859,6 +868,12 @@ public class App extends JPanel {
 			if (currentTempFile.delete())
 				currentTempFile = null;
 		}
+	}
+
+	public void refreshSimulator() {
+		simulatorPanel.setCurrentState(automata.getInitialState());
+		simulatorPanel.getTracesTableModel().removeAllTraces();
+		simulatorPanel.recreateSimulatorGraph(graphComponent.getGraph());
 	}
 
 	/**

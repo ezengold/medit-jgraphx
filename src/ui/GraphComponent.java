@@ -16,14 +16,14 @@ import com.mxgraph.view.mxGraph;
 import models.State;
 import models.Transition;
 
-public class MeGraphComponent extends mxGraphComponent {
+public class GraphComponent extends mxGraphComponent {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2637031447186110868L;
 
-	public MeGraphComponent(JGraphXAdapter<State, Transition> adapter) {
+	public GraphComponent(JGraphXAdapter<State, Transition> adapter) {
 		super(adapter);
 
 		setPageVisible(false);
@@ -56,7 +56,7 @@ public class MeGraphComponent extends mxGraphComponent {
 		getViewport().setBackground(Color.WHITE);
 	}
 
-	public MeGraphComponent(mxGraph graphData) {
+	public GraphComponent(mxGraph graphData) {
 		super(graphData);
 
 		setPageVisible(false);
