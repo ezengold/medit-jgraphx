@@ -94,6 +94,7 @@ public class MeParser {
 		this.conditions = new ArrayList<Exp>();
 		this.log = log;
 		this.automata = automata;
+		this.errors = 0;
 	}
 
 	// verifies current token type and grabs next token or reports error
@@ -110,13 +111,15 @@ public class MeParser {
 	// reports an error to the console
 	private void error(TokenType type) {
 		// only report error once per erroneous token
-		if (token == errorToken)
+		if (token == errorToken) {
 			return;
+		}
+
 		// print error report
+		setErrors(errors + 1);
 		log.error(token.getType().toString() + " at line " + token.getLineNumber() + ", column "
 				+ token.getColumnNumber() + "; Expected " + type);
 		errorToken = token; // set error token to prevent cascading
-		errors++; // increment error counter
 	}
 
 	// skip tokens until match in follow set for error recovery
@@ -133,6 +136,10 @@ public class MeParser {
 	// number of reported syntax errors
 	public int getErrors() {
 		return errors;
+	}
+
+	public void setErrors(int errors) {
+		this.errors = errors;
 	}
 
 	public ArrayList<VarDecl> getDecelarations() {

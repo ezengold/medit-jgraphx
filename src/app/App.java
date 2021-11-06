@@ -259,7 +259,8 @@ public class App extends JPanel {
 		graphComponent.setBorder(null);
 
 		JPanel graphComponentPanel = new JPanel(new BorderLayout());
-		graphComponentPanel.setBorder(new CompoundBorder(BorderFactory.createTitledBorder(" Zone de dessin "), new EmptyBorder(0, 5, 5, 5)));
+		graphComponentPanel.setBorder(
+				new CompoundBorder(BorderFactory.createTitledBorder(" Zone de dessin "), new EmptyBorder(0, 5, 5, 5)));
 		graphComponentPanel.add(graphComponent, BorderLayout.CENTER);
 
 		graph.insertVertex(graph.getDefaultParent(), s0.getName(), s0, 20, 20, 40, 40);
@@ -349,7 +350,8 @@ public class App extends JPanel {
 		this.graphOutline = new mxGraphOutline(graphComponent);
 
 		JPanel graphOutlinePanel = new JPanel(new BorderLayout());
-		graphOutlinePanel.setBorder(new CompoundBorder(BorderFactory.createTitledBorder(" Zoom "), new EmptyBorder(0, 5, 5, 5)));
+		graphOutlinePanel
+				.setBorder(new CompoundBorder(BorderFactory.createTitledBorder(" Zoom "), new EmptyBorder(0, 5, 5, 5)));
 		graphOutlinePanel.add(graphOutline, BorderLayout.CENTER);
 
 		this.navComponent = createNavComponent();
@@ -606,10 +608,11 @@ public class App extends JPanel {
 		MouseWheelListener wheelTracker = new MouseWheelListener() {
 			public void mouseWheelMoved(MouseWheelEvent e) {
 				if (e.getSource() instanceof mxGraphOutline || e.isControlDown()) {
-					App.this.mouseWheelMoved(e);
+					getInstance().mouseWheelMoved(e);
 				}
 			}
 		};
+		
 		graphOutline.addMouseWheelListener(wheelTracker);
 		graphComponent.addMouseWheelListener(wheelTracker);
 
@@ -871,9 +874,9 @@ public class App extends JPanel {
 	}
 
 	public void refreshSimulator() {
+		simulatorPanel.recreateSimulatorGraph(graphComponent.getGraph());
 		simulatorPanel.setCurrentState(automata.getInitialState());
 		simulatorPanel.getTracesTableModel().removeAllTraces();
-		simulatorPanel.recreateSimulatorGraph(graphComponent.getGraph());
 	}
 
 	/**
@@ -892,7 +895,6 @@ public class App extends JPanel {
 	 * @param action
 	 * @return a new Action bound to the specified string name and icon
 	 */
-	@SuppressWarnings("serial")
 	public Action bind(String name, final Action action, String iconUrl) {
 		AbstractAction newAction = new AbstractAction(name,
 				(iconUrl != null) ? new ImageIcon(App.class.getResource(iconUrl)) : null) {

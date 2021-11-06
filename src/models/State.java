@@ -1,7 +1,6 @@
 package models;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.UUID;
 
@@ -19,11 +18,12 @@ public class State implements Serializable, Cloneable {
 
 	private boolean isInitial = false;
 
-	//for verifier
-	private Hashtable<String,Boolean> propertiesVerified = new Hashtable<>();
-	private boolean seenBefore = false;
-	private int degrees = 0;
+	// for verifier
+	private Hashtable<String, Boolean> propertiesVerified = new Hashtable<>();
 
+	private boolean seenBefore = false;
+
+	private int degrees = 0;
 
 	private Position position;
 
@@ -58,7 +58,6 @@ public class State implements Serializable, Cloneable {
 			removeProperty(this.name);
 		}
 		this.name = name;
-
 	}
 
 	public String getInvariant() {
@@ -90,35 +89,32 @@ public class State implements Serializable, Cloneable {
 		}
 	}
 
-
-	public void addProperty(String property,Boolean value) {
+	public void addProperty(String property, Boolean value) {
 		if (!isPropertySatisfy(property)) {
-			this.propertiesVerified.put(property,value);
+			this.propertiesVerified.put(property, value);
 		}
 	}
 
 	public void removeProperty(String property) {
-		if(isPropertySatisfy(property)) {
+		if (isPropertySatisfy(property)) {
 			this.propertiesVerified.remove(property);
 		}
-
 	}
 
 	public void resetProperties() {
 		this.propertiesVerified = new Hashtable<>();
 	}
 
-	public Hashtable<String,Boolean> getPropertiesVerified() {
+	public Hashtable<String, Boolean> getPropertiesVerified() {
 		return propertiesVerified;
 	}
 
 	public boolean isPropertySatisfy(String property) {
-		if(this.propertiesVerified.get(property) !=null) {
+		if (this.propertiesVerified.get(property) != null) {
 			return this.propertiesVerified.get(property);
 		}
 		return false;
 	}
-
 
 	public String debug() {
 		String verb = "";
@@ -148,6 +144,7 @@ public class State implements Serializable, Cloneable {
 	public void setDegrees(int degrees) {
 		this.degrees = degrees;
 	}
+
 	@Override
 	protected Object clone() {
 		try {

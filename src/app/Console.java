@@ -45,7 +45,7 @@ public class Console extends JPanel {
 
 		add(header, BorderLayout.NORTH);
 
-		content = new JTextArea("Aucune erreur");
+		content = new JTextArea("");
 		content.setEditable(false);
 		content.setForeground(isError ? Color.RED : Color.decode("#9099ae"));
 		content.setLineWrap(true);
