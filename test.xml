@@ -1,41 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- DTD GOES HERE -->
 <content>
-	<declarations></declarations>
+	<declarations> </declarations>
 	<model>
-		<location id="s0" stateId="727a84e7-c219-4bb8-a401-78217830f9c6" x="20.0" y="20.0" isInitial="1">
-			<name>s2</name>
+		<location id="s5" stateId="75e14b83-1545-473e-a67e-eb9c4a8c47f5" x="60.0" y="10.0" isInitial="1">
+			<name>p</name>
 			<invariant></invariant>
 		</location>
-		<location id="2" stateId="badb3718-1c1f-40b0-94bf-0056217782b2" x="290.0" y="120.0" isInitial="0">
-			<name>s0</name>
+		<location id="27" stateId="1d599db6-9dc5-49cb-8e31-3afa6a6a7055" x="250.0" y="100.0" isInitial="0">
+			<name>notp</name>
 			<invariant></invariant>
 		</location>
-		<location id="4" stateId="3ac6c2c8-422e-4775-b3d1-6a27ba204d14" x="90.0" y="170.0" isInitial="0">
-			<name>s0</name>
-			<invariant></invariant>
-		</location>
-		<location id="6" stateId="9ce3f5f3-ba5c-4488-afd5-c68a75565822" x="440.0" y="240.0" isInitial="0">
-			<name>s2</name>
-			<invariant></invariant>
-		</location>
-		<location id="8" stateId="28165b40-0273-44ff-bf5b-58dd944ec3a9" x="240.0" y="230.0" isInitial="0">
-			<name>s2</name>
-			<invariant></invariant>
-		</location>
-		<transition id="3" transitionId="8163f104-7ec0-4a65-92c6-17b2097dbf49" source="s0" sourceX="40.0" sourceY="40.0" target="2" targetX="320.0" targetY="140.0">
+		<transition id="28" transitionId="541ce253-9c2f-4acc-a028-c9437b9b75ae" source="s5" sourceX="90.0" sourceY="130.0" target="27" targetX="280.0" targetY="120.0">
 			<guard></guard>
 			<updates></updates>
 		</transition>
-		<transition id="5" transitionId="cc9bd92c-b19a-42c4-b370-ad37bd89e915" source="s0" sourceX="40.0" sourceY="40.0" target="4" targetX="110.0" targetY="190.0">
+		<location id="29" stateId="cc810b91-1fb7-44aa-bc11-d7fd374c18c9" x="440.0" y="100.0" isInitial="0">
+			<name>p</name>
+			<invariant></invariant>
+		</location>
+		<transition id="30" transitionId="63a99009-7dcb-4fd8-9093-995f75c3c249" source="27" sourceX="270.0" sourceY="120.0" target="29" targetX="460.0" targetY="120.0">
 			<guard></guard>
 			<updates></updates>
 		</transition>
-		<transition id="7" transitionId="9bef58f6-f0cb-4509-8570-ee07da14f3e7" source="2" sourceX="310.0" sourceY="140.0" target="6" targetX="460.0" targetY="260.0">
+		<location id="31" stateId="b52794cf-933c-4b8b-993b-2f474ada4ba6" x="400.0" y="340.0" isInitial="0">
+			<name>notp</name>
+			<invariant></invariant>
+		</location>
+		<transition id="32" transitionId="0aa74ee8-2eee-4eea-82b3-e6d0c1323b65" source="29" sourceX="460.0" sourceY="120.0" target="31" targetX="430.0" targetY="360.0">
 			<guard></guard>
 			<updates></updates>
 		</transition>
-		<transition id="9" transitionId="5035cc7e-2083-4cef-9087-be45dc99df95" source="4" sourceX="110.0" sourceY="190.0" target="8" targetX="270.0" targetY="260.0">
+		<location id="33" stateId="82f62598-40f9-461d-bbe8-3b6f93d92bae" x="230.0" y="340.0" isInitial="0">
+			<name>p</name>
+			<invariant></invariant>
+		</location>
+		<transition id="34" transitionId="38c8a06d-843d-4f36-b395-5aefb7a21e09" source="31" sourceX="420.0" sourceY="360.0" target="33" targetX="250.0" targetY="360.0">
+			<guard></guard>
+			<updates></updates>
+		</transition>
+		<transition id="35" transitionId="a98af26f-5846-4687-b3a7-b131f8bf3c56" source="33" sourceX="250.0" sourceY="360.0" target="s5" targetX="80.0" targetY="140.0">
+			<guard></guard>
+			<updates></updates>
+		</transition>
+		<transition id="39" transitionId="4ea30f29-e1e9-4ed5-ab82-5b9f1bb2520a" source="27" sourceX="270.0" sourceY="120.0" target="s5" targetX="100.0" targetY="130.0">
+			<guard></guard>
+			<updates></updates>
+		</transition>
+		<transition id="40" transitionId="fb8e14f9-9627-4305-8757-e32d7abd7350" source="29" sourceX="460.0" sourceY="120.0" target="s5" targetX="90.0" targetY="140.0">
 			<guard></guard>
 			<updates></updates>
 		</transition>

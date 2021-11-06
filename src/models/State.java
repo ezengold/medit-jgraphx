@@ -92,9 +92,7 @@ public class State implements Serializable {
 
 
 	public void addProperty(String property,Boolean value) {
-		if (!isPropertySatisfy(property)) {
 			this.propertiesVerified.put(property,value);
-		}
 	}
 
 	public void removeProperty(String property) {

@@ -183,7 +183,8 @@ public class VerifierAnalyzer {
         if(expression != null) {
             //Model checking
             ModelCheckerCTL modelCheckerCTL = new ModelCheckerCTL(app.getAutomata());
-           ArrayList<State> statesVerified =  modelCheckerCTL.checkingModel(expression);
+            boolean isVerified = modelCheckerCTL.satisfies(app.getAutomata(),expression);
+
 
             System.out.println("=====START DEBUGG======");
 
@@ -192,17 +193,13 @@ public class VerifierAnalyzer {
             }
             System.out.println("=====END DEBUGG======");
 
+            if(isVerified) {
+                statusVerifier.success("The property is satisfied");
+            } else {
+                statusVerifier.error("The property is not satisfied");
+            }
 
-           if (!statesVerified.isEmpty()) {
-               statusVerifier.success("The property is satisfied");
-               for (State state: statesVerified) {
-                   System.out.println(state.debug());
-               }
 
-
-           } else {
-               statusVerifier.error("The property is not satisfied");
-           }
 
         }
         long endTime = System.currentTimeMillis();
