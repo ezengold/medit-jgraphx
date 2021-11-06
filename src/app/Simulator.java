@@ -10,6 +10,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import com.mxgraph.model.mxCell;
 import com.mxgraph.view.mxGraph;
 
 import javax.swing.BorderFactory;
@@ -24,6 +25,7 @@ import models.State;
 import models.Trace;
 import models.Transition;
 import ui.Button;
+import ui.GraphStyles;
 import ui.SimulatorGraphComponent;
 import ui.TraceCellRenderer;
 import ui.TracesTableModel;
@@ -81,6 +83,8 @@ public class Simulator extends JPanel {
 	public Simulator(App app) {
 		this.app = app;
 		this.automata = app.getAutomata();
+
+		this.graphComponent = new SimulatorGraphComponent(app.graphComponent.getGraph());
 
 		this.setCurrentState(automata.getInitialState());
 
@@ -152,10 +156,10 @@ public class Simulator extends JPanel {
 		leftSplit.setBorder(null);
 
 		// VISUALIZATION
-		this.graphComponent = new SimulatorGraphComponent(app.graphComponent.getGraph());
 
 		JPanel graphComponentPanel = new JPanel(new BorderLayout());
-		graphComponentPanel.setBorder(new CompoundBorder(BorderFactory.createTitledBorder(" Visualisation "), new EmptyBorder(0, 5, 5, 5)));
+		graphComponentPanel.setBorder(
+				new CompoundBorder(BorderFactory.createTitledBorder(" Visualisation "), new EmptyBorder(0, 5, 5, 5)));
 
 		JScrollPane graphComponentScrollPane = new JScrollPane(graphComponent);
 		graphComponentScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -201,16 +205,49 @@ public class Simulator extends JPanel {
 	 */
 	public void setCurrentTransition(Transition currentTransition) {
 		this.currentTransition = currentTransition;
+		setTransitionActiveOnGraph(currentTransition);
 	}
 
 	public Transition getCurrentTransition() {
 		return currentTransition;
 	}
 
+	public void setTransitionActiveOnGraph(Transition... transitions) {
+		if (graphComponent != null && graphComponent.getGraph() != null) {
+			mxGraph graph = graphComponent.getGraph();
+
+			for (Object el : graph.getChildCells(graph.getDefaultParent())) {
+				if (el instanceof mxCell) {
+					mxCell cell = (mxCell) el;
+
+					if (cell.isEdge() && (cell.getValue() != null) && (cell.getValue() instanceof Transition)) {
+						Transition transition = (Transition) cell.getValue();
+
+						graph.getModel().beginUpdate();
+						try {
+							if (isTransitionIn(transition, transitions)) {
+								graph.getModel().setStyle(cell,
+										"strokeColor=" + GraphStyles.ACTIVE_EDGE_STROKE_COLOR + ";strokeWidth=2");
+							} else {
+								graph.getModel().setStyle(cell, "");
+							}
+						} finally {
+							graph.getModel().endUpdate();
+							graph.refresh();
+							graph.repaint();
+						}
+					}
+				}
+			}
+		}
+	}
+
 	public void setCurrentState(State currentState) {
 		this.currentState = currentState;
 
 		if (currentState != null) {
+			setStatesActiveOnGraph(currentState);
+
 			// clear transitions model and recreate
 			activeTransitionsTableModel.removeAllTransitions();
 
@@ -220,6 +257,38 @@ public class Simulator extends JPanel {
 
 			activeTransitionsTable.revalidate();
 			activeTransitionsTable.repaint();
+		}
+	}
+
+	public void setStatesActiveOnGraph(State... states) {
+		if (graphComponent != null && graphComponent.getGraph() != null) {
+			mxGraph graph = graphComponent.getGraph();
+
+			for (Object el : graph.getChildCells(graph.getDefaultParent())) {
+				if (el instanceof mxCell) {
+					mxCell cell = (mxCell) el;
+
+					if (cell.isVertex() && (cell.getValue() != null) && (cell.getValue() instanceof State)) {
+						State state = (State) cell.getValue();
+
+						graph.getModel().beginUpdate();
+						try {
+							if (isStateIn(state, states)) {
+								graph.getModel().setStyle(cell,
+										"fillColor=" + GraphStyles.ACTIVE_FILL_COLOR + ";strokeColor="
+												+ GraphStyles.ACTIVE_STROKE_COLOR + ";fontColor="
+												+ GraphStyles.ACTIVE_FONT_COLOR);
+							} else {
+								graph.getModel().setStyle(cell, "");
+							}
+						} finally {
+							graph.getModel().endUpdate();
+							graph.refresh();
+							graph.repaint();
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -291,11 +360,18 @@ public class Simulator extends JPanel {
 
 	public void handleNextClicked() {
 		Transition oldCurrentTransition = currentTransition;
-
 		saveTrace();
-
 		setCurrentState(automata.findState(oldCurrentTransition.getTargetStateId()));
-		nextTransitionButton.setEnabled(false);
+
+		ArrayList<Transition> possibleNexts = automata.findOutgoingValidTransitions(currentState.getStateId());
+
+		if (possibleNexts.size() > 0) {
+			activeTransitionsTable.setRowSelectionInterval(0, 0);
+			nextTransitionButton.setEnabled(true);
+		} else {
+			setCurrentTransition(null);
+			nextTransitionButton.setEnabled(false);
+		}
 	}
 
 	public void handlePreviousClicked() {
@@ -395,5 +471,21 @@ public class Simulator extends JPanel {
 				//
 			}
 		}
+	}
+
+	private boolean isStateIn(State state, State[] states) {
+		for (State s : states) {
+			if (s != null && s.getStateId().equals(state.getStateId()))
+				return true;
+		}
+		return false;
+	}
+
+	private boolean isTransitionIn(Transition transition, Transition[] transitions) {
+		for (Transition t : transitions) {
+			if (t != null && t.getTransitionId().equals(transition.getTransitionId()))
+				return true;
+		}
+		return false;
 	}
 }

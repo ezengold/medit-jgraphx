@@ -259,7 +259,8 @@ public class App extends JPanel {
 		graphComponent.setBorder(null);
 
 		JPanel graphComponentPanel = new JPanel(new BorderLayout());
-		graphComponentPanel.setBorder(new CompoundBorder(BorderFactory.createTitledBorder(" Zone de dessin "), new EmptyBorder(0, 5, 5, 5)));
+		graphComponentPanel.setBorder(
+				new CompoundBorder(BorderFactory.createTitledBorder(" Zone de dessin "), new EmptyBorder(0, 5, 5, 5)));
 		graphComponentPanel.add(graphComponent, BorderLayout.CENTER);
 
 		graph.insertVertex(graph.getDefaultParent(), s0.getName(), s0, 20, 20, 40, 40);
@@ -349,7 +350,8 @@ public class App extends JPanel {
 		this.graphOutline = new mxGraphOutline(graphComponent);
 
 		JPanel graphOutlinePanel = new JPanel(new BorderLayout());
-		graphOutlinePanel.setBorder(new CompoundBorder(BorderFactory.createTitledBorder(" Zoom "), new EmptyBorder(0, 5, 5, 5)));
+		graphOutlinePanel
+				.setBorder(new CompoundBorder(BorderFactory.createTitledBorder(" Zoom "), new EmptyBorder(0, 5, 5, 5)));
 		graphOutlinePanel.add(graphOutline, BorderLayout.CENTER);
 
 		this.navComponent = createNavComponent();
@@ -871,9 +873,10 @@ public class App extends JPanel {
 	}
 
 	public void refreshSimulator() {
+		setModified(false);
+		simulatorPanel.recreateSimulatorGraph(graphComponent.getGraph());
 		simulatorPanel.setCurrentState(automata.getInitialState());
 		simulatorPanel.getTracesTableModel().removeAllTraces();
-		simulatorPanel.recreateSimulatorGraph(graphComponent.getGraph());
 	}
 
 	/**
