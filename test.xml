@@ -4,7 +4,7 @@
 	<declarations></declarations>
 	<model>
 		<location id="s0" stateId="727a84e7-c219-4bb8-a401-78217830f9c6" x="20.0" y="20.0" isInitial="1">
-			<name>s2</name>
+			<name>s0</name>
 			<invariant></invariant>
 		</location>
 		<location id="2" stateId="badb3718-1c1f-40b0-94bf-0056217782b2" x="290.0" y="120.0" isInitial="0">
@@ -12,11 +12,11 @@
 			<invariant></invariant>
 		</location>
 		<location id="4" stateId="3ac6c2c8-422e-4775-b3d1-6a27ba204d14" x="90.0" y="170.0" isInitial="0">
-			<name>s0</name>
+			<name>s2</name>
 			<invariant></invariant>
 		</location>
 		<location id="6" stateId="9ce3f5f3-ba5c-4488-afd5-c68a75565822" x="440.0" y="240.0" isInitial="0">
-			<name>s2</name>
+			<name>s0</name>
 			<invariant></invariant>
 		</location>
 		<location id="8" stateId="28165b40-0273-44ff-bf5b-58dd944ec3a9" x="240.0" y="230.0" isInitial="0">

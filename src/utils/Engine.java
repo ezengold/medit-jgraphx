@@ -29,7 +29,7 @@ public class Engine implements Cloneable {
 
 	public boolean isConditionSatisfied(String condition) {
 		try {
-			if (condition.isEmpty() || condition.isBlank()) {
+			if (condition.isEmpty()) {
 				return true;
 			} else {
 				return (boolean) ((Object) this.engine.eval(condition));
