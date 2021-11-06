@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.UUID;
 
-public class State implements Serializable {
+public class State implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = -1569774286174664135L;
 
@@ -122,11 +122,11 @@ public class State implements Serializable {
 
 	public String debug() {
 		String verb = "";
-		verb += "StateId ="+ this.getStateId()+" || State Name = "+this.getName()+" || Is initial = "+this.isInitial()+
-		" || Position X = "+this.getPosition().getX()+" || Position Y = "+this.getPosition().getY()+ "\n";
+		verb += "StateId =" + this.getStateId() + " || State Name = " + this.getName() + " || Is initial = "
+				+ this.isInitial() + " || Position X = " + this.getPosition().getX() + " || Position Y = "
+				+ this.getPosition().getY() + "\n";
 		return verb;
 	}
-
 
 	@Override
 	public String toString() {
@@ -147,5 +147,14 @@ public class State implements Serializable {
 
 	public void setDegrees(int degrees) {
 		this.degrees = degrees;
+	}
+	@Override
+	protected Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }
