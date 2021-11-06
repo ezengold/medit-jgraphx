@@ -18,7 +18,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 
 import models.Automata;
 import models.State;
@@ -52,6 +54,8 @@ public class Simulator extends JPanel {
 
 	private Transition currentTransition;
 
+	private JTextArea currentTransitionDetails;
+
 	private JPanel activeTransitionsPanel;
 
 	private JTable activeTransitionsTable;
@@ -61,6 +65,8 @@ public class Simulator extends JPanel {
 	private Button nextTransitionButton;
 
 	private Button previousTransitionButton;
+
+	private Button simulateButton;
 
 	// handle simulation traces
 
@@ -107,19 +113,24 @@ public class Simulator extends JPanel {
 		activeTransitionsTableScrollPane.setBorder(new EmptyBorder(10, 10, 10, 10));
 		activeTransitionsPanel.add(activeTransitionsTableScrollPane, BorderLayout.CENTER);
 
-		this.nextTransitionButton = new Button("Suivant");
+		this.nextTransitionButton = new Button("Prendre");
 		nextTransitionButton.setBackground(Color.decode("#9099ae"));
 		nextTransitionButton.setEnabled(false);
 
 		this.previousTransitionButton = new Button("Previous");
 		previousTransitionButton.setEnabled(false);
 
+		this.simulateButton = new Button("Simuler");
+		simulateButton.setBackground(Color.decode(GraphStyles.INIT_FILL_COLOR.toString()));
+		simulateButton.setForeground(Color.WHITE);
+
 		installActiveTransitionsHandlers();
 
 		JPanel activesTransitionsButtonsContainer = new JPanel();
 		activesTransitionsButtonsContainer.setBorder(new EmptyBorder(5, 10, 0, 10));
-		activesTransitionsButtonsContainer.add(previousTransitionButton);
+		// activesTransitionsButtonsContainer.add(previousTransitionButton);
 		activesTransitionsButtonsContainer.add(nextTransitionButton);
+		activesTransitionsButtonsContainer.add(simulateButton);
 
 		activeTransitionsPanel.add(activesTransitionsButtonsContainer, BorderLayout.SOUTH);
 
@@ -149,7 +160,16 @@ public class Simulator extends JPanel {
 		// VARIABLES
 		this.variablesTree = new VariablesTree(automata);
 
-		JSplitPane leftSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftInnerSplit, variablesTree);
+		JPanel currentTransitionDetailsPanel = createCurrentTransitionDetailsPanel();
+
+		JSplitPane variablesSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, currentTransitionDetailsPanel,
+				variablesTree);
+		variablesSplit.setDividerLocation(200);
+		variablesSplit.setResizeWeight(1);
+		variablesSplit.setDividerSize(3);
+		variablesSplit.setBorder(null);
+
+		JSplitPane leftSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftInnerSplit, variablesSplit);
 		leftSplit.setDividerLocation(350);
 		leftSplit.setResizeWeight(1);
 		leftSplit.setDividerSize(3);
@@ -205,11 +225,47 @@ public class Simulator extends JPanel {
 	 */
 	public void setCurrentTransition(Transition currentTransition) {
 		this.currentTransition = currentTransition;
+		printTransitionDetails(currentTransition);
 		setTransitionActiveOnGraph(currentTransition);
 	}
 
 	public Transition getCurrentTransition() {
 		return currentTransition;
+	}
+
+	public JTextArea getCurrentTransitionDetails() {
+		return currentTransitionDetails;
+	}
+
+	public void setCurrentTransitionDetails(JTextArea currentTransitionDetails) {
+		this.currentTransitionDetails = currentTransitionDetails;
+	}
+
+	public JPanel createCurrentTransitionDetailsPanel() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		panel.setBorder(new CompoundBorder(BorderFactory.createTitledBorder(" Détails "), new EmptyBorder(0, 5, 5, 5)));
+
+		this.currentTransitionDetails = new JTextArea("");
+		currentTransitionDetails.setEditable(false);
+		currentTransitionDetails.setLineWrap(true);
+		currentTransitionDetails.setWrapStyleWord(true);
+		currentTransitionDetails.setAlignmentY(SwingConstants.TOP);
+		currentTransitionDetails.setBorder(new EmptyBorder(5, 5, 5, 5));
+		currentTransitionDetails.setFont(new Font("Ubuntu Mono", Font.PLAIN, 12));
+
+		JScrollPane innerScrollPane = new JScrollPane(currentTransitionDetails);
+		innerScrollPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+		panel.add(innerScrollPane, BorderLayout.CENTER);
+
+		return panel;
+	}
+
+	public void printTransitionDetails(Transition transition) {
+		currentTransitionDetails.setText("Garde : "
+				+ (transition.getGuard().isEmpty() ? "Aucune garde" : transition.getGuard()) + "\n\n\nMise à jour : "
+				+ (transition.getUpdate().isEmpty() ? "Aucun update" : transition.getUpdate()) + "\n");
 	}
 
 	public void setTransitionActiveOnGraph(Transition... transitions) {
@@ -251,8 +307,18 @@ public class Simulator extends JPanel {
 			// clear transitions model and recreate
 			activeTransitionsTableModel.removeAllTransitions();
 
-			for (Transition tr : automata.findOutgoingValidTransitions(currentState.getStateId())) {
+			ArrayList<Transition> possibleNexts = automata.findOutgoingValidTransitions(currentState.getStateId());
+
+			for (Transition tr : possibleNexts) {
 				activeTransitionsTableModel.addTransition(tr.getTransitionId());
+			}
+
+			if (possibleNexts.size() > 0) {
+				activeTransitionsTable.setRowSelectionInterval(0, 0);
+				nextTransitionButton.setEnabled(true);
+			} else {
+				setCurrentTransition(null);
+				nextTransitionButton.setEnabled(false);
 			}
 
 			activeTransitionsTable.revalidate();
@@ -360,17 +426,13 @@ public class Simulator extends JPanel {
 
 	public void handleNextClicked() {
 		Transition oldCurrentTransition = currentTransition;
-		saveTrace();
-		setCurrentState(automata.findState(oldCurrentTransition.getTargetStateId()));
 
-		ArrayList<Transition> possibleNexts = automata.findOutgoingValidTransitions(currentState.getStateId());
+		// make updates on transition
+		if (automata.executeUpdates(currentTransition.getUpdate())) {
+			variablesTree.recreateTree();
 
-		if (possibleNexts.size() > 0) {
-			activeTransitionsTable.setRowSelectionInterval(0, 0);
-			nextTransitionButton.setEnabled(true);
-		} else {
-			setCurrentTransition(null);
-			nextTransitionButton.setEnabled(false);
+			saveTrace();
+			setCurrentState(automata.findState(oldCurrentTransition.getTargetStateId()));
 		}
 	}
 

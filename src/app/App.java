@@ -608,10 +608,11 @@ public class App extends JPanel {
 		MouseWheelListener wheelTracker = new MouseWheelListener() {
 			public void mouseWheelMoved(MouseWheelEvent e) {
 				if (e.getSource() instanceof mxGraphOutline || e.isControlDown()) {
-					App.this.mouseWheelMoved(e);
+					getInstance().mouseWheelMoved(e);
 				}
 			}
 		};
+		
 		graphOutline.addMouseWheelListener(wheelTracker);
 		graphComponent.addMouseWheelListener(wheelTracker);
 
@@ -873,7 +874,6 @@ public class App extends JPanel {
 	}
 
 	public void refreshSimulator() {
-		setModified(false);
 		simulatorPanel.recreateSimulatorGraph(graphComponent.getGraph());
 		simulatorPanel.setCurrentState(automata.getInitialState());
 		simulatorPanel.getTracesTableModel().removeAllTraces();
@@ -895,7 +895,6 @@ public class App extends JPanel {
 	 * @param action
 	 * @return a new Action bound to the specified string name and icon
 	 */
-	@SuppressWarnings("serial")
 	public Action bind(String name, final Action action, String iconUrl) {
 		AbstractAction newAction = new AbstractAction(name,
 				(iconUrl != null) ? new ImageIcon(App.class.getResource(iconUrl)) : null) {

@@ -18,6 +18,10 @@ public class Engine implements Cloneable {
 		engine.put(name, value);
 	}
 
+	public Object getVariable(String name) {
+		return engine.get(name);
+	}
+
 	public void removeVariable(String name) {
 		engine.getBindings(ScriptContext.ENGINE_SCOPE).remove(name);
 	}
@@ -27,9 +31,22 @@ public class Engine implements Cloneable {
 		this.engine = this.manager.getEngineByName("JavaScript");
 	}
 
+	public boolean executeStatement(String statement) {
+		try {
+			if (statement.isEmpty()) {
+				return true;
+			} else {
+				this.engine.eval(statement);
+				return true;
+			}
+		} catch (ScriptException e) {
+			return false;
+		}
+	}
+
 	public boolean isConditionSatisfied(String condition) {
 		try {
-			if (condition.isEmpty() || condition.isBlank()) {
+			if (condition.isEmpty()) {
 				return true;
 			} else {
 				return (boolean) ((Object) this.engine.eval(condition));

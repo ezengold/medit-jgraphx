@@ -26,9 +26,8 @@ public class Automata implements Observable {
 	// hold the engine for computations
 	protected Engine engine;
 
-	//label which map each state to atom properties
-	protected Hashtable<String,ArrayList<String>> labelProperties;
-
+	// label which map each state to atom properties
+	protected Hashtable<String, ArrayList<String>> labelProperties;
 
 	/**
 	 * List of observers to the object
@@ -45,7 +44,7 @@ public class Automata implements Observable {
 		this.intVariablesList = new Hashtable<String, IntVariable>();
 		this.boolVariablesList = new Hashtable<String, BooleanVariable>();
 		this.clockVariablesList = new Hashtable<String, ClockVariable>();
-		this.labelProperties = new Hashtable<String,ArrayList<String>>();
+		this.labelProperties = new Hashtable<String, ArrayList<String>>();
 
 		this.engine = new Engine();
 	}
@@ -177,8 +176,37 @@ public class Automata implements Observable {
 		return this.engine.isConditionSatisfied(condition.trim());
 	}
 
-	public void executeUpdates(String statement) {
-		//
+	public boolean executeUpdates(String statement) {
+		if (engine.executeStatement(statement)) {
+			// updates values in each hastable of variable
+			for (String variableName : intVariablesList.keySet()) {
+				Object updated = engine.getVariable(variableName);
+
+				if (updated != null) {
+					intVariablesList.get(variableName).setValue((int) updated);
+				}
+			}
+
+			for (String variableName : boolVariablesList.keySet()) {
+				Object updated = engine.getVariable(variableName);
+
+				if (updated != null) {
+					boolVariablesList.get(variableName).setValue((boolean) updated);
+				}
+			}
+
+			for (String variableName : clockVariablesList.keySet()) {
+				Object updated = engine.getVariable(variableName);
+
+				if (updated != null) {
+					clockVariablesList.get(variableName).setValue(Long.parseLong(updated.toString()));
+				}
+			}
+
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public String getName() {
@@ -264,11 +292,10 @@ public class Automata implements Observable {
 		return this.intVariablesList.get(name);
 	}
 
-
-	public void addLabelProperty(String stateId,String property) {
+	public void addLabelProperty(String stateId, String property) {
 		ArrayList<String> properties = new ArrayList<>();
 		properties.add(property);
-		labelProperties.put(stateId,properties);
+		labelProperties.put(stateId, properties);
 	}
 
 	public Hashtable<String, ArrayList<String>> getLabelProperties() {
