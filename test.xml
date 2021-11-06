@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DTD GOES HERE -->
+<content>
+	<declarations></declarations>
+	<model>
+		<location id="s0" stateId="727a84e7-c219-4bb8-a401-78217830f9c6" x="20.0" y="20.0" isInitial="1">
+			<name>s2</name>
+			<invariant></invariant>
+		</location>
+		<location id="2" stateId="badb3718-1c1f-40b0-94bf-0056217782b2" x="290.0" y="120.0" isInitial="0">
+			<name>s0</name>
+			<invariant></invariant>
+		</location>
+		<location id="4" stateId="3ac6c2c8-422e-4775-b3d1-6a27ba204d14" x="90.0" y="170.0" isInitial="0">
+			<name>s0</name>
+			<invariant></invariant>
+		</location>
+		<location id="6" stateId="9ce3f5f3-ba5c-4488-afd5-c68a75565822" x="440.0" y="240.0" isInitial="0">
+			<name>s2</name>
+			<invariant></invariant>
+		</location>
+		<location id="8" stateId="28165b40-0273-44ff-bf5b-58dd944ec3a9" x="240.0" y="230.0" isInitial="0">
+			<name>s2</name>
+			<invariant></invariant>
+		</location>
+		<transition id="3" transitionId="8163f104-7ec0-4a65-92c6-17b2097dbf49" source="s0" sourceX="40.0" sourceY="40.0" target="2" targetX="320.0" targetY="140.0">
+			<guard></guard>
+			<updates></updates>
+		</transition>
+		<transition id="5" transitionId="cc9bd92c-b19a-42c4-b370-ad37bd89e915" source="s0" sourceX="40.0" sourceY="40.0" target="4" targetX="110.0" targetY="190.0">
+			<guard></guard>
+			<updates></updates>
+		</transition>
+		<transition id="7" transitionId="9bef58f6-f0cb-4509-8570-ee07da14f3e7" source="2" sourceX="310.0" sourceY="140.0" target="6" targetX="460.0" targetY="260.0">
+			<guard></guard>
+			<updates></updates>
+		</transition>
+		<transition id="9" transitionId="5035cc7e-2083-4cef-9087-be45dc99df95" source="4" sourceX="110.0" sourceY="190.0" target="8" targetX="270.0" targetY="260.0">
+			<guard></guard>
+			<updates></updates>
+		</transition>
+	</model>
+</content>

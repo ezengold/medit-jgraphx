@@ -78,7 +78,7 @@ public class ModelCheckerCTL {
             markingStates(expressionNext);
             //set property not verified in all states
             for (State state:automata.getStatesList()) {
-                state.removeProperty(expression.toString());
+                state.addProperty(expression.toString(),false);
             }
 
 
@@ -168,7 +168,8 @@ public class ModelCheckerCTL {
                     if(transition.getTargetStateId().equals(s.getStateId())) {
                         State previous = automata.findState(transition.getSourceStateId());
                         previous.setDegrees(previous.getDegrees()-1);
-                        if(previous.getDegrees() == 0 && previous.getPropertiesVerified().get(lhs.toString())) {
+                        if(previous.getDegrees() == 0 && previous.getPropertiesVerified().get(lhs.toString())
+                        && !previous.isPropertySatisfy(expression.toString())) {
                                 list.add(previous);
                         }
                     }
@@ -200,8 +201,14 @@ public class ModelCheckerCTL {
             markingStates(exp);
             for (State state:automata.getStatesList()) {
                 if(state.getPropertiesVerified().get(exp.toString()) !=null) {
-                    state.addProperty(expression.toString(),state.getPropertiesVerified().get(exp.toString()));
-
+                    if (!state.getPropertiesVerified().get(exp.toString())) {
+                        resetAllStates();
+                        break;
+                    } else {
+                        state.addProperty(expression.toString(),state.getPropertiesVerified().get(exp.toString()));
+                    }
+                } else {
+                    resetAllStates();
                 }
             }
 
@@ -210,11 +217,16 @@ public class ModelCheckerCTL {
 
             Not notExpression = new Not(new AlwaysEventually(new Not(((ExistsGlobally) expression).getExp())));
             markingStates(notExpression);
+            int i = 0;
             for (State state:automata.getStatesList()) {
-                if(state.getPropertiesVerified().get(notExpression.toString()) !=null) {
-                    state.addProperty(expression.toString(),state.getPropertiesVerified().get(notExpression.toString()));
-
+                if(i == 0 && (state.getPropertiesVerified().get(notExpression.toString()) == null || !state.getPropertiesVerified().get(notExpression.toString()))) {
+                    resetAllStates();
+                    break;
                 }
+                if(state.getPropertiesVerified().get(notExpression.toString()) !=null ) {
+                    state.addProperty(expression.toString(),state.getPropertiesVerified().get(notExpression.toString()));
+                }
+                i++;
             }
         }
     }
@@ -250,7 +262,7 @@ public class ModelCheckerCTL {
         resetAllStates();
         markingStates(exp);
         for (State state:automata.getStatesList()) {
-            System.out.println("STATE "+state.getName()+":: "+state.getPropertiesVerified().get(exp));
+            System.out.println("STATE "+state.getName()+":: "+state.getPropertiesVerified().get(exp.toString()));
             if (state.isPropertySatisfy(exp.toString())) {
                 statesPropertyVerified.add(state);
             }
