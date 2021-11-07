@@ -43,7 +43,7 @@ public class ConfigStateDialog extends JDialog {
 	public ConfigStateDialog(final mxCell cell, final mxIGraphModel graphModel) {
 		super((Frame) null, "", true);
 
-		State state = (State) cell.getValue();		
+		State state = (State) cell.getValue();
 
 		this.graphModel = graphModel;
 		this.currentCell = cell;
@@ -123,9 +123,10 @@ public class ConfigStateDialog extends JDialog {
 			state.setName(labelField.getText());
 			state.setInvariant(invariantField.getText());
 			state.setInitial(isInitialBox.isSelected());
-			
+
 			if (state.isInitial()) {
-				graphModel.setStyle(currentCell, "fillColor=#888888;strokeColor=#dddddd");
+				graphModel.setStyle(currentCell, "fillColor=" + GraphStyles.INIT_FILL_COLOR + ";strokeColor="
+						+ GraphStyles.INIT_STROKE_COLOR + ";fontColor=" + GraphStyles.INIT_FONT_COLOR);
 			} else {
 				graphModel.setStyle(currentCell, "");
 			}

@@ -72,6 +72,7 @@ public class VariablesTree extends JPanel {
 
 		this.tree = new JTree(root);
 		tree.setBorder(new EmptyBorder(5, 10, 10, 10));
+		tree.setExpandsSelectedPaths(true);
 
 		// remove folder and file icon on tree
 		DefaultTreeCellRenderer cellRenderer = (DefaultTreeCellRenderer) tree.getCellRenderer();
@@ -84,6 +85,16 @@ public class VariablesTree extends JPanel {
 		add(tree, BorderLayout.CENTER);
 		revalidate();
 		repaint();
+
+		expandAllTree();
+	}
+
+	private void expandAllTree() {
+		if (tree != null) {
+			for (int i = 0; i < tree.getRowCount(); i++) {
+				tree.expandRow(i);
+			}
+		}
 	}
 
 	public void recreateTree() {

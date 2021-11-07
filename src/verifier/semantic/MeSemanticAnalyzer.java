@@ -41,15 +41,15 @@ public class MeSemanticAnalyzer {
 	private ArrayList<Assign> assigns;
 	private ArrayList<Exp> conditions;
 
-	private int errors;
+	private int errors = 0;
 
 	private Console log;
 
 	private Program finalProgram;
 
 	public MeSemanticAnalyzer(FileReader file, Automata automata, Console log) throws IOException {
-		this.parser = new MeParser(file, automata, log);
 		this.log = log;
+		this.parser = new MeParser(file, automata, log);
 	}
 
 	// get number of errors
@@ -68,6 +68,10 @@ public class MeSemanticAnalyzer {
 	// start semantic analyzer
 	public void analyzeProgram() throws IOException {
 		this.finalProgram = this.parser.parseProgram();
+
+		// add errors on parser to semantic analyser errors
+		this.errors += this.parser.getErrors();
+
 		this.declerations = this.parser.getDecelarations();
 		checkDeclerations();
 		this.identifiers = this.parser.getIdentifiers();

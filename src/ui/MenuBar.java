@@ -8,18 +8,18 @@ import javax.swing.JMenuBar;
 import app.App;
 import utils.EditorActions.*;
 
-public class MeMenuBar extends JMenuBar {
+public class MenuBar extends JMenuBar {
 
 	private static final long serialVersionUID = 1L;
 
-	public MeMenuBar(final App app) {
+	public MenuBar(final App app) {
 		JMenu menu = null;
 		
 		// Create file menu
 		JMenu fichierMenu = new JMenu("Fichier");
 		fichierMenu.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
 		menu = add(fichierMenu);
-		menu.add(app.bind("Nouveau", new NewAction(), "/file.png"));
+		// menu.add(app.bind("Nouveau", new NewAction(), "/file.png"));
 		menu.add(app.bind("Ouvrir", new OpenAction(), "/folder.png"));
 		menu.add(app.bind("Sauvegarder", new SaveAction(), "/disk.png"));
 		menu.addSeparator();

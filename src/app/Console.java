@@ -6,13 +6,14 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
 public class Console extends JPanel {
@@ -24,18 +25,14 @@ public class Console extends JPanel {
 
 	public Console() {
 		setLayout(new BorderLayout());
-		setBorder(new EmptyBorder(5, 0, 0, 5));
+		setBorder(new CompoundBorder(BorderFactory.createTitledBorder(" Console "), new EmptyBorder(0, 5, 5, 5)));
 
 		JPanel header = new JPanel(new BorderLayout());
 		header.setOpaque(true);
 		header.setBackground(new Color(0, 0, 0, 20));
 		header.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-		JLabel title = new JLabel("Console");
-		title.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
-		header.add(title, BorderLayout.WEST);
-
-		JButton clearBtn = new JButton(new ImageIcon(getClass().getResource("/clear.png")));
+		JButton clearBtn = new JButton("Effacer", new ImageIcon(getClass().getResource("/clear.png")));
 		clearBtn.setOpaque(true);
 		clearBtn.setBorderPainted(false);
 		clearBtn.addActionListener(new ActionListener() {
@@ -48,7 +45,7 @@ public class Console extends JPanel {
 
 		add(header, BorderLayout.NORTH);
 
-		content = new JTextArea("Aucune erreur");
+		content = new JTextArea("");
 		content.setEditable(false);
 		content.setForeground(isError ? Color.RED : Color.decode("#9099ae"));
 		content.setLineWrap(true);

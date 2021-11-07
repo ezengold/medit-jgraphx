@@ -26,9 +26,8 @@ public class Automata implements Observable {
 	// hold the engine for computations
 	protected Engine engine;
 
-	//label which map each state to atom properties
-	protected Hashtable<String,ArrayList<String>> labelProperties;
-
+	// label which map each state to atom properties
+	protected Hashtable<String, ArrayList<String>> labelProperties;
 
 	/**
 	 * List of observers to the object
@@ -45,7 +44,7 @@ public class Automata implements Observable {
 		this.intVariablesList = new Hashtable<String, IntVariable>();
 		this.boolVariablesList = new Hashtable<String, BooleanVariable>();
 		this.clockVariablesList = new Hashtable<String, ClockVariable>();
-		this.labelProperties = new Hashtable<String,ArrayList<String>>();
+		this.labelProperties = new Hashtable<String, ArrayList<String>>();
 
 		this.engine = new Engine();
 	}
@@ -142,6 +141,22 @@ public class Automata implements Observable {
 		return outgoingTransitionList;
 	}
 
+	// return transitions which guards are evaluated true
+	public ArrayList<Transition> findOutgoingValidTransitions(String stateId) {
+		ArrayList<Transition> outgoingTransitionList = new ArrayList<>();
+		Transition transition = null;
+
+		for (int i = 0; i < this.transitionsList.size(); i++) {
+
+			transition = this.transitionsList.get(i);
+
+			if (transition.getSourceStateId().equals(stateId) && isConditionSatisfied(transition.getGuard())) {
+				outgoingTransitionList.add(transition);
+			}
+		}
+		return outgoingTransitionList;
+	}
+
 	public ArrayList<State> findOutgoingStates(String stateId) {
 		ArrayList<State> outgoingStatesList = new ArrayList<>();
 		Transition transition = null;
@@ -157,12 +172,41 @@ public class Automata implements Observable {
 		return outgoingStatesList;
 	}
 
-	public boolean evaluateCondition(String condition) {
-		return this.engine.evaluateCondition(condition.trim());
+	public boolean isConditionSatisfied(String condition) {
+		return this.engine.isConditionSatisfied(condition.trim());
 	}
 
-	public void executeUpdates(String statement) {
-		//
+	public boolean executeUpdates(String statement) {
+		if (engine.executeStatement(statement)) {
+			// updates values in each hastable of variable
+			for (String variableName : intVariablesList.keySet()) {
+				Object updated = engine.getVariable(variableName);
+
+				if (updated != null) {
+					intVariablesList.get(variableName).setValue((int) updated);
+				}
+			}
+
+			for (String variableName : boolVariablesList.keySet()) {
+				Object updated = engine.getVariable(variableName);
+
+				if (updated != null) {
+					boolVariablesList.get(variableName).setValue((boolean) updated);
+				}
+			}
+
+			for (String variableName : clockVariablesList.keySet()) {
+				Object updated = engine.getVariable(variableName);
+
+				if (updated != null) {
+					clockVariablesList.get(variableName).setValue(Long.parseLong(updated.toString()));
+				}
+			}
+
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public String getName() {
@@ -248,11 +292,10 @@ public class Automata implements Observable {
 		return this.intVariablesList.get(name);
 	}
 
-
-	public void addLabelProperty(String stateId,String property) {
+	public void addLabelProperty(String stateId, String property) {
 		ArrayList<String> properties = new ArrayList<>();
 		properties.add(property);
-		labelProperties.put(stateId,properties);
+		labelProperties.put(stateId, properties);
 	}
 
 	public Hashtable<String, ArrayList<String>> getLabelProperties() {
@@ -323,7 +366,8 @@ public class Automata implements Observable {
 		System.out.println("\nStructure of " + getName() + "\n");
 
 		System.out.println("                    INIT STATE                    \n");
-		System.out.println("\nInitial State (" + getInitialState() != null ? getInitialState().getName() : "No state" + ")");
+		System.out.println(
+				"\nInitial State (" + getInitialState() != null ? getInitialState().getName() : "No state" + ")");
 		System.out.println("");
 
 		System.out.println("                      STATES                      \n");

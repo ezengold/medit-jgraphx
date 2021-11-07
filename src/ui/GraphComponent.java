@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Point;
 import java.util.Hashtable;
 
-
 import org.jgrapht.ext.JGraphXAdapter;
 
 import com.mxgraph.model.mxICell;
@@ -16,14 +15,14 @@ import com.mxgraph.view.mxGraph;
 import models.State;
 import models.Transition;
 
-public class MeGraphComponent extends mxGraphComponent {
+public class GraphComponent extends mxGraphComponent {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2637031447186110868L;
 
-	public MeGraphComponent(JGraphXAdapter<State, Transition> adapter) {
+	public GraphComponent(JGraphXAdapter<State, Transition> adapter) {
 		super(adapter);
 
 		setPageVisible(false);
@@ -49,14 +48,16 @@ public class MeGraphComponent extends mxGraphComponent {
 		Hashtable<String, Object> vertexStyle = (Hashtable<String, Object>) graph.getStylesheet()
 				.getDefaultVertexStyle();
 		vertexStyle.put(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_ELLIPSE);
-		vertexStyle.put(mxConstants.STYLE_FILLCOLOR, "#78c4fc");
+		vertexStyle.put(mxConstants.STYLE_FILLCOLOR, GraphStyles.FILL_COLOR);
+		vertexStyle.put(mxConstants.STYLE_STROKECOLOR, GraphStyles.STROKE_COLOR);
+		vertexStyle.put(mxConstants.STYLE_FONTCOLOR, GraphStyles.FONT_COLOR);
 		graph.getStylesheet().setDefaultVertexStyle(vertexStyle);
 
 		getViewport().setOpaque(true);
 		getViewport().setBackground(Color.WHITE);
 	}
 
-	public MeGraphComponent(mxGraph graphData) {
+	public GraphComponent(mxGraph graphData) {
 		super(graphData);
 
 		setPageVisible(false);
@@ -82,7 +83,9 @@ public class MeGraphComponent extends mxGraphComponent {
 		Hashtable<String, Object> vertexStyle = (Hashtable<String, Object>) graph.getStylesheet()
 				.getDefaultVertexStyle();
 		vertexStyle.put(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_ELLIPSE);
-		vertexStyle.put(mxConstants.STYLE_FILLCOLOR, "#78c4fc");
+		vertexStyle.put(mxConstants.STYLE_FILLCOLOR, GraphStyles.FILL_COLOR);
+		vertexStyle.put(mxConstants.STYLE_STROKECOLOR, GraphStyles.STROKE_COLOR);
+		vertexStyle.put(mxConstants.STYLE_FONTCOLOR, GraphStyles.FONT_COLOR);
 		graph.getStylesheet().setDefaultVertexStyle(vertexStyle);
 
 		getViewport().setOpaque(true);

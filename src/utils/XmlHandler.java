@@ -25,6 +25,7 @@ import app.App;
 import app.App.Compilables;
 import models.State;
 import models.Transition;
+import ui.GraphStyles;
 
 public class XmlHandler {
 	private App app;
@@ -34,8 +35,8 @@ public class XmlHandler {
 	public XmlHandler(App parent) {
 		this.app = parent;
 
-		excepts.put("<", "&gt;");
-		excepts.put(">", "&lt;");
+		excepts.put("<", "&lt;");
+		excepts.put(">", "&gt;");
 		excepts.put("&", "&amp;");
 	}
 
@@ -131,7 +132,9 @@ public class XmlHandler {
 		Hashtable<String, Object> vertexStyle = (Hashtable<String, Object>) graph.getStylesheet()
 				.getDefaultVertexStyle();
 		vertexStyle.put(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_ELLIPSE);
-		vertexStyle.put(mxConstants.STYLE_FILLCOLOR, "#78c4fc");
+		vertexStyle.put(mxConstants.STYLE_FILLCOLOR, GraphStyles.FILL_COLOR);
+		vertexStyle.put(mxConstants.STYLE_STROKECOLOR, GraphStyles.STROKE_COLOR);
+		vertexStyle.put(mxConstants.STYLE_FONTCOLOR, GraphStyles.FONT_COLOR);
 		graph.getStylesheet().setDefaultVertexStyle(vertexStyle);
 
 		try {
@@ -182,7 +185,8 @@ public class XmlHandler {
 						Object vertex = graph.insertVertex(graph.getDefaultParent(), id, s, x, y, 40, 40);
 
 						if (isInitial) {
-							((mxCell) vertex).setStyle("fillColor=#888888;strokeColor=#dddddd");
+							((mxCell) vertex).setStyle("fillColor=" + GraphStyles.INIT_FILL_COLOR + ";strokeColor="
+									+ GraphStyles.INIT_STROKE_COLOR + ";fontColor=" + GraphStyles.INIT_FONT_COLOR);
 						}
 
 						verticesArray.put(id, vertex);

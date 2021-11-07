@@ -1,11 +1,10 @@
 package models;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.UUID;
 
-public class State implements Serializable {
+public class State implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = -1569774286174664135L;
 
@@ -19,11 +18,12 @@ public class State implements Serializable {
 
 	private boolean isInitial = false;
 
-	//for verifier
-	private Hashtable<String,Boolean> propertiesVerified = new Hashtable<>();
-	private boolean seenBefore = false;
-	private int degrees = 0;
+	// for verifier
+	private Hashtable<String, Boolean> propertiesVerified = new Hashtable<>();
 
+	private boolean seenBefore = false;
+
+	private int degrees = 0;
 
 	private Position position;
 
@@ -58,7 +58,6 @@ public class State implements Serializable {
 			removeProperty(this.name);
 		}
 		this.name = name;
-
 	}
 
 	public String getInvariant() {
@@ -93,38 +92,37 @@ public class State implements Serializable {
 
 	public void addProperty(String property,Boolean value) {
 			this.propertiesVerified.put(property,value);
+
 	}
 
 	public void removeProperty(String property) {
-		if(isPropertySatisfy(property)) {
+		if (isPropertySatisfy(property)) {
 			this.propertiesVerified.remove(property);
 		}
-
 	}
 
 	public void resetProperties() {
 		this.propertiesVerified = new Hashtable<>();
 	}
 
-	public Hashtable<String,Boolean> getPropertiesVerified() {
+	public Hashtable<String, Boolean> getPropertiesVerified() {
 		return propertiesVerified;
 	}
 
 	public boolean isPropertySatisfy(String property) {
-		if(this.propertiesVerified.get(property) !=null) {
+		if (this.propertiesVerified.get(property) != null) {
 			return this.propertiesVerified.get(property);
 		}
 		return false;
 	}
 
-
 	public String debug() {
 		String verb = "";
-		verb += "StateId ="+ this.getStateId()+" || State Name = "+this.getName()+" || Is initial = "+this.isInitial()+
-		" || Position X = "+this.getPosition().getX()+" || Position Y = "+this.getPosition().getY()+ "\n";
+		verb += "StateId =" + this.getStateId() + " || State Name = " + this.getName() + " || Is initial = "
+				+ this.isInitial() + " || Position X = " + this.getPosition().getX() + " || Position Y = "
+				+ this.getPosition().getY() + "\n";
 		return verb;
 	}
-
 
 	@Override
 	public String toString() {
@@ -145,5 +143,15 @@ public class State implements Serializable {
 
 	public void setDegrees(int degrees) {
 		this.degrees = degrees;
+	}
+
+	@Override
+	protected Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

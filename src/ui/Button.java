@@ -17,8 +17,7 @@ public class Button extends JButton {
 
 	private static final long serialVersionUID = 8366435826897373230L;
 
-	@SuppressWarnings("unused")
-	private Color oldForgroundColor = new Color(0, 0, 0, 40), oldBackgroundColor = new Color(0, 0, 0, 60);
+	private Color oldForgroundColor = Color.decode("#666666"), oldBackgroundColor = new Color(0, 0, 0, 60);
 
 	public Button() {
 		super();
@@ -58,14 +57,11 @@ public class Button extends JButton {
 
 	@Override
 	public void setBackground(Color bg) {
-		oldBackgroundColor = bg;
-		oldForgroundColor = bg;
 		super.setBackground(bg);
 	}
 
 	@Override
 	public void setForeground(Color fg) {
-		oldForgroundColor = fg;
 		super.setForeground(fg);
 	}
 
@@ -101,13 +97,21 @@ public class Button extends JButton {
 		public void mouseExited(MouseEvent e) {
 			setContentAreaFilled(true);
 			setBorderPainted(false);
+			setForeground(getOldForgroundColor());
+			setBackground(getOldBackgroundColor());
 		}
 
 		@Override
 		public void mouseEntered(MouseEvent e) {
+			setOldForgroundColor(getForeground());
+			setOldBackgroundColor(getBackground());
+
 			setContentAreaFilled(false);
 			setBorderPainted(true);
+			setForeground(getBackground());
 			setBorder(new CompoundBorder(new LineBorder(getBackground(), 1), new EmptyBorder(9, 14, 9, 14)));
+
+			setBackground(Color.decode("#dddddd"));
 		}
 
 		@Override
@@ -115,4 +119,20 @@ public class Button extends JButton {
 			//
 		}
 	};
+
+	public Color getOldBackgroundColor() {
+		return oldBackgroundColor;
+	}
+
+	public void setOldBackgroundColor(Color oldBackgroundColor) {
+		this.oldBackgroundColor = oldBackgroundColor;
+	}
+
+	public Color getOldForgroundColor() {
+		return oldForgroundColor;
+	}
+
+	public void setOldForgroundColor(Color oldForgroundColor) {
+		this.oldForgroundColor = oldForgroundColor;
+	}
 }

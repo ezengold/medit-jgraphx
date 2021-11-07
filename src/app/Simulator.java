@@ -1,19 +1,34 @@
 package app;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import com.mxgraph.model.mxCell;
+import com.mxgraph.view.mxGraph;
+
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 
 import models.Automata;
 import models.State;
+import models.Trace;
 import models.Transition;
 import ui.Button;
+import ui.GraphStyles;
+import ui.SimulatorGraphComponent;
 import ui.TraceCellRenderer;
 import ui.TracesTableModel;
 import ui.TransitionsTableModel;
@@ -25,9 +40,9 @@ public class Simulator extends JPanel {
 
 	private static final long serialVersionUID = 8364570541969774335L;
 
-	private static String[] ACTIVES_TRANSITIONS_TABLE_COLUMNS = { "Transitions" };
+	private static String ACTIVES_TRANSITIONS_TABLE_COLUMN_NAME = "Transitions";
 
-	private static String[] TRACES_TABLE_COLUMNS = { "Liste des traces" };
+	private static String TRACES_TABLE_COLUMN_NAME = "Liste des traces";
 
 	private App app;
 
@@ -35,13 +50,13 @@ public class Simulator extends JPanel {
 
 	// handle active transaction
 
-	private Transition currentTransition;
-
 	private State currentState;
 
-	private JPanel activeTransitionsPanel;
+	private Transition currentTransition;
 
-	private Object[][] activeTransitions = { { "" } };
+	private JTextArea currentTransitionDetails;
+
+	private JPanel activeTransitionsPanel;
 
 	private JTable activeTransitionsTable;
 
@@ -51,23 +66,31 @@ public class Simulator extends JPanel {
 
 	private Button previousTransitionButton;
 
+	private Button simulateButton;
+
 	// handle simulation traces
 
 	private JPanel tracesPanel;
 
-	private Object[][] traces = { { "" } };
+	private ArrayList<Trace> traces = new ArrayList<Trace>();
 
 	private JTable tracesTable;
 
 	private TracesTableModel tracesTableModel;
 
+	// handle variable tree
+
 	private VariablesTree variablesTree;
 
-	private JPanel apercuPanel;
+	// handle visualization
+
+	private SimulatorGraphComponent graphComponent;
 
 	public Simulator(App app) {
 		this.app = app;
 		this.automata = app.getAutomata();
+
+		this.graphComponent = new SimulatorGraphComponent(app.graphComponent.getGraph());
 
 		this.setCurrentState(automata.getInitialState());
 
@@ -76,28 +99,38 @@ public class Simulator extends JPanel {
 		activeTransitionsPanel.setBorder(new CompoundBorder(BorderFactory.createTitledBorder(" Transitions actives "),
 				new EmptyBorder(0, 5, 5, 5)));
 
-		this.activeTransitionsTableModel = new TransitionsTableModel(activeTransitions,
-				ACTIVES_TRANSITIONS_TABLE_COLUMNS);
+		this.activeTransitionsTableModel = new TransitionsTableModel(ACTIVES_TRANSITIONS_TABLE_COLUMN_NAME);
 		this.activeTransitionsTable = new JTable(activeTransitionsTableModel);
 		activeTransitionsTable.setRowHeight(35);
 		activeTransitionsTable.setTableHeader(null);
+		activeTransitionsTable.getColumnModel().getSelectionModel()
+				.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		setFileChooserFont(activeTransitionsTable.getComponents());
-		activeTransitionsTable.getColumn(ACTIVES_TRANSITIONS_TABLE_COLUMNS[0])
+		activeTransitionsTable.getColumn(ACTIVES_TRANSITIONS_TABLE_COLUMN_NAME)
 				.setCellRenderer(new TransitonCellRenderer(automata));
 
 		JScrollPane activeTransitionsTableScrollPane = new JScrollPane(activeTransitionsTable);
 		activeTransitionsTableScrollPane.setBorder(new EmptyBorder(10, 10, 10, 10));
 		activeTransitionsPanel.add(activeTransitionsTableScrollPane, BorderLayout.CENTER);
 
-		this.nextTransitionButton = new Button("Suivant");
+		this.nextTransitionButton = new Button("Prendre");
 		nextTransitionButton.setBackground(Color.decode("#9099ae"));
+		nextTransitionButton.setEnabled(false);
 
 		this.previousTransitionButton = new Button("Previous");
+		previousTransitionButton.setEnabled(false);
+
+		this.simulateButton = new Button("Simuler");
+		simulateButton.setBackground(Color.decode(GraphStyles.INIT_FILL_COLOR.toString()));
+		simulateButton.setForeground(Color.WHITE);
+
+		installActiveTransitionsHandlers();
 
 		JPanel activesTransitionsButtonsContainer = new JPanel();
 		activesTransitionsButtonsContainer.setBorder(new EmptyBorder(5, 10, 0, 10));
-		activesTransitionsButtonsContainer.add(previousTransitionButton);
+		// activesTransitionsButtonsContainer.add(previousTransitionButton);
 		activesTransitionsButtonsContainer.add(nextTransitionButton);
+		activesTransitionsButtonsContainer.add(simulateButton);
 
 		activeTransitionsPanel.add(activesTransitionsButtonsContainer, BorderLayout.SOUTH);
 
@@ -106,12 +139,13 @@ public class Simulator extends JPanel {
 		this.tracesPanel.setBorder(new CompoundBorder(BorderFactory.createTitledBorder(" Traces de simulation "),
 				new EmptyBorder(0, 5, 5, 5)));
 
-		this.tracesTableModel = new TracesTableModel(traces, TRACES_TABLE_COLUMNS);
+		this.tracesTableModel = new TracesTableModel(TRACES_TABLE_COLUMN_NAME);
 		this.tracesTable = new JTable(tracesTableModel);
 		tracesTable.setRowHeight(35);
 		tracesTable.setTableHeader(null);
+		tracesTable.getColumnModel().getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		setFileChooserFont(tracesTable.getComponents());
-		tracesTable.getColumn(TRACES_TABLE_COLUMNS[0]).setCellRenderer(new TraceCellRenderer());
+		tracesTable.getColumn(TRACES_TABLE_COLUMN_NAME).setCellRenderer(new TraceCellRenderer(traces));
 
 		JScrollPane tracesTableScrollPane = new JScrollPane(tracesTable);
 		tracesTableScrollPane.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -126,22 +160,40 @@ public class Simulator extends JPanel {
 		// VARIABLES
 		this.variablesTree = new VariablesTree(automata);
 
-		JSplitPane leftSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftInnerSplit, variablesTree);
+		JPanel currentTransitionDetailsPanel = createCurrentTransitionDetailsPanel();
+
+		JSplitPane variablesSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, currentTransitionDetailsPanel,
+				variablesTree);
+		variablesSplit.setDividerLocation(200);
+		variablesSplit.setResizeWeight(1);
+		variablesSplit.setDividerSize(3);
+		variablesSplit.setBorder(null);
+
+		JSplitPane leftSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftInnerSplit, variablesSplit);
 		leftSplit.setDividerLocation(350);
 		leftSplit.setResizeWeight(1);
 		leftSplit.setDividerSize(3);
 		leftSplit.setBorder(null);
 
-		this.apercuPanel = new JPanel();
+		// VISUALIZATION
 
-		JSplitPane mainSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSplit, apercuPanel);
+		JPanel graphComponentPanel = new JPanel(new BorderLayout());
+		graphComponentPanel.setBorder(
+				new CompoundBorder(BorderFactory.createTitledBorder(" Visualisation "), new EmptyBorder(0, 5, 5, 5)));
+
+		JScrollPane graphComponentScrollPane = new JScrollPane(graphComponent);
+		graphComponentScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
+
+		graphComponentPanel.add(graphComponentScrollPane, BorderLayout.CENTER);
+
+		JSplitPane mainSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSplit, graphComponentPanel);
 		mainSplit.setDividerLocation(600);
 		mainSplit.setResizeWeight(1);
 		mainSplit.setDividerSize(3);
 		mainSplit.setBorder(null);
 
-		this.setLayout(new BorderLayout());
-		this.add(mainSplit, BorderLayout.CENTER);
+		setLayout(new BorderLayout());
+		add(mainSplit, BorderLayout.CENTER);
 
 		// listen to changes on automata
 		automata.addObserver(new Observer() {
@@ -168,32 +220,146 @@ public class Simulator extends JPanel {
 		this.automata = automata;
 	}
 
+	/**
+	 * ACTIVES TRANSITIONS
+	 */
 	public void setCurrentTransition(Transition currentTransition) {
 		this.currentTransition = currentTransition;
+		printTransitionDetails(currentTransition);
+		setTransitionActiveOnGraph(currentTransition);
 	}
 
 	public Transition getCurrentTransition() {
 		return currentTransition;
 	}
 
+	public JTextArea getCurrentTransitionDetails() {
+		return currentTransitionDetails;
+	}
+
+	public void setCurrentTransitionDetails(JTextArea currentTransitionDetails) {
+		this.currentTransitionDetails = currentTransitionDetails;
+	}
+
+	public JPanel createCurrentTransitionDetailsPanel() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		panel.setBorder(new CompoundBorder(BorderFactory.createTitledBorder(" Détails "), new EmptyBorder(0, 5, 5, 5)));
+
+		this.currentTransitionDetails = new JTextArea("");
+		currentTransitionDetails.setEditable(false);
+		currentTransitionDetails.setLineWrap(true);
+		currentTransitionDetails.setWrapStyleWord(true);
+		currentTransitionDetails.setAlignmentY(SwingConstants.TOP);
+		currentTransitionDetails.setBorder(new EmptyBorder(5, 5, 5, 5));
+		currentTransitionDetails.setFont(new Font("Ubuntu Mono", Font.PLAIN, 12));
+
+		JScrollPane innerScrollPane = new JScrollPane(currentTransitionDetails);
+		innerScrollPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+		panel.add(innerScrollPane, BorderLayout.CENTER);
+
+		return panel;
+	}
+
+	public void printTransitionDetails(Transition transition) {
+		currentTransitionDetails.setText("Garde : "
+				+ (transition.getGuard().isEmpty() ? "Aucune garde" : transition.getGuard()) + "\n\n\nMise à jour : "
+				+ (transition.getUpdate().isEmpty() ? "Aucun update" : transition.getUpdate()) + "\n");
+	}
+
+	public void setTransitionActiveOnGraph(Transition... transitions) {
+		if (graphComponent != null && graphComponent.getGraph() != null) {
+			mxGraph graph = graphComponent.getGraph();
+
+			for (Object el : graph.getChildCells(graph.getDefaultParent())) {
+				if (el instanceof mxCell) {
+					mxCell cell = (mxCell) el;
+
+					if (cell.isEdge() && (cell.getValue() != null) && (cell.getValue() instanceof Transition)) {
+						Transition transition = (Transition) cell.getValue();
+
+						graph.getModel().beginUpdate();
+						try {
+							if (isTransitionIn(transition, transitions)) {
+								graph.getModel().setStyle(cell,
+										"strokeColor=" + GraphStyles.ACTIVE_EDGE_STROKE_COLOR + ";strokeWidth=2");
+							} else {
+								graph.getModel().setStyle(cell, "");
+							}
+						} finally {
+							graph.getModel().endUpdate();
+							graph.refresh();
+							graph.repaint();
+						}
+					}
+				}
+			}
+		}
+	}
+
 	public void setCurrentState(State currentState) {
 		this.currentState = currentState;
 
 		if (currentState != null) {
-			System.out.println(currentState.debug());
+			setStatesActiveOnGraph(currentState);
 
-			for (Transition tr : automata.findOutgoingTransitions(currentState.getStateId())) {
+			// clear transitions model and recreate
+			activeTransitionsTableModel.removeAllTransitions();
+
+			ArrayList<Transition> possibleNexts = automata.findOutgoingValidTransitions(currentState.getStateId());
+
+			for (Transition tr : possibleNexts) {
 				activeTransitionsTableModel.addTransition(tr.getTransitionId());
+			}
+
+			if (possibleNexts.size() > 0) {
+				activeTransitionsTable.setRowSelectionInterval(0, 0);
+				nextTransitionButton.setEnabled(true);
+			} else {
+				setCurrentTransition(null);
+				nextTransitionButton.setEnabled(false);
+			}
+
+			activeTransitionsTable.revalidate();
+			activeTransitionsTable.repaint();
+		}
+	}
+
+	public void setStatesActiveOnGraph(State... states) {
+		if (graphComponent != null && graphComponent.getGraph() != null) {
+			mxGraph graph = graphComponent.getGraph();
+
+			for (Object el : graph.getChildCells(graph.getDefaultParent())) {
+				if (el instanceof mxCell) {
+					mxCell cell = (mxCell) el;
+
+					if (cell.isVertex() && (cell.getValue() != null) && (cell.getValue() instanceof State)) {
+						State state = (State) cell.getValue();
+
+						graph.getModel().beginUpdate();
+						try {
+							if (isStateIn(state, states)) {
+								graph.getModel().setStyle(cell,
+										"fillColor=" + GraphStyles.ACTIVE_FILL_COLOR + ";strokeColor="
+												+ GraphStyles.ACTIVE_STROKE_COLOR + ";fontColor="
+												+ GraphStyles.ACTIVE_FONT_COLOR);
+							} else {
+								graph.getModel().setStyle(cell, "");
+							}
+						} finally {
+							graph.getModel().endUpdate();
+							graph.refresh();
+							graph.repaint();
+						}
+					}
+				}
 			}
 		}
 	}
 
 	public State getCurrentState() {
 		return currentState;
-	}
-
-	public JPanel getActiveTransitionsPanel() {
-		return activeTransitionsPanel;
 	}
 
 	public void setActiveTransitionsPanel(JPanel activeTransitionsPanel) {
@@ -224,6 +390,59 @@ public class Simulator extends JPanel {
 		this.previousTransitionButton = previousTransitionButton;
 	}
 
+	public void installActiveTransitionsHandlers() {
+		nextTransitionButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				handleNextClicked();
+			}
+		});
+
+		previousTransitionButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				handlePreviousClicked();
+			}
+		});
+
+		// handle selected transition in the table to enable or disable buttons
+		activeTransitionsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				int selectedRow = activeTransitionsTable.getSelectedRow();
+				if (selectedRow != -1) {
+					Transition clickedTransition = automata
+							.findTransition(activeTransitionsTable.getValueAt(selectedRow, 0).toString());
+					if (clickedTransition != null) {
+						setCurrentTransition(clickedTransition);
+						nextTransitionButton.setEnabled(true);
+					} else {
+						nextTransitionButton.setEnabled(false);
+					}
+				}
+			}
+		});
+	}
+
+	public void handleNextClicked() {
+		Transition oldCurrentTransition = currentTransition;
+
+		// make updates on transition
+		if (automata.executeUpdates(currentTransition.getUpdate())) {
+			variablesTree.recreateTree();
+
+			saveTrace();
+			setCurrentState(automata.findState(oldCurrentTransition.getTargetStateId()));
+		}
+	}
+
+	public void handlePreviousClicked() {
+		//
+	}
+
+	/**
+	 * TRACES HANDLING
+	 */
 	public JPanel getTracesPanel() {
 		return tracesPanel;
 	}
@@ -232,12 +451,35 @@ public class Simulator extends JPanel {
 		this.tracesPanel = tracesPanel;
 	}
 
-	public Object[][] getTraces() {
+	public void saveTrace() {
+		if (currentTransition != null && currentState != null) {
+			State targetState = automata.findState(currentTransition.getTargetStateId());
+
+			Trace newTrace = new Trace(currentTransition, currentState, targetState, automata.getEngine());
+
+			traces.add(newTrace);
+
+			// insert in the trace table model
+			tracesTableModel.addTrace(newTrace.getTraceId());
+			tracesTable.revalidate();
+		}
+	}
+
+	public ArrayList<Trace> getTraces() {
 		return traces;
 	}
 
-	public void setTraces(Object[][] traces) {
+	public void setTraces(ArrayList<Trace> traces) {
 		this.traces = traces;
+
+		// reset these traces to the modal
+		tracesTableModel.removeAllTraces();
+
+		for (Trace trace : traces) {
+			tracesTableModel.addTrace(trace.getTraceId());
+		}
+
+		tracesTable.revalidate();
 	}
 
 	public JTable getTracesTable() {
@@ -256,6 +498,9 @@ public class Simulator extends JPanel {
 		this.tracesTableModel = tracesTableModel;
 	}
 
+	/**
+	 * VARIABLE TREE
+	 */
 	public VariablesTree getVariablesTree() {
 		return variablesTree;
 	}
@@ -264,12 +509,16 @@ public class Simulator extends JPanel {
 		this.variablesTree = variablesTree;
 	}
 
-	public JPanel getApercuPanel() {
-		return apercuPanel;
+	public SimulatorGraphComponent getGraphComponent() {
+		return graphComponent;
 	}
 
-	public void setApercuPanel(JPanel apercuPanel) {
-		this.apercuPanel = apercuPanel;
+	public void setGraphComponent(SimulatorGraphComponent graphComponent) {
+		this.graphComponent = graphComponent;
+	}
+
+	public void recreateSimulatorGraph(final mxGraph newGraph) {
+		this.graphComponent.setGraph(newGraph);
 	}
 
 	public void setFileChooserFont(Component[] comps) {
@@ -284,5 +533,21 @@ public class Simulator extends JPanel {
 				//
 			}
 		}
+	}
+
+	private boolean isStateIn(State state, State[] states) {
+		for (State s : states) {
+			if (s != null && s.getStateId().equals(state.getStateId()))
+				return true;
+		}
+		return false;
+	}
+
+	private boolean isTransitionIn(Transition transition, Transition[] transitions) {
+		for (Transition t : transitions) {
+			if (t != null && t.getTransitionId().equals(transition.getTransitionId()))
+				return true;
+		}
+		return false;
 	}
 }
