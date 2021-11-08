@@ -3,6 +3,8 @@ package app;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -173,26 +175,36 @@ public class Verifier extends JPanel {
 		propertie.setBorder(new MatteBorder(1, 1, 1, 1, Color.lightGray));
 		propertie.setPreferredSize(new Dimension(700, 100));
 
-		propertie.addKeyListener(new KeyListener() {
+		propertie.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
-			public void keyTyped(KeyEvent keyEvent) {
+			public void insertUpdate(DocumentEvent documentEvent) {
 				if (tableRequest.getSelectedRow() != -1) {
 					//set value at line selected; column 0
-					modelRequest.setValueAt(propertie.getText() + keyEvent.getKeyChar(), tableRequest.getSelectedRow(),
+					modelRequest.setValueAt(propertie.getText() , tableRequest.getSelectedRow(),
+							0);
+				}
+
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent documentEvent) {
+				if (tableRequest.getSelectedRow() != -1) {
+					//set value at line selected; column 0
+					modelRequest.setValueAt(propertie.getText() , tableRequest.getSelectedRow(),
 							0);
 				}
 			}
 
 			@Override
-			public void keyPressed(KeyEvent keyEvent) {
-
-			}
-
-			@Override
-			public void keyReleased(KeyEvent keyEvent) {
-
+			public void changedUpdate(DocumentEvent documentEvent) {
+				if (tableRequest.getSelectedRow() != -1) {
+					//set value at line selected; column 0
+					modelRequest.setValueAt(propertie.getText() , tableRequest.getSelectedRow(),
+							0);
+				}
 			}
 		});
+
 
 		propertie.setBorder(new MatteBorder(1, 1, 1, 1, Color.lightGray));
 		propertie.setPreferredSize(new Dimension(700, 100));
