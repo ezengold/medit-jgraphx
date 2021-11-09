@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -11,6 +13,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.mxgraph.model.mxCell;
+import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.view.mxGraph;
 
 import javax.swing.BorderFactory;
@@ -23,6 +26,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 
 import models.Automata;
+import models.ClockVariable;
 import models.State;
 import models.Trace;
 import models.Transition;
@@ -64,9 +68,11 @@ public class Simulator extends JPanel {
 
 	private Button nextTransitionButton;
 
-	private Button previousTransitionButton;
+	private Button resetTransitionButton;
 
 	private Button simulateButton;
+
+	private Timer simulateTimer;
 
 	// handle simulation traces
 
@@ -114,11 +120,12 @@ public class Simulator extends JPanel {
 		activeTransitionsPanel.add(activeTransitionsTableScrollPane, BorderLayout.CENTER);
 
 		this.nextTransitionButton = new Button("Prendre");
-		nextTransitionButton.setBackground(Color.decode("#9099ae"));
+		nextTransitionButton.setBackground(Color.decode(GraphStyles.STROKE_COLOR.toString()));
+		nextTransitionButton.setForeground(Color.WHITE);
 		nextTransitionButton.setEnabled(false);
 
-		this.previousTransitionButton = new Button("Previous");
-		previousTransitionButton.setEnabled(false);
+		this.resetTransitionButton = new Button("Restaurer");
+		resetTransitionButton.setBackground(Color.decode("#9099ae"));
 
 		this.simulateButton = new Button("Simuler");
 		simulateButton.setBackground(Color.decode(GraphStyles.INIT_FILL_COLOR.toString()));
@@ -128,7 +135,7 @@ public class Simulator extends JPanel {
 
 		JPanel activesTransitionsButtonsContainer = new JPanel();
 		activesTransitionsButtonsContainer.setBorder(new EmptyBorder(5, 10, 0, 10));
-		// activesTransitionsButtonsContainer.add(previousTransitionButton);
+		activesTransitionsButtonsContainer.add(resetTransitionButton);
 		activesTransitionsButtonsContainer.add(nextTransitionButton);
 		activesTransitionsButtonsContainer.add(simulateButton);
 
@@ -262,10 +269,24 @@ public class Simulator extends JPanel {
 		return panel;
 	}
 
+	public void printStateDetails(State state) {
+		if (state != null) {
+			currentTransitionDetails.setText("État : " + state.getName() + "\n\n\nInvariant : "
+					+ (state.getInvariant().isEmpty() ? "Aucun invariant" : state.getInvariant()) + "\n");
+		} else {
+			currentTransitionDetails.setText("");
+		}
+	}
+
 	public void printTransitionDetails(Transition transition) {
-		currentTransitionDetails.setText("Garde : "
-				+ (transition.getGuard().isEmpty() ? "Aucune garde" : transition.getGuard()) + "\n\n\nMise à jour : "
-				+ (transition.getUpdate().isEmpty() ? "Aucun update" : transition.getUpdate()) + "\n");
+		if (transition != null) {
+			currentTransitionDetails
+					.setText("Garde : " + (transition.getGuard().isEmpty() ? "Aucune garde" : transition.getGuard())
+							+ "\n\n\nMise à jour : "
+							+ (transition.getUpdate().isEmpty() ? "Aucun update" : transition.getUpdate()) + "\n");
+		} else {
+			currentTransitionDetails.setText("");
+		}
 	}
 
 	public void setTransitionActiveOnGraph(Transition... transitions) {
@@ -382,12 +403,12 @@ public class Simulator extends JPanel {
 		this.nextTransitionButton = nextTransitionButton;
 	}
 
-	public Button getPreviousTransitionButton() {
-		return previousTransitionButton;
+	public Button getResetTransitionButton() {
+		return resetTransitionButton;
 	}
 
-	public void setPreviousTransitionButton(Button previousTransitionButton) {
-		this.previousTransitionButton = previousTransitionButton;
+	public void setResetTransitionButton(Button resetTransitionButton) {
+		this.resetTransitionButton = resetTransitionButton;
 	}
 
 	public void installActiveTransitionsHandlers() {
@@ -398,10 +419,17 @@ public class Simulator extends JPanel {
 			}
 		});
 
-		previousTransitionButton.addActionListener(new ActionListener() {
+		resetTransitionButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				handlePreviousClicked();
+				handleResetClicked();
+			}
+		});
+
+		simulateButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				handleSimulateClicked();
 			}
 		});
 
@@ -436,8 +464,81 @@ public class Simulator extends JPanel {
 		}
 	}
 
-	public void handlePreviousClicked() {
-		//
+	public void handleResetClicked() {
+		stopTimer();
+
+		app.compileProject();
+
+		tracesTableModel.removeAllTraces();
+		tracesTable.revalidate();
+		tracesTable.repaint();
+
+		setCurrentTransition(null);
+		setCurrentState(automata.getInitialState());
+	}
+
+	public void handleSimulateClicked() {
+		this.simulateTimer = new Timer();
+		nextTransitionButton.setEnabled(false);
+
+		// reset all clocks
+		// for (String clockName : automata.getClockVariablesList().keySet()) {
+		// ClockVariable clockVariable =
+		// automata.getClockVariablesList().get(clockName);
+
+		// automata.getEngine().setVariable(clockName, -1);
+		// clockVariable.setValue(-1);
+		// }
+
+		simulateTimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				if (currentState != null && currentTransition == null) {
+					// waiting on an invariant
+
+					setStatesActiveOnGraph(currentState);
+
+					printStateDetails(currentState);
+
+					// clear transitions model
+					activeTransitionsTableModel.removeAllTransitions();
+
+					if (automata.getEngine().isConditionSatisfied(currentState.getInvariant())) {
+						// stay in the state if the invariant is satisfied
+						saveTrace();
+					} else {
+						ArrayList<Transition> possibleNexts = automata
+								.findOutgoingValidTransitions(currentState.getStateId());
+
+						for (Transition tr : possibleNexts) {
+							activeTransitionsTableModel.addTransition(tr.getTransitionId());
+						}
+
+						setCurrentTransition(possibleNexts.get(0));
+					}
+				} else if (currentState != null && currentTransition != null) {
+					// taking the current transition
+					Transition oldCurrentTransition = currentTransition;
+
+					// make updates on transition
+					if (automata.executeUpdates(currentTransition.getUpdate())) {
+						saveTrace();
+						setCurrentState(automata.findState(oldCurrentTransition.getTargetStateId()));
+					}
+				}
+
+				for (String clockName : automata.getClockVariablesList().keySet()) {
+					ClockVariable clockVariable = automata.getClockVariablesList().get(clockName);
+
+					automata.getEngine().setVariable(clockName, clockVariable.getValue() + 1);
+					clockVariable.setValue(clockVariable.getValue() + 1);
+				}
+
+				activeTransitionsTable.revalidate();
+				activeTransitionsTable.repaint();
+				variablesTree.recreateTree();
+			}
+		}, 0, 2000);
 	}
 
 	/**
@@ -452,10 +553,18 @@ public class Simulator extends JPanel {
 	}
 
 	public void saveTrace() {
-		if (currentTransition != null && currentState != null) {
+		if (currentState != null && currentTransition != null) {
 			State targetState = automata.findState(currentTransition.getTargetStateId());
 
 			Trace newTrace = new Trace(currentTransition, currentState, targetState, automata.getEngine());
+
+			traces.add(newTrace);
+
+			// insert in the trace table model
+			tracesTableModel.addTrace(newTrace.getTraceId());
+			tracesTable.revalidate();
+		} else if (currentState != null && currentTransition == null) {
+			Trace newTrace = new Trace(currentState, automata.getEngine());
 
 			traces.add(newTrace);
 
@@ -517,8 +626,26 @@ public class Simulator extends JPanel {
 		this.graphComponent = graphComponent;
 	}
 
+	public Timer getSimulateTimer() {
+		return simulateTimer;
+	}
+
+	public void setSimulateTimer(Timer simulateTimer) {
+		this.simulateTimer = simulateTimer;
+	}
+
+	public void stopTimer() {
+		if (simulateTimer != null)
+			simulateTimer.cancel();
+	}
+
 	public void recreateSimulatorGraph(final mxGraph newGraph) {
-		this.graphComponent.setGraph(newGraph);
+		Object[] cells = newGraph.getModel().cloneCells(newGraph.getChildCells(newGraph.getDefaultParent(), true, true),
+				true);
+		mxGraphModel modelCopy = new mxGraphModel();
+		mxGraph graphCopy = new mxGraph(modelCopy);
+		graphCopy.addCells(cells);
+		this.graphComponent.setGraph(graphCopy);
 	}
 
 	public void setFileChooserFont(Component[] comps) {
