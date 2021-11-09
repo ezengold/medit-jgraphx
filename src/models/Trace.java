@@ -21,6 +21,12 @@ public class Trace {
 		this.currentTransition = (Transition) currenTransition.clone();
 	}
 
+	public Trace(State currentState, Engine engine) {
+		this.traceId = UUID.randomUUID().toString();
+		this.currentState = (State) currentState.clone();
+		this.engine = (Engine) engine.clone();
+	}
+
 	public Trace(Transition currenTransition, State currentState, State targetState) {
 		this.traceId = UUID.randomUUID().toString();
 		this.currentTransition = (Transition) currenTransition.clone();

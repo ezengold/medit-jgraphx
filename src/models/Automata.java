@@ -183,7 +183,11 @@ public class Automata implements Observable {
 				Object updated = engine.getVariable(variableName);
 
 				if (updated != null) {
-					intVariablesList.get(variableName).setValue((int) updated);
+					if (updated instanceof Double) {
+						intVariablesList.get(variableName).setValue((int) Math.ceil((double) updated));
+					} else if (updated instanceof Integer) {
+						intVariablesList.get(variableName).setValue((int) updated);
+					}
 				}
 			}
 
@@ -191,7 +195,13 @@ public class Automata implements Observable {
 				Object updated = engine.getVariable(variableName);
 
 				if (updated != null) {
-					boolVariablesList.get(variableName).setValue((boolean) updated);
+					if (updated instanceof Boolean) {
+						boolVariablesList.get(variableName).setValue((boolean) updated);
+					} else if (updated instanceof Double) {
+						boolVariablesList.get(variableName).setValue(((double) updated) > 0);
+					} else if (updated instanceof Integer) {
+						boolVariablesList.get(variableName).setValue(((int) updated) > 0);
+					}
 				}
 			}
 
@@ -199,7 +209,11 @@ public class Automata implements Observable {
 				Object updated = engine.getVariable(variableName);
 
 				if (updated != null) {
-					clockVariablesList.get(variableName).setValue(Long.parseLong(updated.toString()));
+					if (updated instanceof Double) {
+						clockVariablesList.get(variableName).setValue(Math.round((double) updated));
+					} else if (updated instanceof Integer) {
+						clockVariablesList.get(variableName).setValue((int) updated);
+					}
 				}
 			}
 

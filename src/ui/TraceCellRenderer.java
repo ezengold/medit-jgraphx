@@ -30,9 +30,15 @@ public class TraceCellRenderer extends Button implements TableCellRenderer {
 		if (!traceId.isEmpty()) {
 			Trace trace = findTrace(traceId);
 
-			if (trace != null) {
+			if (trace != null && trace.getCurrentState() != null && trace.getCurrentTransition() != null) {
+
 				setText((trace.getCurrentState() != null ? trace.getCurrentState().getName() : "<??>") + " --> "
 						+ (trace.getTargetState() != null ? trace.getTargetState().getName() : "<??>"));
+
+			} else if (trace != null && trace.getCurrentState() != null && trace.getCurrentTransition() == null) {
+
+				setText(trace.getCurrentState().getName() + " --> " + trace.getCurrentState().getInvariant());
+
 			} else {
 				// should never occures
 				setText("<? not found ?>");

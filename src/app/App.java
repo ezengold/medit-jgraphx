@@ -369,7 +369,7 @@ public class App extends JPanel {
 		this.consolePanel = createConsolePanel();
 
 		JSplitPane consoleSpliter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, graphComponentPanel, consolePanel);
-		consoleSpliter.setDividerLocation(600);
+		consoleSpliter.setDividerLocation(650);
 		consoleSpliter.setResizeWeight(1);
 		consoleSpliter.setDividerSize(5);
 		consoleSpliter.setBorder(null);
@@ -411,7 +411,8 @@ public class App extends JPanel {
 	public JFrame createFrame(MenuBar menuBar) {
 		this.mainFrame = new JFrame(this.appTitle);
 		mainFrame.setLocationRelativeTo(null);
-		mainFrame.setSize(1200, 700);
+		mainFrame.setSize(1350, 750);
+		mainFrame.setIconImage((new ImageIcon(getClass().getResource("/location.png")).getImage()));
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.setJMenuBar(menuBar);
 
@@ -789,7 +790,7 @@ public class App extends JPanel {
 
 			FinalProgram = analyze.getFinalProgram();
 
-			automata.getEngine().debug();
+			// automata.getEngine().debug();
 
 			removeCurrentTempFile();
 
@@ -836,7 +837,7 @@ public class App extends JPanel {
 
 		fullProgram += "\n}";
 
-		System.out.println(fullProgram);
+		// System.out.println(fullProgram);
 
 		File outputFile = createCurrentTempFile();
 		try {
