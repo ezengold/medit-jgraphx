@@ -24,6 +24,7 @@ public interface Visitor {
 	public void visit(Assign assignStm);
 	public void visit(ArrayAssign arrayAssignStm);
 	public void visit(And andExp);
+	public void visit(Imply implyExp);
 	public void visit(Or orExp);
 	public void visit(MoreThan moreExp);
 	public void visit(LessThan lessThanExp);

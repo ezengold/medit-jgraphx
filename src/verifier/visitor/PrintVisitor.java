@@ -192,6 +192,17 @@ public class PrintVisitor implements Visitor {
 	}
 
 	@Override
+	public void visit(Imply implyExp) {
+		System.out.print("(");
+		if (implyExp.getLHS() != null)
+			implyExp.getLHS().accept(this);
+		System.out.print(" == ");
+		if (implyExp.getRHS() != null)
+			implyExp.getRHS().accept(this);
+		System.out.print(")");
+	}
+
+	@Override
 	public void visit(Or andExp) {
 		System.out.print("(");
 		if (andExp.getLHS() != null)

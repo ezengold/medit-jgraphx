@@ -71,6 +71,20 @@ public class ModelCheckerCTL {
 
           return automata.getInitialState().isPropertySatisfy(expression.toString());
 
+        }else if(expression instanceof Imply) {
+            Exp lhs = ((Imply) expression).getLHS();
+            Exp rhs = ((Imply) expression).getRHS();
+            satisfies(lhs);
+            satisfies(rhs);
+
+            for (State eachSate:automata.getStatesList()) {
+                boolean result = !(eachSate.isPropertySatisfy(lhs.toString())
+                        && !eachSate.isPropertySatisfy(rhs.toString()) );
+                eachSate.addProperty(expression.toString(),result);
+            }
+
+            return automata.getInitialState().isPropertySatisfy(expression.toString());
+
         } else if(expression instanceof And) {
             Exp lhs = ((And) expression).getLHS();
             Exp rhs = ((And) expression).getRHS();

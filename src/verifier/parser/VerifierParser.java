@@ -32,6 +32,7 @@ public class VerifierParser {
     static {
         binopLevels = new HashMap<TokenType, Integer>();
         binopLevels.put(TokenType.AND, 10);
+        binopLevels.put(TokenType.IMPLY, 10);
         binopLevels.put(TokenType.OR, 10);
         binopLevels.put(TokenType.LT, 20);
         binopLevels.put(TokenType.RT, 20);
@@ -640,6 +641,8 @@ public class VerifierParser {
                 case AND:
                     lhs = new And(lhs, rhs);
                     break;
+                case IMPLY:
+                    lhs = new Imply(lhs,rhs);
                 case OR:
                     lhs = new Or(lhs, rhs);
                     break;

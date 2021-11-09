@@ -15,6 +15,7 @@ public enum TokenType {
 	GLOBALLY,// []
 	DEADLOCK,
 	UNTIL,
+	IMPLY,
 
 
 
