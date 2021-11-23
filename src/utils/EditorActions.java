@@ -71,9 +71,11 @@ public class EditorActions {
 						JFileChooser fc = new JFileChooser(wd);
 						EditorFileFilter xmlFilter = new EditorFileFilter(".xml", "Fichier XML");
 						EditorFileFilter yscFilter = new EditorFileFilter(".ysc", "Fichier Yakindu");
+						EditorFileFilter qmFilter = new EditorFileFilter(".qm", "Fichier Quantum leaps");
 
 						fc.addChoosableFileFilter(xmlFilter);
 						fc.addChoosableFileFilter(yscFilter);
+						fc.addChoosableFileFilter(qmFilter);
 
 						fc.setAcceptAllFileFilterUsed(false);
 						fc.setFileFilter(xmlFilter);
@@ -104,6 +106,17 @@ public class EditorActions {
 									YakinduHanlder yscHandler = new YakinduHanlder(app);
 									
 									app.updateGraph(yscHandler.readYakinduFile(fc.getSelectedFile()));
+								} catch (IOException e1) {
+									e1.printStackTrace();
+								}
+
+							}  else if (fc.getSelectedFile().getAbsolutePath().toLowerCase().endsWith(".qm")) {
+								try {
+									((mxGraphModel) graphComponent.getGraph().getModel()).clear();
+
+									QmHandler qmHandler = new QmHandler(app);
+
+									app.updateGraph(qmHandler.readQuantumLeapsFile(fc.getSelectedFile()));
 								} catch (IOException e1) {
 									e1.printStackTrace();
 								}
