@@ -1,9 +1,12 @@
 package utils;
 
 import app.App;
+import com.mxgraph.layout.*;
+import com.mxgraph.layout.orthogonal.mxOrthogonalLayout;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.util.mxConstants;
+
 import com.mxgraph.util.mxPoint;
 import com.mxgraph.view.mxGraph;
 import models.State;
@@ -23,7 +26,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
-public class QmHandler {
+public class QmHandler  {
     private static HashMap<String, String> excepts = new HashMap<String, String>();
     private static HashMap<String, String> globalDeclarationsExcepts = new HashMap<String, String>();
     protected String globalDeclarations = "";
@@ -240,19 +243,12 @@ public class QmHandler {
 
 
 
-
-
-
-
-
-
-
-
-
                     }
 
 
                 }
+
+                handlingSubMachine(firstStatechart);
 
 
 
@@ -306,6 +302,7 @@ public class QmHandler {
                         s.getPosition().getY(), 40, 40);
 
                 if (s.isInitial()) {
+
                     ((mxCell) vertex).setStyle("fillColor=#888888;strokeColor=#dddddd");
                 }
 
@@ -314,6 +311,7 @@ public class QmHandler {
 
             // GET EDGES
             for (Transition t : transitionList) {
+
                 mxCell source = (mxCell) verticesArray.get(t.getSourceStateId());
                 State sourceState = (State) source.getValue();
                 double sourceX = sourceState.getPosition().getX();
@@ -336,7 +334,79 @@ public class QmHandler {
             graph.getModel().endUpdate();
         }
 
-        return graph;
+//         mxFastOrganicLayout layout = new mxFastOrganicLayout(graph);
+        mxCompactTreeLayout layout = new mxCompactTreeLayout(graph,true);
+        layout.setLevelDistance(30);
+        layout.setGroupPadding(50);
+        layout.setNodeDistance(50);
+        layout.setUseBoundingBox(true);
+        layout.setEdgeRouting(true);
+
+
+
+        layout.execute(graph.getDefaultParent());
+
+        return layout.getGraph();
+
+
+
+    }
+
+
+
+    public void handlingSubMachine(Element firstStateChart){
+        NodeList smStates = firstStateChart.getElementsByTagName("smstate") ;
+        if (smStates != null && smStates.getLength()>0) {
+            for (int i = 0; i <smStates.getLength() ; i++) {
+                Node smStateNode = smStates.item(i);
+                if(smStateNode.getNodeType() == Element.ELEMENT_NODE) {
+                    Element smStateElement = (Element)smStateNode;
+
+                    String sourceStateName = smStateElement.getAttribute("name");
+                    System.out.println("SOURCE STATE: "+sourceStateName);
+                    addStatesId(sourceStateName);
+                    String sourceStateId = getStateId(sourceStateName);
+                    String subMachine = smStateElement.getAttribute("submachine");
+
+                    Node subMachineTarget = getTargetNode(subMachine,smStateNode);
+                    System.out.println("SUBMACHINE: " +subMachineTarget.getNodeName());
+                    if(subMachineTarget.getNodeType() == Element.ELEMENT_NODE) {
+                        Element subMachineElement = (Element)subMachineTarget;
+                        Node subStateInitial = subMachineElement.getElementsByTagName("initial").item(0);
+                        Element subStateInitialElement = (Element)subStateInitial;
+
+                        Node subStateInitialAction = subStateInitialElement.getElementsByTagName("action").item(0);
+                        Node mainTarget = getTargetNode(subStateInitialElement.getAttribute("target"),subStateInitial);
+
+                        Element mainTargetElement = (Element) mainTarget;
+                        String targetStateName = mainTargetElement.getAttribute("name");
+                        System.out.println("TARGET STATE NAME: "+sourceStateName);
+                        addStatesId(targetStateName);
+                        String targetStateId = getStateId(targetStateName);
+                        Transition transition = new Transition(sourceStateId,targetStateId);
+                        transitionList.add(transition);
+
+                        if (subStateInitialAction != null) {
+                            if(subStateInitialAction.getNodeType() == Element.ELEMENT_NODE) {
+                                Element subStateInitialActionElement = (Element)subStateInitialAction;
+                                setTransitionUpdate(transition.getTransitionId(),subStateInitialActionElement.getAttribute("brief"));
+                            }
+
+                        }
+
+
+
+
+
+
+                    }
+
+
+
+                }
+            }
+        }
+
 
     }
 
