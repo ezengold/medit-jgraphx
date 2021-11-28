@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DTD GOES HERE -->
+<content>
+	<declarations></declarations>
+	<model>
+		<location id="80d4769f-ac4c-4d7b-bfc0-0ed566591400" stateId="80d4769f-ac4c-4d7b-bfc0-0ed566591400" x="38.5" y="0.0" isInitial="1">
+			<name>s1</name>
+			<invariant></invariant>
+		</location>
+		<location id="8c9b7cd8-48ea-45e1-b4b3-5310c5a81f91" stateId="8c9b7cd8-48ea-45e1-b4b3-5310c5a81f91" x="38.5" y="120.0" isInitial="0">
+			<name>Light Off</name>
+			<invariant></invariant>
+		</location>
+		<location id="2a643062-0f79-4637-83d0-f5f42309e450" stateId="2a643062-0f79-4637-83d0-f5f42309e450" x="38.5" y="240.0" isInitial="0">
+			<name>Manual mode</name>
+			<invariant></invariant>
+		</location>
+		<location id="0e8cec42-9c9a-48e0-93cf-ec0ee69780e9" stateId="0e8cec42-9c9a-48e0-93cf-ec0ee69780e9" x="38.5" y="360.0" isInitial="0">
+			<name>State</name>
+			<invariant></invariant>
+		</location>
+		<location id="4524267d-f4f9-4d2d-9578-6c8f0bab644f" stateId="4524267d-f4f9-4d2d-9578-6c8f0bab644f" x="38.5" y="480.0" isInitial="0">
+			<name>No motion detected</name>
+			<invariant></invariant>
+		</location>
+		<location id="98b4b2ca-8408-4669-b6a1-dc915c54d7b1" stateId="98b4b2ca-8408-4669-b6a1-dc915c54d7b1" x="38.5" y="600.0" isInitial="0">
+			<name>Motion detected</name>
+			<invariant></invariant>
+		</location>
+		<transition id="" transitionId="0340c908-b279-4535-a4b6-093b7f2d1e8b" source="80d4769f-ac4c-4d7b-bfc0-0ed566591400" sourceX="0.0" sourceY="0.0" target="8c9b7cd8-48ea-45e1-b4b3-5310c5a81f91" targetX="0.0" targetY="0.0">
+			<guard></guard>
+			<updates>;brightness=0;
+</updates>
+		</transition>
+		<transition id="ON_pressed" transitionId="b8072386-f835-4318-a6e5-6378dacf3429" source="8c9b7cd8-48ea-45e1-b4b3-5310c5a81f91" sourceX="0.0" sourceY="0.0" target="2a643062-0f79-4637-83d0-f5f42309e450" targetX="0.0" targetY="0.0">
+			<guard>ON_pressed</guard>
+			<updates>brightness=1;
+</updates>
+		</transition>
+		<transition id="MOT_pressed" transitionId="e389ed56-4ae4-4e33-bb8e-c8f8991e1b70" source="8c9b7cd8-48ea-45e1-b4b3-5310c5a81f91" sourceX="0.0" sourceY="0.0" target="0e8cec42-9c9a-48e0-93cf-ec0ee69780e9" targetX="0.0" targetY="0.0">
+			<guard>MOT_pressed</guard>
+			<updates></updates>
+		</transition>
+		<transition id="OFF_pressed" transitionId="c0c89b1b-8208-4ac4-8cfe-0506f3a9fd8e" source="2a643062-0f79-4637-83d0-f5f42309e450" sourceX="0.0" sourceY="0.0" target="8c9b7cd8-48ea-45e1-b4b3-5310c5a81f91" targetX="0.0" targetY="0.0">
+			<guard>OFF_pressed</guard>
+			<updates></updates>
+		</transition>
+		<transition id="2" transitionId="c1497e72-9dac-4488-8bba-03f29291bd95" source="2a643062-0f79-4637-83d0-f5f42309e450" sourceX="0.0" sourceY="0.0" target="0e8cec42-9c9a-48e0-93cf-ec0ee69780e9" targetX="0.0" targetY="0.0">
+			<guard>MOT_pressed</guard>
+			<updates></updates>
+		</transition>
+		<transition id="motion_detected" transitionId="65c3006a-a243-4775-9341-2ec9416d4850" source="4524267d-f4f9-4d2d-9578-6c8f0bab644f" sourceX="0.0" sourceY="0.0" target="98b4b2ca-8408-4669-b6a1-dc915c54d7b1" targetX="0.0" targetY="0.0">
+			<guard>motion_detected</guard>
+			<updates>;brightness=3;</updates>
+		</transition>
+		<transition id="after 30s" transitionId="96309390-70aa-4ad1-8d7e-68c8ee77a468" source="98b4b2ca-8408-4669-b6a1-dc915c54d7b1" sourceX="0.0" sourceY="0.0" target="4524267d-f4f9-4d2d-9578-6c8f0bab644f" targetX="0.0" targetY="0.0">
+			<guard>after 30s</guard>
+			<updates></updates>
+		</transition>
+		<transition id="3" transitionId="ac318246-3580-416c-a204-5dbb4adeb67c" source="0e8cec42-9c9a-48e0-93cf-ec0ee69780e9" sourceX="0.0" sourceY="0.0" target="4524267d-f4f9-4d2d-9578-6c8f0bab644f" targetX="0.0" targetY="0.0">
+			<guard></guard>
+			<updates></updates>
+		</transition>
+	</model>
+</content>

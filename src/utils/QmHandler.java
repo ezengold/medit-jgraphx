@@ -39,7 +39,31 @@ public class QmHandler  {
 
     public QmHandler(App parent) {
         this.app = parent;
+        excepts.put("<", "&lt;");
+        excepts.put(">", "&gt;");
+        excepts.put("&", "&amp;");
     }
+
+    public static String escapeStr(final String input) {
+        String output = input;
+        for (String token : excepts.keySet()) {
+            output = output.replaceAll(token, excepts.get(token));
+        }
+        return output;
+    }
+
+    public static String restoreStr(final String input) {
+        String output = input;
+        for (String token : excepts.keySet()) {
+            output = output.replaceAll(excepts.get(token), token);
+        }
+        return output;
+    }
+
+
+
+
+
 
     public mxGraph readQuantumLeapsFile(File file) throws IOException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -100,13 +124,14 @@ public class QmHandler  {
                            int i = 0;
                            while (i <= index) {
                                stateNode = stateNode.getNextSibling();
-                               if(stateNode.getNodeType() == Element.ELEMENT_NODE) {
+                               if(stateNode.getNodeType() == Element.ELEMENT_NODE && !stateNode.getNodeName().equals("documentation")) {
                                    System.out.println("INITIAL STATE NAME: "+stateNode.getNodeName());
                                    i++;
                                }
                            }
 
                            String stateName = ((Element)stateNode).getAttribute("name");
+                           System.out.println("STATE INITIAL NAME: "+stateName);
 
                            addStatesId(stateName);
                            String targetStateId = getStateId(stateName);
@@ -145,7 +170,7 @@ public class QmHandler  {
                         if(entryNode != null) {
                             Transition transitionEntry = getEntryTransition(stateId);
                             if(transitionEntry != null) {
-                                setTransitionUpdate(transitionEntry.getTransitionId(), ((Element)entryNode).getAttribute("brief"));
+                                setTransitionUpdate(transitionEntry.getTransitionId(), ((Element)entryNode).getTextContent());
                             }
                         }
 
@@ -170,10 +195,14 @@ public class QmHandler  {
                                         transitionList.add(transitionOutgoing);
 
                                         if(existNode != null) {
-                                            setTransitionUpdate(transitionOutgoing.getTransitionId(),((Element)existNode).getAttribute("brief"));
+                                            setTransitionUpdate(transitionOutgoing.getTransitionId(),((Element)existNode).getTextContent());
                                         }
                                         if(transitionAction != null) {
-                                            setTransitionUpdate(transitionOutgoing.getTransitionId(),((Element)transitionAction).getAttribute("brief"));
+                                            Element transitionActionElement = (Element)transitionAction;
+                                            String actionContent = transitionActionElement.getTextContent() == null ?
+                                                    transitionActionElement.getAttribute("brief")
+                                                    : transitionActionElement.getTextContent();
+                                            setTransitionUpdate(transitionOutgoing.getTransitionId(),actionContent);
                                         }
                                         if(transitionTrig != null) {
                                             setTransitionGuard(transitionOutgoing.getTransitionId(),transitionTrig);
@@ -286,6 +315,7 @@ public class QmHandler  {
 
 
 
+        this.app.setGlobalDeclarations("");
 
         // create the graph
         graph.getModel().beginUpdate();
@@ -335,7 +365,7 @@ public class QmHandler  {
         }
 
 //         mxFastOrganicLayout layout = new mxFastOrganicLayout(graph);
-        mxCompactTreeLayout layout = new mxCompactTreeLayout(graph,true);
+        mxCompactTreeLayout layout = new mxCompactTreeLayout(graph,false);
         layout.setLevelDistance(30);
         layout.setGroupPadding(50);
         layout.setNodeDistance(50);
@@ -389,7 +419,7 @@ public class QmHandler  {
                         if (subStateInitialAction != null) {
                             if(subStateInitialAction.getNodeType() == Element.ELEMENT_NODE) {
                                 Element subStateInitialActionElement = (Element)subStateInitialAction;
-                                setTransitionUpdate(transition.getTransitionId(),subStateInitialActionElement.getAttribute("brief"));
+                                setTransitionUpdate(transition.getTransitionId(),subStateInitialActionElement.getTextContent());
                             }
 
                         }
@@ -428,7 +458,7 @@ public class QmHandler  {
                     int i = 0;
                     while (i <= index) {
                         nodeFound = nodeFound.getNextSibling();
-                        if(nodeFound.getNodeType() == Element.ELEMENT_NODE) {
+                        if(nodeFound.getNodeType() == Element.ELEMENT_NODE &&  !nodeFound.getNodeName().equals("documentation")) {
                             i++;
                         }
 
@@ -476,16 +506,24 @@ public class QmHandler  {
     }
 
     public void setTransitionUpdate(String transitionId, String update) {
-        if (this.transitionUpdates.containsKey(transitionId)) {
 
-            String oldValue = this.transitionUpdates.get(transitionId);
-            this.transitionUpdates.replace(transitionId, oldValue + ";" + update);
 
-        } else {
+        if(!update.isEmpty()) {
 
-            this.transitionUpdates.put(transitionId, update);
+            if (this.transitionUpdates.containsKey(transitionId)) {
+
+                String oldValue = this.transitionUpdates.get(transitionId);
+                this.transitionUpdates.replace(transitionId, oldValue + ";" + update);
+
+            } else {
+                this.transitionUpdates.put(transitionId, update);
+
+            }
 
         }
+
+
+
     }
 
     public void setTransitionGuard(String transitionId, String guard) {
