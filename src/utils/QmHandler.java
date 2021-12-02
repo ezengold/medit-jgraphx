@@ -378,8 +378,6 @@ public class QmHandler  {
 
         return layout.getGraph();
 
-
-
     }
 
 
