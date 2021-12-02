@@ -19,9 +19,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -56,14 +54,41 @@ public class UppaalXmlHandler {
         this.uppaalDoc = null;
         excepts.put("<", "&lt;");
         excepts.put(">", "&gt;");
+
         excepts.put("&", "&amp;");
     }
+
+
+    public  void createCurrentTempFile(String request) {
+        File outputFile = new File("temp_uppaal/automata.q");
+        if (outputFile.exists()) {
+            outputFile.delete();
+            createCurrentTempFile(request);
+            return;
+        }
+        File currentTempFile;
+
+        try {
+            if (outputFile.createNewFile()) {
+                currentTempFile = outputFile;
+                FileWriter writer = new FileWriter(outputFile);
+                writer.write(request);
+                writer.close();
+            } else {
+                currentTempFile = null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
 
     public void write() {
         this.uppaalDoc = createDoc();
         writeModel();
         writeDoc();
-
     }
 
     private Document createDoc() {
@@ -124,21 +149,39 @@ public class UppaalXmlHandler {
         Element declarationEle = this.uppaalDoc.createElement("declaration");
         rootEle.appendChild(declarationEle);
 
-        String declarations = "";
+        StringBuilder declarations = new StringBuilder();
+
         for (int i = 0; i < this.automata.getDeclarationsList().size(); i++) {
-            declarations = String.valueOf(declarations) + (String)this.automata.getDeclarationsList().get(i) + "\n";
+
+            if(!automata.getDeclarationsList().get(i).trim().isEmpty()) {
+                declarations.append(this.automata.getDeclarationsList().get(i)).append(";\n");
+            }
+
         }
 
-        declarationEle.appendChild(this.uppaalDoc.createTextNode(declarations));
+//        for (String clock : automata.getClockVariablesList().keySet()) {
+//
+//            declarations.append("clock ").append(clock).append(";\n");
+//        }
+//
+//        for (String varInt : automata.getIntVariablesList().keySet()) {
+//
+//            declarations.append("int ").append(varInt).append(";\n");
+//        }
+
+
+
+        declarationEle.appendChild(this.uppaalDoc.createTextNode(declarations.toString()));
 
         writeAutomata(rootEle);
 
         Element systemEle = this.uppaalDoc.createElement("system");
         rootEle.appendChild(systemEle);
-        String name = automata.getName();
-        String systemDeclaration = automata.getName().toLowerCase()+" = "+
-                name.substring(0, 1).toUpperCase() + name.substring(1)+";";
-        String systemStr = "system "+ automata.getName().toLowerCase()+";";
+        String name = "automata";
+        String systemDeclaration = "automata = Automata();";
+//        String systemDeclaration = "automata = "+
+//                name.substring(0, 1).toUpperCase() + name.substring(1)+";";
+        String systemStr = "system automata;";
         systemEle.appendChild(this.uppaalDoc.createTextNode(systemDeclaration));
         systemEle.appendChild(this.uppaalDoc.createTextNode(systemStr));
 
@@ -150,7 +193,7 @@ public class UppaalXmlHandler {
         Element automataEle = this.uppaalDoc.createElement("template");
         rootEle.appendChild(automataEle);
         Element automataNameEle = this.uppaalDoc.createElement("name");
-        automataNameEle.appendChild(this.uppaalDoc.createTextNode(automata.getName()));
+        automataNameEle.appendChild(this.uppaalDoc.createTextNode("Automata"));
         automataEle.appendChild(automataNameEle);
 
         //handling of states
@@ -161,7 +204,8 @@ public class UppaalXmlHandler {
         }
 
         Element initStateEle = this.uppaalDoc.createElement("init");
-        initStateEle.setAttribute("ref", automata.getInitialStateId());
+
+        initStateEle.setAttribute("ref", automata.getStatesList().get(0).getStateId());
         automataEle.appendChild(initStateEle);
 
 

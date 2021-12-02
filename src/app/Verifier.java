@@ -10,12 +10,16 @@ import javax.swing.event.ListSelectionListener;
 
 import ui.DialogUtils;
 import ui.ModelRequest;
+import utils.UppaalXmlHandler;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class Verifier extends JPanel {
 
@@ -105,7 +109,49 @@ public class Verifier extends JPanel {
 				if(propertie.isEnabled() && !propertie.getText().isEmpty()) {
 					statusVerifier.clearStatus();
 					statusVerifier.normal(propertie.getText());
-					verifierAnalyzer.analyze(propertie.getText());
+//					verifierAnalyzer.analyze(propertie.getText());
+					try {
+						String pathModel = "temp_uppaal/automata.xml";
+						String requestFile = "temp_uppaal/automata.q";
+						UppaalXmlHandler uppaalXmlHandler = new UppaalXmlHandler(app.getAutomata(),pathModel);
+						uppaalXmlHandler.write();
+						System.out.println("EXPRESSION UPPAAL = "+propertie.getText());
+						uppaalXmlHandler.createCurrentTempFile(propertie.getText());
+
+						Process proc = Runtime.getRuntime().exec("uppaal/bin-Linux/verifyta  -t0  "+pathModel+" "+requestFile);
+						BufferedReader stdInput = new BufferedReader(new
+								InputStreamReader(proc.getInputStream()));
+
+						BufferedReader stdError = new BufferedReader(new
+								InputStreamReader(proc.getErrorStream()));
+
+
+						// Read the output from the command
+						System.out.println("Here is the standard output of the command:\n");
+						String s = null;
+
+						while ((s = stdInput.readLine()) != null) {
+							if(!s.isEmpty()) {
+								statusVerifier.success(s);
+							}
+
+						}
+
+						// Read any errors from the attempted command
+						System.out.println("Here is the standard error of the command (if any):\n");
+						while ((s = stdError.readLine()) != null) {
+							statusVerifier.error(s);
+						}
+
+
+
+
+					}catch (IOException e) {
+						e.printStackTrace();
+					}
+
+
+
 
 				} else {
 					DialogUtils.errorDialog("Veuillez renseigner une proprieté");

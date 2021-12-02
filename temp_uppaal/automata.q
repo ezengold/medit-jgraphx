@@ -1,0 +1,1 @@
+E<> automata.s1 imply  x<2

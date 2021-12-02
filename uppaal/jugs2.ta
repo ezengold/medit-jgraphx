@@ -1,0 +1,75 @@
+// The Jugs example
+//
+// The problem: Given a number of jugs each having a capacity and a 
+// number of hands, can you by filling, emptying and pouring the 
+// contents of one jug into another reach a certain goal configuration.
+//
+// The instanse: Four jugs with capacity 5, 3, 7 and 9. Two hands. The
+// goal is to have 2 units in the first two jugs and 6 in the last.
+
+const int JUGS = 4;		          // Number of jugs
+const int MAX = 9;			  // Max capacity of any jug
+const int capacity[JUGS] = {5, 3, 7, 9};  // The capacities
+
+int[0,MAX] content[JUGS];	          // The content of any jug
+int[0,1] jug_used[JUGS];	          // 1 if a jug is in use
+int[0,JUGS] used;		          // The number of jugs in use
+
+chan pour, done;
+
+meta int remaining;
+clock cost;
+
+after_update
+{
+  remaining = 
+        ((content[0] <= 2 ? 2 - content[0] : content[0] - 2)
+       + (content[1] <= 2 ? 2 - content[1] : content[1] - 2)
+       + (content[3] <= 6 ? 6 - content[3] : content[3] - 6)
+       + (content[0] + content[1] + content[3] <= 10 
+          ? 10 - content[0] - content[1] - content[3]
+	: content[0] + content[1] + content[3] - 10)
+         ) / 2
+}
+
+process Hand()
+{
+  int amount, i, j;
+  clock time;
+  state S0, S1, S2, empty {time <= amount}, 
+        S3, fill {time <= amount}, S4, S5, 
+        pouring {time <= amount}, standby;
+  commit S1, S2, S3, S4, S5;
+  init S0;
+  trans 
+    S0 -> S1	{ guard used < JUGS; assign time = 0; },
+    S1 -> S1	{ guard i < JUGS - 1; assign i = i +1; },
+    S1 -> S2	{ guard jug_used[i] == 0; 
+	          assign jug_used[i] = 1, used = used + 1; },
+    S2 -> empty { assign amount = content[i], content[i] = 0; },
+    empty -> S3	{ guard time >= amount; 
+                  assign jug_used[i] = 0, used = used - 1; },
+    S3 -> S0	{ assign i = 0, j = 0, amount = 0; },
+    S2 -> fill  { assign amount = capacity[i] - content[i],
+		         content[i] = capacity[i]; },
+    fill -> S3  { guard time >= amount; 
+                  assign jug_used[i] = 0, used = used - 1; },
+    S2 -> S4    { guard used < JUGS; sync pour!; },
+    S4 -> S4    { guard j < JUGS - 1; assign j = j + 1; },
+    S4 -> S5    { guard jug_used[j] == 0; 
+                  assign jug_used[j] = 1, used = used + 1; },
+    S5 -> pouring{assign amount = (capacity[j] - content[j]) <? content[i],
+                         content[j] = content[j] + amount,
+                         content[i] = content[i] - amount; },
+    pouring -> S3{guard time >= amount; 
+                  sync done!; 
+                  assign jug_used[i] = 0, jug_used[j] = 0, 
+                         used = used - 2; },
+    S0 -> standby{sync pour?; },
+    standby -> S0{sync done?; };
+}
+
+H1 = Hand();
+H2 = Hand();
+
+system H1, H2;
