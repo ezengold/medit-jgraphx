@@ -18,6 +18,8 @@ import com.mxgraph.util.mxUtils;
 import com.mxgraph.view.mxGraph;
 
 import app.App;
+import models.Automata;
+import models.State;
 
 public class EditorActions {
 
@@ -35,7 +37,6 @@ public class EditorActions {
 		return null;
 	}
 
-	@SuppressWarnings("serial")
 	public static class NewAction extends AbstractAction {
 
 		@Override
@@ -43,13 +44,31 @@ public class EditorActions {
 			App app = getApp(e);
 
 			if (app != null) {
-				System.out.println("NEW FILE CLICKED");
+				if (!app.isModified() || JOptionPane.showConfirmDialog(app,
+						"Êtes-vous prêts à perdre vos modifications ?") == JOptionPane.YES_OPTION) {
+					app.setModified(false);
+					app.setCurrentFile(null);
+					app.setAutomata(new Automata());
+					app.setGlobalDeclarations("");
+
+					final mxGraph graph = app.getGraphComponent().getGraph();
+
+					graph.getModel().beginUpdate();
+					try {
+						graph.removeCells(graph.getChildCells(graph.getDefaultParent()));
+
+						State s0 = new State();
+						graph.insertVertex(graph.getDefaultParent(), s0.getName(), s0, 20, 20, 40, 40);
+					} finally {
+						graph.getModel().endUpdate();
+						graph.refresh();
+						graph.repaint();
+					}
+				}
 			}
 		}
-
 	}
 
-	@SuppressWarnings("serial")
 	public static class OpenAction extends AbstractAction {
 		/*
 		 * 
@@ -102,7 +121,7 @@ public class EditorActions {
 									((mxGraphModel) graphComponent.getGraph().getModel()).clear();
 
 									YakinduHanlder yscHandler = new YakinduHanlder(app);
-									
+
 									app.updateGraph(yscHandler.readYakinduFile(fc.getSelectedFile()));
 								} catch (IOException e1) {
 									e1.printStackTrace();
@@ -130,7 +149,6 @@ public class EditorActions {
 		}
 	}
 
-	@SuppressWarnings("serial")
 	public static class SaveAction extends AbstractAction {
 
 		protected String lastDir = null;
@@ -219,7 +237,6 @@ public class EditorActions {
 
 	}
 
-	@SuppressWarnings("serial")
 	public static class CloseAction extends AbstractAction {
 
 		@Override
@@ -233,7 +250,6 @@ public class EditorActions {
 
 	}
 
-	@SuppressWarnings("serial")
 	public static class QuitAction extends AbstractAction {
 
 		@Override
@@ -247,7 +263,6 @@ public class EditorActions {
 
 	}
 
-	@SuppressWarnings("serial")
 	public static class SimulatorAction extends AbstractAction {
 
 		@Override
@@ -261,7 +276,6 @@ public class EditorActions {
 
 	}
 
-	@SuppressWarnings("serial")
 	public static class AboutAction extends AbstractAction {
 
 		@Override
@@ -275,7 +289,6 @@ public class EditorActions {
 
 	}
 
-	@SuppressWarnings("serial")
 	public static class CursorAction extends AbstractAction {
 
 		@Override
@@ -289,7 +302,6 @@ public class EditorActions {
 
 	}
 
-	@SuppressWarnings("serial")
 	public static class StateAction extends AbstractAction {
 
 		@Override
@@ -303,7 +315,6 @@ public class EditorActions {
 
 	}
 
-	@SuppressWarnings("serial")
 	public static class EdgeAction extends AbstractAction {
 
 		@Override
@@ -317,7 +328,6 @@ public class EditorActions {
 
 	}
 
-	@SuppressWarnings("serial")
 	public static class HistoryAction extends AbstractAction {
 		protected boolean undo;
 

@@ -19,7 +19,7 @@ public class MenuBar extends JMenuBar {
 		JMenu fichierMenu = new JMenu("Fichier");
 		fichierMenu.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
 		menu = add(fichierMenu);
-		// menu.add(app.bind("Nouveau", new NewAction(), "/file.png"));
+		menu.add(app.bind("Nouveau", new NewAction(), "/file.png"));
 		menu.add(app.bind("Ouvrir", new OpenAction(), "/folder.png"));
 		menu.add(app.bind("Sauvegarder", new SaveAction(), "/disk.png"));
 		menu.addSeparator();
