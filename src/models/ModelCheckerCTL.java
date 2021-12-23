@@ -174,6 +174,7 @@ public class ModelCheckerCTL {
             for (State eachState:automata.getStatesList()) {
                 if (eachState.isPropertySatisfy(rhs.toString())) {
                     list.add(eachState);
+                    eachState.setSeenBefore(true);
                 }
             }
 
@@ -187,7 +188,7 @@ public class ModelCheckerCTL {
                         State previous = automata.findState(transition.getSourceStateId());
                         if(!previous.isSeenBefore()) {
                             previous.setSeenBefore(true);
-                            if(previous.getPropertiesVerified().get(lhs.toString())) {
+                            if(previous.isPropertySatisfy(lhs.toString())) {
                                 list.add(previous);
                             }
                         }

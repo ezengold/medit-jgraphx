@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DTD GOES HERE -->
+<content>
+	<declarations></declarations>
+	<model>
+		<location id="44ec9b80-3bfc-42dc-96db-34fa8ceb4244" stateId="44ec9b80-3bfc-42dc-96db-34fa8ceb4244" x="143.0" y="0.0" isInitial="1">
+			<name>s0</name>
+			<invariant></invariant>
+		</location>
+		<location id="d98c93e8-4c31-4527-87c4-5e263881b630" stateId="d98c93e8-4c31-4527-87c4-5e263881b630" x="143.0" y="120.0" isInitial="0">
+			<name>off</name>
+			<invariant></invariant>
+		</location>
+		<location id="b576125a-aa83-42b7-beed-7d6931dd2aea" stateId="b576125a-aa83-42b7-beed-7d6931dd2aea" x="143.0" y="240.0" isInitial="0">
+			<name>on</name>
+			<invariant></invariant>
+		</location>
+		<location id="54b3173a-ee99-4ce1-baaf-ceafad70ae48" stateId="54b3173a-ee99-4ce1-baaf-ceafad70ae48" x="1.0" y="360.0" isInitial="0">
+			<name>state5</name>
+			<invariant></invariant>
+		</location>
+		<location id="99853923-3a47-4b2b-af1a-d105d73f6174" stateId="99853923-3a47-4b2b-af1a-d105d73f6174" x="143.0" y="360.0" isInitial="0">
+			<name>state4</name>
+			<invariant></invariant>
+		</location>
+		<location id="68e87df0-5b3b-4a8e-80fd-7f1d4ebe5f52" stateId="68e87df0-5b3b-4a8e-80fd-7f1d4ebe5f52" x="285.0" y="360.0" isInitial="0">
+			<name>state3</name>
+			<invariant></invariant>
+		</location>
+		<location id="76ed4e58-4ccd-48ab-b232-8502592fd682" stateId="76ed4e58-4ccd-48ab-b232-8502592fd682" x="143.0" y="480.0" isInitial="0">
+			<name>sub</name>
+			<invariant></invariant>
+		</location>
+		<location id="cecef335-c372-4a79-ace8-1a90fd771840" stateId="cecef335-c372-4a79-ace8-1a90fd771840" x="143.0" y="600.0" isInitial="0">
+			<name>sub_state1</name>
+			<invariant></invariant>
+		</location>
+		<location id="66f36ad9-890b-4f14-a8cc-232a9180cfe3" stateId="66f36ad9-890b-4f14-a8cc-232a9180cfe3" x="143.0" y="720.0" isInitial="0">
+			<name>sub_state2</name>
+			<invariant></invariant>
+		</location>
+		<transition id="" transitionId="99314b65-f3fa-4454-aadb-eaf5bf9d179d" source="44ec9b80-3bfc-42dc-96db-34fa8ceb4244" sourceX="0.0" sourceY="0.0" target="d98c93e8-4c31-4527-87c4-5e263881b630" targetX="0.0" targetY="0.0">
+			<guard></guard>
+			<updates>initial_action;BSD_ledOff();</updates>
+		</transition>
+		<transition id="TIMEOUT" transitionId="ea4d77e9-edf1-4e3c-a1c7-be69c6fc3da4" source="b576125a-aa83-42b7-beed-7d6931dd2aea" sourceX="0.0" sourceY="0.0" target="d98c93e8-4c31-4527-87c4-5e263881b630" targetX="0.0" targetY="0.0">
+			<guard>TIMEOUT</guard>
+			<updates></updates>
+		</transition>
+		<transition id="guard5()" transitionId="e1290f79-ac3a-4e49-afd5-03a4f16e026a" source="b576125a-aa83-42b7-beed-7d6931dd2aea" sourceX="0.0" sourceY="0.0" target="54b3173a-ee99-4ce1-baaf-ceafad70ae48" targetX="0.0" targetY="0.0">
+			<guard>guard5()</guard>
+			<updates></updates>
+		</transition>
+		<transition id="guard4" transitionId="a83e24ca-0222-47a5-9749-7ca8acd7f63c" source="b576125a-aa83-42b7-beed-7d6931dd2aea" sourceX="0.0" sourceY="0.0" target="99853923-3a47-4b2b-af1a-d105d73f6174" targetX="0.0" targetY="0.0">
+			<guard>guard4</guard>
+			<updates></updates>
+		</transition>
+		<transition id="guard()" transitionId="c70476d9-4647-4691-814c-cdad49d8dbf7" source="b576125a-aa83-42b7-beed-7d6931dd2aea" sourceX="0.0" sourceY="0.0" target="68e87df0-5b3b-4a8e-80fd-7f1d4ebe5f52" targetX="0.0" targetY="0.0">
+			<guard>guard()</guard>
+			<updates></updates>
+		</transition>
+		<transition id="2" transitionId="74e59359-7e1f-4265-9d10-3adbe1ed5010" source="99853923-3a47-4b2b-af1a-d105d73f6174" sourceX="0.0" sourceY="0.0" target="76ed4e58-4ccd-48ab-b232-8502592fd682" targetX="0.0" targetY="0.0">
+			<guard>TIMEOUT</guard>
+			<updates></updates>
+		</transition>
+		<transition id="TRIG1" transitionId="9fb0a189-3f53-467b-adb5-ec40d591fe59" source="cecef335-c372-4a79-ace8-1a90fd771840" sourceX="0.0" sourceY="0.0" target="66f36ad9-890b-4f14-a8cc-232a9180cfe3" targetX="0.0" targetY="0.0">
+			<guard>TRIG1</guard>
+			<updates></updates>
+		</transition>
+		<transition id="3" transitionId="b38da523-dc93-4c2c-b21e-48365c9d4a68" source="76ed4e58-4ccd-48ab-b232-8502592fd682" sourceX="0.0" sourceY="0.0" target="cecef335-c372-4a79-ace8-1a90fd771840" targetX="0.0" targetY="0.0">
+			<guard></guard>
+			<updates></updates>
+		</transition>
+	</model>
+</content>
