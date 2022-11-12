@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DTD GOES HERE -->
+<content>
+	<declarations></declarations>
+	<model>
+		<location id="a767c447-d81d-4da8-9c58-efff01542f46" stateId="a767c447-d81d-4da8-9c58-efff01542f46" x="0.0" y="0.0" isInitial="1">
+			<name>s1</name>
+			<invariant></invariant>
+		</location>
+		<location id="b741560f-6dcc-4b0f-8942-9aa3b6246f3c" stateId="b741560f-6dcc-4b0f-8942-9aa3b6246f3c" x="120.0" y="0.0" isInitial="0">
+			<name>off</name>
+			<invariant></invariant>
+		</location>
+		<location id="0f1ce017-f978-4a14-a24e-a546271e9751" stateId="0f1ce017-f978-4a14-a24e-a546271e9751" x="390.0" y="20.0" isInitial="0">
+			<name>on</name>
+			<invariant></invariant>
+		</location>
+		<transition id="" transitionId="fc161404-ce39-42d0-9e6c-c5e8967deba3" source="a767c447-d81d-4da8-9c58-efff01542f46" sourceX="0.0" sourceY="0.0" target="b741560f-6dcc-4b0f-8942-9aa3b6246f3c" targetX="0.0" targetY="0.0">
+			<guard></guard>
+			<updates></updates>
+		</transition>
+		<transition id="TIMEOUT" transitionId="466da1c8-3309-4db0-9dd1-c8babe90e569" source="b741560f-6dcc-4b0f-8942-9aa3b6246f3c" sourceX="0.0" sourceY="0.0" target="0f1ce017-f978-4a14-a24e-a546271e9751" targetX="0.0" targetY="0.0">
+			<guard>TIMEOUT</guard>
+			<updates>timeout();</updates>
+		</transition>
+	</model>
+</content>

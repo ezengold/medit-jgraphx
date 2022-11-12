@@ -1,1 +1,1 @@
-E<> automata.s1 imply  x<2
+A[] (x==0)

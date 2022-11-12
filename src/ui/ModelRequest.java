@@ -12,6 +12,8 @@ public class ModelRequest extends DefaultTableModel {
 		return super.getRowCount();
 	}
 
+
+
 	@Override
 	public int getColumnCount() {
 		return 1;

@@ -130,12 +130,15 @@ public class Verifier extends JPanel {
 						System.out.println("Here is the standard output of the command:\n");
 						String s = null;
 
+
 						while ((s = stdInput.readLine()) != null) {
 							if(!s.isEmpty()) {
 								statusVerifier.success(s);
+
 							}
 
 						}
+
 
 						// Read any errors from the attempted command
 						System.out.println("Here is the standard error of the command (if any):\n");

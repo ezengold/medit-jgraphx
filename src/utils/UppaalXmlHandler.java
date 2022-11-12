@@ -280,7 +280,7 @@ public class UppaalXmlHandler {
             transitionAssignmentEle.setAttribute("kind", "assignment");
             transitionAssignmentEle.setAttribute("x", "0");
             transitionAssignmentEle.setAttribute("y", "15");
-            transitionAssignmentEle.appendChild(this.uppaalDoc.createTextNode(transition.getUpdate()));
+            transitionAssignmentEle.appendChild(this.uppaalDoc.createTextNode(transition.getUpdate().replace(";","")));
             transitionEle.appendChild(transitionAssignmentEle);
         }
 
