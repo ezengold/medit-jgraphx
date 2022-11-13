@@ -175,99 +175,7 @@ public class QmHandler  {
                         }
 
                         //Iterate each outgoing transitions
-                        for (int j = 0; j < outgoingTransitions.getLength() ; j++) {
-                            Node transitionNode = outgoingTransitions.item(j);
-
-                            if (transitionNode.getNodeType() == Node.ELEMENT_NODE) {
-                                Element transition  = (Element) transitionNode;
-                                String transitionTrig = transition.getAttribute("trig");
-                                String transitionTarget = transition.getAttribute("target");
-
-                                Node transitionAction = transition.getElementsByTagName("action").item(0);
-
-                                if(transitionTarget != null && !transitionTarget.equals("..") && !transitionTarget.isEmpty()) {
-                                    Node targetState = getTargetNode(transitionTarget,transitionNode);
-                                    String targetStateName = ((Element)targetState).getAttribute("name");
-                                    addStatesId(targetStateName);
-                                    String targetStateId = getStateId(targetStateName);
-                                    if(targetStateId != null) {
-                                        Transition transitionOutgoing = new Transition(stateId,targetStateId);
-                                        transitionList.add(transitionOutgoing);
-
-                                        if(existNode != null) {
-                                            setTransitionUpdate(transitionOutgoing.getTransitionId(),((Element)existNode).getTextContent());
-                                        }
-                                        if(transitionAction != null) {
-                                            Element transitionActionElement = (Element)transitionAction;
-                                            String actionContent = transitionActionElement.getTextContent() == null ?
-                                                    transitionActionElement.getAttribute("brief")
-                                                    : transitionActionElement.getTextContent();
-                                            setTransitionUpdate(transitionOutgoing.getTransitionId(),actionContent);
-                                        }
-                                        if(transitionTrig != null) {
-                                            setTransitionGuard(transitionOutgoing.getTransitionId(),transitionTrig);
-
-                                        }
-
-
-
-                                    }
-
-                                } else {
-                                    //Pseudo states list
-
-                                    NodeList choiceList = transition.getElementsByTagName("choice");
-                                    for (int k = 0; k < choiceList.getLength() ; k++) {
-                                        if (choiceList.getLength() > 0) {
-                                            Node choiceNode = choiceList.item(k);
-                                            if(choiceNode.getNodeType() == Element.ELEMENT_NODE) {
-
-                                                Element choiceElement = (Element) choiceNode;
-                                                Node guardNode = choiceElement.getElementsByTagName("guard").item(0);
-                                                String guardChoice = ((Element)guardNode).getAttribute("brief");
-                                                String targetChoice = choiceElement.getAttribute("target");
-                                                if (targetChoice !=null && !target.isEmpty()) {
-
-                                                    Node targetState = getTargetNode(targetChoice,choiceNode);
-                                                    String targetStateName = ((Element)targetState).getAttribute("name");
-                                                    addStatesId(targetStateName);
-                                                    String targetChoiceStateId = getStateId(targetStateName);
-                                                    if(targetChoiceStateId != null) {
-                                                        Transition transitionChoiceOutgoing = new Transition(stateId,targetChoiceStateId);
-                                                        transitionList.add(transitionChoiceOutgoing);
-
-
-                                                        if(guardChoice != null) {
-                                                            setTransitionGuard(transitionChoiceOutgoing.getTransitionId(),guardChoice);
-
-                                                        }
-
-
-
-                                                    }
-
-
-
-
-                                                }
-
-
-                                            }
-
-
-
-
-
-
-                                        }
-                                    }
-
-
-                                }
-
-
-                            }
-                        }
+                        handlingTransitions(outgoingTransitions,existNode,stateId,target);
 
 
 
@@ -365,23 +273,115 @@ public class QmHandler  {
         }
 
 //         mxFastOrganicLayout layout = new mxFastOrganicLayout(graph);
-        mxCompactTreeLayout layout = new mxCompactTreeLayout(graph,false);
+        mxCompactTreeLayout layout = new mxCompactTreeLayout(graph,true);
         layout.setLevelDistance(30);
         layout.setGroupPadding(50);
         layout.setNodeDistance(50);
         layout.setUseBoundingBox(true);
         layout.setEdgeRouting(true);
 
-
-
         layout.execute(graph.getDefaultParent());
-
         return layout.getGraph();
-
-
 
     }
 
+
+
+    private void handlingTransitions(NodeList outgoingTransitions,Node existNode,String stateId,String target) {
+        for (int j = 0; j < outgoingTransitions.getLength() ; j++) {
+            Node transitionNode = outgoingTransitions.item(j);
+
+            if (transitionNode.getNodeType() == Node.ELEMENT_NODE) {
+                Element transition  = (Element) transitionNode;
+                String transitionTrig = transition.getAttribute("trig");
+                String transitionTarget = transition.getAttribute("target");
+
+                Node transitionAction = transition.getElementsByTagName("action").item(0);
+
+                if(transitionTarget != null && !transitionTarget.equals("..") && !transitionTarget.isEmpty()) {
+                    Node targetState = getTargetNode(transitionTarget,transitionNode);
+                    String targetStateName = ((Element)targetState).getAttribute("name");
+                    addStatesId(targetStateName);
+                    String targetStateId = getStateId(targetStateName);
+                    if(targetStateId != null) {
+                        Transition transitionOutgoing = new Transition(stateId,targetStateId);
+                        transitionList.add(transitionOutgoing);
+
+                        if(existNode != null) {
+                            setTransitionUpdate(transitionOutgoing.getTransitionId(),((Element)existNode).getTextContent());
+                        }
+                        if(transitionAction != null) {
+                            Element transitionActionElement = (Element)transitionAction;
+                            String actionContent = transitionActionElement.getTextContent() == null ?
+                                    transitionActionElement.getAttribute("brief")
+                                    : transitionActionElement.getTextContent();
+                            setTransitionUpdate(transitionOutgoing.getTransitionId(),actionContent);
+                        }
+                        if(transitionTrig != null) {
+                            setTransitionGuard(transitionOutgoing.getTransitionId(),transitionTrig);
+
+                        }
+
+
+
+                    }
+
+                } else {
+                    //Pseudo states list
+
+                    NodeList choiceList = transition.getElementsByTagName("choice");
+                    for (int k = 0; k < choiceList.getLength() ; k++) {
+                        if (choiceList.getLength() > 0) {
+                            Node choiceNode = choiceList.item(k);
+                            if(choiceNode.getNodeType() == Element.ELEMENT_NODE) {
+
+                                Element choiceElement = (Element) choiceNode;
+                                Node guardNode = choiceElement.getElementsByTagName("guard").item(0);
+                                String guardChoice = ((Element)guardNode).getAttribute("brief");
+                                String targetChoice = choiceElement.getAttribute("target");
+                                if (targetChoice !=null && !target.isEmpty()) {
+
+                                    Node targetState = getTargetNode(targetChoice,choiceNode);
+                                    String targetStateName = ((Element)targetState).getAttribute("name");
+                                    addStatesId(targetStateName);
+                                    String targetChoiceStateId = getStateId(targetStateName);
+                                    if(targetChoiceStateId != null) {
+                                        Transition transitionChoiceOutgoing = new Transition(stateId,targetChoiceStateId);
+                                        transitionList.add(transitionChoiceOutgoing);
+
+
+                                        if(guardChoice != null) {
+                                            setTransitionGuard(transitionChoiceOutgoing.getTransitionId(),transitionTrig+" && "+guardChoice);
+
+                                        }
+
+
+
+                                    }
+
+
+
+
+                                }
+
+
+                            }
+
+
+
+
+
+
+                        }
+                    }
+
+
+                }
+
+
+            }
+        }
+    }
 
 
     public void handlingSubMachine(Element firstStateChart){
@@ -391,6 +391,7 @@ public class QmHandler  {
                 Node smStateNode = smStates.item(i);
                 if(smStateNode.getNodeType() == Element.ELEMENT_NODE) {
                     Element smStateElement = (Element)smStateNode;
+
 
                     String sourceStateName = smStateElement.getAttribute("name");
                     System.out.println("SOURCE STATE: "+sourceStateName);
@@ -422,6 +423,12 @@ public class QmHandler  {
                                 setTransitionUpdate(transition.getTransitionId(),subStateInitialActionElement.getTextContent());
                             }
 
+                        }
+
+                        NodeList transitions = smStateElement.getElementsByTagName("tran");
+                        if(transitions !=null && transitions.getLength()>0) {
+                            handlingTransitions(transitions,null,targetStateId,"target");
+//                            handlingTransitions(transitions,null,subStateInitial,"target");
                         }
 
 

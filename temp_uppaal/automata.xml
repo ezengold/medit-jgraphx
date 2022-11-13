@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nta PUBLIC "-//Uppaal Team//DTD Flat System 1.1//EN" "http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd">
+<nta>
+<declaration/>
+<template>
+<name>Automata</name>
+<location id="206523bc-157e-43ed-8199-af81d6aa8d07" x="0.0" y="70.0">
+<name x="-8.0" y="62.0">s0</name>
+</location>
+<location id="a19cf1e7-7e00-4208-a94b-5f24e536e798" x="120.0" y="70.0">
+<name x="112.0" y="62.0">s1</name>
+</location>
+<location id="45b43cec-8c0d-4276-88b5-541c29517bbe" x="240.0" y="0.0">
+<name x="232.0" y="-8.0">s2</name>
+</location>
+<location id="29391f35-3626-4062-9fba-095a24bd81ac" x="240.0" y="140.0">
+<name x="232.0" y="132.0">s3</name>
+</location>
+<init ref="206523bc-157e-43ed-8199-af81d6aa8d07"/>
+<transition>
+<source ref="206523bc-157e-43ed-8199-af81d6aa8d07"/>
+<target ref="a19cf1e7-7e00-4208-a94b-5f24e536e798"/>
+<label kind="guard" x="0" y="0"/>
+</transition>
+<transition>
+<source ref="a19cf1e7-7e00-4208-a94b-5f24e536e798"/>
+<target ref="45b43cec-8c0d-4276-88b5-541c29517bbe"/>
+<label kind="guard" x="0" y="0">x==0 &amp;&amp; y==2</label>
+</transition>
+<transition>
+<source ref="a19cf1e7-7e00-4208-a94b-5f24e536e798"/>
+<target ref="29391f35-3626-4062-9fba-095a24bd81ac"/>
+<label kind="guard" x="0" y="0">x==0 &amp;&amp; y==1</label>
+</transition>
+</template>
+<system>automata = Automata();system automata;</system>
+</nta>

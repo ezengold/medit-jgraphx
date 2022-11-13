@@ -87,6 +87,8 @@ public class StatusVerifier extends JPanel {
 
 
         JScrollPane scrollStatus = new JScrollPane(tableRequest);
+        scrollStatus.createVerticalScrollBar();
+        scrollStatus.createHorizontalScrollBar();
         scrollStatus.setPreferredSize(new Dimension(this.getWidth(), 200));
         statusContent.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.lightGray));
         statusContent.setLayout(new GridLayout(1,1));

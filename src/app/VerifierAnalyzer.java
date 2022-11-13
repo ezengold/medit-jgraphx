@@ -3,6 +3,7 @@ package app;
 import models.ModelCheckerCTL;
 import models.State;
 import utils.Compiler;
+import utils.UppaalXmlHandler;
 import utils.XmlHandler;
 import verifier.ast.*;
 import verifier.lexer.Token;
@@ -179,11 +180,52 @@ public class VerifierAnalyzer {
 
         // initiate parse and clock time
         long startTime = System.currentTimeMillis();
-        Exp expression = semantic.analyzeProgram();
-        if(expression != null) {
+        Exp expressionSemantic = semantic.analyzeProgram();
+        if(expressionSemantic != null) {
             //Model checking
-            ModelCheckerCTL modelCheckerCTL = new ModelCheckerCTL(app.getAutomata());
-            boolean isVerified = modelCheckerCTL.satisfies(app.getAutomata(),expression);
+//            ModelCheckerCTL modelCheckerCTL = new ModelCheckerCTL(app.getAutomata());
+//            boolean isVerified = modelCheckerCTL.satisfies(app.getAutomata(),expression);
+
+            try {
+                String pathModel = "temp_uppaal/automata.xml";
+                String requestFile = "temp_uppaal/automata.q";
+                UppaalXmlHandler uppaalXmlHandler = new UppaalXmlHandler(app.getAutomata(),pathModel);
+                uppaalXmlHandler.write();
+                System.out.println("EXPRESSION UPPAAL = "+expression);
+                uppaalXmlHandler.createCurrentTempFile(expression);
+
+                Process proc = Runtime.getRuntime().exec("uppaal/bin-Linux/verifyta -t0 "+pathModel+" "+requestFile);
+                BufferedReader stdInput = new BufferedReader(new
+                        InputStreamReader(proc.getInputStream()));
+
+                BufferedReader stdError = new BufferedReader(new
+                        InputStreamReader(proc.getErrorStream()));
+
+
+                // Read the output from the command
+                System.out.println("Here is the standard output of the command:\n");
+                String s = null;
+
+                while ((s = stdInput.readLine()) != null) {
+                    statusVerifier.success(s);
+                }
+
+                // Read any errors from the attempted command
+                System.out.println("Here is the standard error of the command (if any):\n");
+                while ((s = stdError.readLine()) != null) {
+                    statusVerifier.error(s);
+                }
+
+
+
+
+            }catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+
+
 
 
             System.out.println("=====START DEBUGG======");
@@ -193,11 +235,11 @@ public class VerifierAnalyzer {
             }
             System.out.println("=====END DEBUGG======");
 
-            if(isVerified) {
-                statusVerifier.success("The property is satisfied");
-            } else {
-                statusVerifier.error("The property is not satisfied");
-            }
+//            if(isVerified) {
+//                statusVerifier.success("The property is satisfied");
+//            } else {
+//                statusVerifier.error("The property is not satisfied");
+//            }
 
 
 
