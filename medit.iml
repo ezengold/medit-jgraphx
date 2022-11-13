@@ -38,135 +38,69 @@
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="inheritedJdk" />
-<<<<<<< HEAD
-    <orderEntry type="module-library" exported="">
-      <library name="antlr4-runtime-4.8-1.jar">
-        <CLASSES>
-          <root url="file:///Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/antlr4-runtime-4.8-1.jar" />
-=======
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Téléchargements/jgrapht-1.5.1/lib/antlr4-runtime-4.8-1.jar!/" />
->>>>>>> spencer
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-<<<<<<< HEAD
-    <orderEntry type="module-library" exported="">
-      <library name="commons-lang3-3.9.jar">
-        <CLASSES>
-          <root url="file:///Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/commons-lang3-3.9.jar" />
-=======
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Téléchargements/jgrapht-1.5.1/lib/commons-lang3-3.9.jar!/" />
->>>>>>> spencer
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-<<<<<<< HEAD
-    <orderEntry type="module-library" exported="">
-      <library name="commons-math3-3.6.1.jar">
-        <CLASSES>
-          <root url="file:///Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/commons-math3-3.6.1.jar" />
-=======
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Téléchargements/jgrapht-1.5.1/lib/commons-math3-3.6.1.jar!/" />
->>>>>>> spencer
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-<<<<<<< HEAD
-    <orderEntry type="module-library" exported="">
-      <library name="commons-text-1.8.jar">
-        <CLASSES>
-          <root url="file:///Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/commons-text-1.8.jar" />
-=======
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Téléchargements/jgrapht-1.5.1/lib/commons-text-1.8.jar!/" />
->>>>>>> spencer
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-<<<<<<< HEAD
-    <orderEntry type="module-library" exported="">
-      <library name="dsiutils-2.6.17.jar">
-        <CLASSES>
-          <root url="file:///Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/dsiutils-2.6.17.jar" />
-=======
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Téléchargements/jgrapht-1.5.1/lib/dsiutils-2.6.17.jar!/" />
->>>>>>> spencer
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-<<<<<<< HEAD
-    <orderEntry type="module-library" exported="">
-      <library name="fastutil-8.5.2.jar">
-        <CLASSES>
-          <root url="file:///Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/fastutil-8.5.2.jar" />
-=======
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Téléchargements/jgrapht-1.5.1/lib/fastutil-8.5.2.jar!/" />
->>>>>>> spencer
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-<<<<<<< HEAD
-    <orderEntry type="module-library" exported="">
-      <library name="guava-29.0-jre.jar">
-        <CLASSES>
-          <root url="file:///Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/guava-29.0-jre.jar" />
-=======
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Téléchargements/jgrapht-1.5.1/lib/guava-29.0-jre.jar!/" />
->>>>>>> spencer
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-<<<<<<< HEAD
-    <orderEntry type="module-library" exported="">
-      <library name="jgrapht-core-1.5.1.jar">
-        <CLASSES>
-          <root url="file:///Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/jgrapht-core-1.5.1.jar" />
-        </CLASSES>
-        <JAVADOC>
-          <root url="file://Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/javadoc" />
-        </JAVADOC>
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="jgrapht-demo-1.5.1.jar">
-        <CLASSES>
-          <root url="file:///Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/jgrapht-demo-1.5.1.jar" />
-=======
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -180,241 +114,136 @@
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Téléchargements/jgrapht-1.5.1/lib/jgrapht-demo-1.5.1.jar!/" />
->>>>>>> spencer
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-<<<<<<< HEAD
-    <orderEntry type="module-library" exported="">
-      <library name="jgrapht-ext-1.5.1.jar">
-        <CLASSES>
-          <root url="file:///Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/jgrapht-ext-1.5.1.jar" />
-=======
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Téléchargements/jgrapht-1.5.1/lib/jgrapht-ext-1.5.1.jar!/" />
->>>>>>> spencer
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-<<<<<<< HEAD
-    <orderEntry type="module-library" exported="">
-      <library name="jgrapht-guava-1.5.1.jar">
-        <CLASSES>
-          <root url="file:///Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/jgrapht-guava-1.5.1.jar" />
-=======
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Téléchargements/jgrapht-1.5.1/lib/jgrapht-guava-1.5.1.jar!/" />
->>>>>>> spencer
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-<<<<<<< HEAD
-    <orderEntry type="module-library" exported="">
-      <library name="jgrapht-io-1.5.1.jar">
-        <CLASSES>
-          <root url="file:///Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/jgrapht-io-1.5.1.jar" />
-=======
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Téléchargements/jgrapht-1.5.1/lib/jgrapht-io-1.5.1.jar!/" />
->>>>>>> spencer
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-<<<<<<< HEAD
-    <orderEntry type="module-library" exported="">
-      <library name="jgrapht-opt-1.5.1.jar">
-        <CLASSES>
-          <root url="file:///Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/jgrapht-opt-1.5.1.jar" />
-=======
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Téléchargements/jgrapht-1.5.1/lib/jgrapht-opt-1.5.1.jar!/" />
->>>>>>> spencer
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-<<<<<<< HEAD
-    <orderEntry type="module-library" exported="">
-      <library name="jgrapht-unimi-dsi-1.5.1.jar">
-        <CLASSES>
-          <root url="file:///Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/jgrapht-unimi-dsi-1.5.1.jar" />
-=======
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Téléchargements/jgrapht-1.5.1/lib/jgrapht-unimi-dsi-1.5.1.jar!/" />
->>>>>>> spencer
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-<<<<<<< HEAD
-    <orderEntry type="module-library" exported="">
-      <library name="jgraphx-4.1.0.jar">
-        <CLASSES>
-          <root url="file:///Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/jgraphx-4.1.0.jar" />
-=======
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Téléchargements/jgrapht-1.5.1/lib/jgraphx-4.1.0.jar!/" />
->>>>>>> spencer
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-<<<<<<< HEAD
-    <orderEntry type="module-library" exported="">
-      <library name="jheaps-0.13.jar">
-        <CLASSES>
-          <root url="file:///Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/jheaps-0.13.jar" />
-=======
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Téléchargements/jgrapht-1.5.1/lib/jheaps-0.13.jar!/" />
->>>>>>> spencer
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-<<<<<<< HEAD
-    <orderEntry type="module-library" exported="">
-      <library name="jsap-20210129.jar">
-        <CLASSES>
-          <root url="file:///Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/jsap-20210129.jar" />
-=======
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Téléchargements/jgrapht-1.5.1/lib/jsap-20210129.jar!/" />
->>>>>>> spencer
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-<<<<<<< HEAD
-    <orderEntry type="module-library" exported="">
-      <library name="logback-classic-1.2.3.jar">
-        <CLASSES>
-          <root url="file:///Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/logback-classic-1.2.3.jar" />
-=======
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Téléchargements/jgrapht-1.5.1/lib/logback-classic-1.2.3.jar!/" />
->>>>>>> spencer
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-<<<<<<< HEAD
-    <orderEntry type="module-library" exported="">
-      <library name="logback-core-1.2.3.jar">
-        <CLASSES>
-          <root url="file:///Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/logback-core-1.2.3.jar" />
-=======
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Téléchargements/jgrapht-1.5.1/lib/logback-core-1.2.3.jar!/" />
->>>>>>> spencer
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-<<<<<<< HEAD
-    <orderEntry type="module-library" exported="">
-      <library name="slf4j-api-1.7.30.jar">
-        <CLASSES>
-          <root url="file:///Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/slf4j-api-1.7.30.jar" />
-=======
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Téléchargements/jgrapht-1.5.1/lib/slf4j-api-1.7.30.jar!/" />
->>>>>>> spencer
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-<<<<<<< HEAD
-    <orderEntry type="module-library" exported="">
-      <library name="sux4j-5.2.3.jar">
-        <CLASSES>
-          <root url="file:///Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/sux4j-5.2.3.jar" />
-=======
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Téléchargements/jgrapht-1.5.1/lib/sux4j-5.2.3.jar!/" />
->>>>>>> spencer
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-<<<<<<< HEAD
-    <orderEntry type="module-library" exported="">
-      <library name="webgraph-3.6.10.jar">
-        <CLASSES>
-          <root url="file:///Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/webgraph-3.6.10.jar" />
-=======
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Téléchargements/jgrapht-1.5.1/lib/webgraph-3.6.10.jar!/" />
->>>>>>> spencer
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-<<<<<<< HEAD
-    <orderEntry type="module-library" exported="">
-      <library name="webgraph-big-3.6.6.jar">
-        <CLASSES>
-          <root url="file:///Users/mac/Documents/MEMOIRE/jgrapht-1.5.1/lib/webgraph-big-3.6.6.jar" />
-=======
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Téléchargements/jgrapht-1.5.1/lib/webgraph-big-3.6.6.jar!/" />
->>>>>>> spencer
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-<<<<<<< HEAD
-    <orderEntry type="library" name="com.github.vlsi.mxgraph:jgraphx:4.2.2" level="project" />
-    <orderEntry type="library" name="jgrapht-ext-1.5.1" level="project" />
-    <orderEntry type="library" name="jgrapht-core-1.5.1" level="project" />
-=======
->>>>>>> spencer
   </component>
 </module>
