@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DTD GOES HERE -->
+<content>
+	<declarations></declarations>
+	<model>
+		<location id="244fba67-0881-4280-8876-7f7b9bd54669" stateId="244fba67-0881-4280-8876-7f7b9bd54669" x="0.0" y="0.0" isInitial="1">
+			<name>s1</name>
+			<invariant></invariant>
+		</location>
+		<location id="b66c2d26-20ec-4ccd-b1c9-2542733cc485" stateId="b66c2d26-20ec-4ccd-b1c9-2542733cc485" x="0.0" y="120.0" isInitial="0">
+			<name>off</name>
+			<invariant></invariant>
+		</location>
+		<location id="048c2eb0-4638-466f-9fa5-5292ac82e43c" stateId="048c2eb0-4638-466f-9fa5-5292ac82e43c" x="0.0" y="240.0" isInitial="0">
+			<name>on</name>
+			<invariant></invariant>
+		</location>
+		<transition id="" transitionId="82533069-c7a0-4ad8-ba46-224f3ec3c856" source="244fba67-0881-4280-8876-7f7b9bd54669" sourceX="0.0" sourceY="0.0" target="b66c2d26-20ec-4ccd-b1c9-2542733cc485" targetX="0.0" targetY="0.0">
+			<guard></guard>
+			<updates>BSP_ledOff();</updates>
+		</transition>
+		<transition id="TIMEOUT" transitionId="95c52ae5-151b-418d-a7a2-ed9a2fdde76c" source="b66c2d26-20ec-4ccd-b1c9-2542733cc485" sourceX="0.0" sourceY="0.0" target="048c2eb0-4638-466f-9fa5-5292ac82e43c" targetX="0.0" targetY="0.0">
+			<guard>TIMEOUT</guard>
+			<updates>BSP_ledOn();</updates>
+		</transition>
+		<transition id="2" transitionId="c978413e-6ddb-4b34-96cc-32b6b82eb344" source="048c2eb0-4638-466f-9fa5-5292ac82e43c" sourceX="0.0" sourceY="0.0" target="b66c2d26-20ec-4ccd-b1c9-2542733cc485" targetX="0.0" targetY="0.0">
+			<guard>TIMEOUT</guard>
+			<updates></updates>
+		</transition>
+	</model>
+</content>
