@@ -1,6 +1,6 @@
 /bin/
 .idea/
 .vscode
-
+temp_uppaal/
 temp/
 .DS_Store

@@ -99,13 +99,13 @@ public class XmlHandler {
 				xmlStr += "\t\t\t<updates>" + (transition != null ? escapeStr(transition.getUpdate()) : "")
 						+ "</updates>\n";
 				xmlStr += "\t\t</transition>\n";
-
 				// save the transition in the automata model
 				this.app.getAutomata().addTransition(transition);
 			}
 		}
 
 		xmlStr += "\t</model>\n";
+		System.out.println("XML GOT : "+xmlStr);
 
 		return xmlStr + "</content>\n";
 	}
