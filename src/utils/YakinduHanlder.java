@@ -228,6 +228,9 @@ public class YakinduHanlder {
 
 		// assign guards and updates to transitions
 		for (Transition transition : transitionList) {
+
+
+
 			transition.setGuard(transitionGuards.get(transition.getTransitionId()) == null ? ""
 					: transitionGuards.get(transition.getTransitionId()));
 			transition.setUpdate(transitionUpdates.get(transition.getTransitionId()) == null ? ""
@@ -269,7 +272,7 @@ public class YakinduHanlder {
 				double targetX = targetState.getPosition().getX();
 				double targetY = targetState.getPosition().getY();
 
-				mxCell newEdge = (mxCell) graph.insertEdge(graph.getDefaultParent(), t.getGuard(), t, source, target);
+				mxCell newEdge = (mxCell) graph.insertEdge(graph.getDefaultParent(), t.getTransitionId(), t, source, target);
 
 				mxGeometry edgeGeometry = new mxGeometry();
 				edgeGeometry.setTerminalPoint(new mxPoint(sourceX, sourceY), true);
