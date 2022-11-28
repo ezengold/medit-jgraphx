@@ -1,37 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE nta PUBLIC "-//Uppaal Team//DTD Flat System 1.1//EN" "http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd">
 <nta>
-<declaration/>
-<template>
-<name>Automata</name>
-<location id="206523bc-157e-43ed-8199-af81d6aa8d07" x="0.0" y="70.0">
-<name x="-8.0" y="62.0">s0</name>
-</location>
-<location id="a19cf1e7-7e00-4208-a94b-5f24e536e798" x="120.0" y="70.0">
-<name x="112.0" y="62.0">s1</name>
-</location>
-<location id="45b43cec-8c0d-4276-88b5-541c29517bbe" x="240.0" y="0.0">
-<name x="232.0" y="-8.0">s2</name>
-</location>
-<location id="29391f35-3626-4062-9fba-095a24bd81ac" x="240.0" y="140.0">
-<name x="232.0" y="132.0">s3</name>
-</location>
-<init ref="206523bc-157e-43ed-8199-af81d6aa8d07"/>
-<transition>
-<source ref="206523bc-157e-43ed-8199-af81d6aa8d07"/>
-<target ref="a19cf1e7-7e00-4208-a94b-5f24e536e798"/>
-<label kind="guard" x="0" y="0"/>
-</transition>
-<transition>
-<source ref="a19cf1e7-7e00-4208-a94b-5f24e536e798"/>
-<target ref="45b43cec-8c0d-4276-88b5-541c29517bbe"/>
-<label kind="guard" x="0" y="0">x==0 &amp;&amp; y==2</label>
-</transition>
-<transition>
-<source ref="a19cf1e7-7e00-4208-a94b-5f24e536e798"/>
-<target ref="29391f35-3626-4062-9fba-095a24bd81ac"/>
-<label kind="guard" x="0" y="0">x==0 &amp;&amp; y==1</label>
-</transition>
-</template>
-<system>automata = Automata();system automata;</system>
+    <declaration>clock x;
+
+clock y;
+</declaration>
+    <template>
+        <name>Automata</name>
+        <location id="b6e24212-87d2-408d-b297-bd4e6ba41799" x="0.0" y="70.0">
+            <name x="-8.0" y="62.0">s0</name>
+        </location>
+        <location id="127c5795-8676-4041-860f-89b8ee4947e2" x="120.0" y="70.0">
+            <name x="112.0" y="62.0">s1</name>
+        </location>
+        <location id="d13b826b-d491-4d1f-bf6e-da77b16cbe34" x="240.0" y="0.0">
+            <name x="232.0" y="-8.0">s2</name>
+        </location>
+        <location id="e003aa5c-9f10-4947-a4d1-67e654851195" x="330.0" y="140.0">
+            <name x="322.0" y="132.0">s3</name>
+        </location>
+        <init ref="b6e24212-87d2-408d-b297-bd4e6ba41799"/>
+        <transition>
+            <source ref="b6e24212-87d2-408d-b297-bd4e6ba41799"/>
+            <target ref="127c5795-8676-4041-860f-89b8ee4947e2"/>
+            <label kind="guard" x="0" y="0"/>
+        </transition>
+        <transition>
+            <source ref="127c5795-8676-4041-860f-89b8ee4947e2"/>
+            <target ref="d13b826b-d491-4d1f-bf6e-da77b16cbe34"/>
+            <label kind="guard" x="0" y="0">x==0 &amp;&amp; y==2</label>
+        </transition>
+        <transition>
+            <source ref="127c5795-8676-4041-860f-89b8ee4947e2"/>
+            <target ref="e003aa5c-9f10-4947-a4d1-67e654851195"/>
+            <label kind="guard" x="0" y="0">x==0 || y ==1</label>
+        </transition>
+    </template>
+    <system>automata = Automata();system automata;</system>
 </nta>

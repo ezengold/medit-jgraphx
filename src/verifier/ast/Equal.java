@@ -21,4 +21,9 @@ public class Equal implements Exp{
 	public void accept(Visitor v) {
 		v.visit(this);
 	}
+
+	@Override
+	public String toString() {
+		return lhs.toString()+" == "+rhs.toString();
+	}
 }

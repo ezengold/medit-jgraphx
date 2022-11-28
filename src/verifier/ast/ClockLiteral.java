@@ -18,4 +18,9 @@ public class ClockLiteral implements Exp {
 		v.visit(this);
 	}
 
+	@Override
+	public String toString() {
+		return String.valueOf(value);
+	}
+
 }
