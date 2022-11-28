@@ -837,7 +837,7 @@ public class App extends JPanel {
 
 		fullProgram += "\n}";
 
-		// System.out.println(fullProgram);
+//		 System.out.println("FULL PROGRAM: "+fullProgram);
 
 		File outputFile = createCurrentTempFile();
 		try {
