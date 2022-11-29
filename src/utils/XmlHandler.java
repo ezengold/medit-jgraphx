@@ -105,7 +105,7 @@ public class XmlHandler {
 		}
 
 		xmlStr += "\t</model>\n";
-		System.out.println("XML GOT : "+xmlStr);
+//		System.out.println("XML GOT : "+xmlStr);
 
 		return xmlStr + "</content>\n";
 	}

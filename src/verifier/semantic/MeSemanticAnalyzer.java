@@ -6,32 +6,9 @@ import java.util.ArrayList;
 
 import app.Console;
 import models.Automata;
-import verifier.ast.Assign;
-import verifier.ast.BooleanArrayType;
-import verifier.ast.BooleanLiteral;
-import verifier.ast.BooleanType;
-import verifier.ast.CharArrayType;
-import verifier.ast.CharLiteral;
-import verifier.ast.CharType;
-import verifier.ast.Equal;
-import verifier.ast.Exp;
-import verifier.ast.FloatArrayType;
-import verifier.ast.FloatLiteral;
-import verifier.ast.FloatType;
-import verifier.ast.Identifier;
-import verifier.ast.IdentifierExp;
-import verifier.ast.IntegerArrayType;
-import verifier.ast.IntegerLiteral;
-import verifier.ast.IntegerType;
-import verifier.ast.LessThan;
-import verifier.ast.LessThanEqual;
-import verifier.ast.MoreThan;
-import verifier.ast.MoreThanEqual;
-import verifier.ast.NotEqual;
-import verifier.ast.Program;
-import verifier.ast.Type;
-import verifier.ast.VarDecl;
+import verifier.ast.*;
 import verifier.parser.MeParser;
+import verifier.visitor.PrintVisitor;
 
 public class MeSemanticAnalyzer {
 
@@ -111,8 +88,12 @@ public class MeSemanticAnalyzer {
 		for (Exp exp : conditions) {
 			if (!(exp instanceof MoreThan || exp instanceof MoreThanEqual || exp instanceof LessThan
 					|| exp instanceof LessThanEqual || exp instanceof NotEqual || exp instanceof Equal
-					|| exp instanceof BooleanLiteral))
+					|| exp instanceof BooleanLiteral || exp instanceof And || exp instanceof  Or) ) {
+
 				error(ErrorType.INVALID_CONDITION, null);
+			}
+
+
 		}
 	}
 
