@@ -28,6 +28,7 @@ public class MeLexer {
 		reservedWords.put("main", TokenType.MAIN);
 		reservedWords.put("inv", TokenType.INV);
 		reservedWords.put("clock", TokenType.CLOCK);
+		reservedWords.put("chan", TokenType.CHAN);
 
 		punctuation = new HashMap<Character, TokenType>();
 		punctuation.put('(', TokenType.LPAREN);

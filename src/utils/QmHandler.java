@@ -91,96 +91,101 @@ public class QmHandler {
 
             //get model and package
             Element model = (Element) doc.getElementsByTagName("model").item(0);
-            Element firstPackage = (Element) model.getElementsByTagName("package").item(0);
-            Element firstStatechart = (Element) firstPackage.getElementsByTagName("statechart").item(0);
-            if (firstStatechart != null) {
 
-                //initial state
-                Node initialNode = firstStatechart.getElementsByTagName("initial").item(0);
-                Element initialElement = (Element) initialNode;
-                State initialState = new State();
-                initialState.setInitial(true);
-                stateList.add(initialState);
-                Node action = initialElement.getElementsByTagName("action").item(0);
-                String target = ((Element) initialNode).getAttribute("target");
+            NodeList element = model.getElementsByTagName("package");
+            for (int iter = 0; iter< element.getLength();iter++) {
+                Element firstPackage = (Element) model.getElementsByTagName("package").item(iter);
+                Element firstStatechart = (Element) firstPackage.getElementsByTagName("statechart").item(0);
+                if (firstStatechart != null) {
 
-                String[] elements = target.split("/");
-                Node node = initialNode;
-                for (String item : elements) {
-                    if (item.equals("..")) {
-                        assert node != null;
-                        node = node.getParentNode();
-                    } else {
-                        int index = Integer.parseInt(item);
+                    //initial state
+                    Node initialNode = firstStatechart.getElementsByTagName("initial").item(0);
+                    Element initialElement = (Element) initialNode;
+                    State initialState = new State();
+                    initialState.setInitial(true);
+                    stateList.add(initialState);
+                    Node action = initialElement.getElementsByTagName("action").item(0);
+                    String target = ((Element) initialNode).getAttribute("target");
 
-                        System.out.println("INDEX: " + index);
-                        System.out.println("PARENT INITIAL NODE: " + node.getNodeName());
-                        if (node != null) {
-                            Node stateNode = node.getFirstChild();
-                            int i = 0;
-                            while (i <= index) {
-                                stateNode = stateNode.getNextSibling();
-                                if (stateNode.getNodeType() == Element.ELEMENT_NODE && !stateNode.getNodeName().equals("documentation")) {
-                                    System.out.println("INITIAL STATE NAME: " + stateNode.getNodeName());
-                                    i++;
+                    String[] elements = target.split("/");
+                    Node node = initialNode;
+                    for (String item : elements) {
+                        if (item.equals("..")) {
+                            assert node != null;
+                            node = node.getParentNode();
+                        } else {
+                            int index = Integer.parseInt(item);
+
+                            System.out.println("INDEX: " + index);
+                            System.out.println("PARENT INITIAL NODE: " + node.getNodeName());
+                            if (node != null) {
+                                Node stateNode = node.getFirstChild();
+                                int i = 0;
+                                while (i <= index) {
+                                    stateNode = stateNode.getNextSibling();
+                                    if (stateNode.getNodeType() == Element.ELEMENT_NODE && !stateNode.getNodeName().equals("documentation")) {
+                                        System.out.println("INITIAL STATE NAME: " + stateNode.getNodeName());
+                                        i++;
+                                    }
                                 }
+
+                                String stateName = ((Element) stateNode).getAttribute("name");
+                                System.out.println("STATE INITIAL NAME: " + stateName);
+
+                                addStatesId(stateName);
+                                String targetStateId = getStateId(stateName);
+                                if (targetStateId != null) {
+                                    Transition transition = new Transition(initialState.getStateId(), targetStateId);
+                                    transitionList.add(transition);
+                                    if (action != null) {
+                                        setTransitionUpdate(transition.getTransitionId(), ((Element) action).getAttribute("brief"));
+                                    }
+                                }
+
+
                             }
+                        }
+                    }
 
-                            String stateName = ((Element) stateNode).getAttribute("name");
-                            System.out.println("STATE INITIAL NAME: " + stateName);
 
+                    //rest of the states
+
+                    NodeList locationsList = firstStatechart.getElementsByTagName("state");
+                    for (int i = 0; i < locationsList.getLength(); i++) {
+                        Node stateNode = locationsList.item(i);
+                        if (stateNode.getNodeType() == Node.ELEMENT_NODE) {
+                            Element location = (Element) stateNode;
+                            String stateName = location.getAttribute("name");
                             addStatesId(stateName);
-                            String targetStateId = getStateId(stateName);
-                            if (targetStateId != null) {
-                                Transition transition = new Transition(initialState.getStateId(), targetStateId);
-                                transitionList.add(transition);
-                                if (action != null) {
-                                    setTransitionUpdate(transition.getTransitionId(), ((Element) action).getAttribute("brief"));
+                            String stateId = getStateId(stateName);
+
+                            Node entryNode = location.getElementsByTagName("entry").item(0);
+                            Node existNode = location.getElementsByTagName("exit").item(0);
+                            //outgoing transitions
+                            NodeList outgoingTransitions = location.getElementsByTagName("tran");
+
+                            if (entryNode != null) {
+                                Transition transitionEntry = getEntryTransition(stateId);
+                                if (transitionEntry != null) {
+                                    setTransitionUpdate(transitionEntry.getTransitionId(), ((Element) entryNode).getTextContent());
                                 }
                             }
 
+                            //Iterate each outgoing transitions
+                            handlingTransitions(outgoingTransitions, existNode, stateId, target);
+
 
                         }
-                    }
-                }
-
-
-                //rest of the states
-
-                NodeList locationsList = firstStatechart.getElementsByTagName("state");
-                for (int i = 0; i < locationsList.getLength(); i++) {
-                    Node stateNode = locationsList.item(i);
-                    if (stateNode.getNodeType() == Node.ELEMENT_NODE) {
-                        Element location = (Element) stateNode;
-                        String stateName = location.getAttribute("name");
-                        addStatesId(stateName);
-                        String stateId = getStateId(stateName);
-
-                        Node entryNode = location.getElementsByTagName("entry").item(0);
-                        Node existNode = location.getElementsByTagName("exit").item(0);
-                        //outgoing transitions
-                        NodeList outgoingTransitions = location.getElementsByTagName("tran");
-
-                        if (entryNode != null) {
-                            Transition transitionEntry = getEntryTransition(stateId);
-                            if (transitionEntry != null) {
-                                setTransitionUpdate(transitionEntry.getTransitionId(), ((Element) entryNode).getTextContent());
-                            }
-                        }
-
-                        //Iterate each outgoing transitions
-                        handlingTransitions(outgoingTransitions, existNode, stateId, target);
 
 
                     }
 
+                    handlingSubMachine(firstStatechart);
+
 
                 }
-
-                handlingSubMachine(firstStatechart);
-
-
             }
+
 
 
         } catch (Exception e) {

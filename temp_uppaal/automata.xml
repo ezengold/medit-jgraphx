@@ -1,39 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE nta PUBLIC "-//Uppaal Team//DTD Flat System 1.1//EN" "http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd">
 <nta>
-    <declaration>clock x;
-
-clock y;
+    <declaration>clock TIMEOUT;
 </declaration>
     <template>
         <name>Automata</name>
-        <location id="b6e24212-87d2-408d-b297-bd4e6ba41799" x="0.0" y="70.0">
-            <name x="-8.0" y="62.0">s0</name>
+        <location id="85c17e1d-4c54-47e6-b0d9-b3001ff6283f" x="0.0" y="0.0">
+            <name x="-8.0" y="-8.0">s0</name>
         </location>
-        <location id="127c5795-8676-4041-860f-89b8ee4947e2" x="120.0" y="70.0">
-            <name x="112.0" y="62.0">s1</name>
+        <location id="dfcd3fdb-e732-4edf-a7e2-30d3edb83696" x="130.0" y="50.0">
+            <name x="122.0" y="42.0">off</name>
         </location>
-        <location id="d13b826b-d491-4d1f-bf6e-da77b16cbe34" x="240.0" y="0.0">
-            <name x="232.0" y="-8.0">s2</name>
+        <location id="7f73f254-78a5-4323-ac4e-7177ec4523eb" x="410.0" y="50.0">
+            <name x="402.0" y="42.0">on</name>
         </location>
-        <location id="e003aa5c-9f10-4947-a4d1-67e654851195" x="330.0" y="140.0">
-            <name x="322.0" y="132.0">s3</name>
-        </location>
-        <init ref="b6e24212-87d2-408d-b297-bd4e6ba41799"/>
+        <init ref="85c17e1d-4c54-47e6-b0d9-b3001ff6283f"/>
         <transition>
-            <source ref="b6e24212-87d2-408d-b297-bd4e6ba41799"/>
-            <target ref="127c5795-8676-4041-860f-89b8ee4947e2"/>
+            <source ref="85c17e1d-4c54-47e6-b0d9-b3001ff6283f"/>
+            <target ref="dfcd3fdb-e732-4edf-a7e2-30d3edb83696"/>
             <label kind="guard" x="0" y="0"/>
+            <label kind="assignment" x="0" y="15">
+</label>
         </transition>
         <transition>
-            <source ref="127c5795-8676-4041-860f-89b8ee4947e2"/>
-            <target ref="d13b826b-d491-4d1f-bf6e-da77b16cbe34"/>
-            <label kind="guard" x="0" y="0">x==0 &amp;&amp; y==2</label>
+            <source ref="dfcd3fdb-e732-4edf-a7e2-30d3edb83696"/>
+            <target ref="7f73f254-78a5-4323-ac4e-7177ec4523eb"/>
+            <label kind="guard" x="0" y="0">TIMEOUT ==5</label>
         </transition>
         <transition>
-            <source ref="127c5795-8676-4041-860f-89b8ee4947e2"/>
-            <target ref="e003aa5c-9f10-4947-a4d1-67e654851195"/>
-            <label kind="guard" x="0" y="0">x==0 || y ==1</label>
+            <source ref="7f73f254-78a5-4323-ac4e-7177ec4523eb"/>
+            <target ref="dfcd3fdb-e732-4edf-a7e2-30d3edb83696"/>
+            <label kind="guard" x="0" y="0">TIMEOUT == 4</label>
         </transition>
     </template>
     <system>automata = Automata();system automata;</system>

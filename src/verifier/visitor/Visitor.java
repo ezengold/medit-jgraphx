@@ -61,4 +61,6 @@ public interface Visitor {
 	public void visit(ExistsNext expression);
 	public void visit(ExistsUntil expression);
 	public void visit(AlwaysUntil expression);
+	public void visit(ChanLiteral expression);
+	public void visit(ChanType expression);
 }

@@ -471,5 +471,15 @@ public class PrintVisitor implements Visitor {
 
 	}
 
+	@Override
+	public void visit(ChanLiteral expression) {
+
+	}
+
+	@Override
+	public void visit(ChanType expression) {
+
+	}
+
 
 }

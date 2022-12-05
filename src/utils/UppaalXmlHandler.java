@@ -54,6 +54,7 @@ public class UppaalXmlHandler {
         this.uppaalDoc = null;
         excepts.put("<", "&lt;");
         excepts.put(">", "&gt;");
+        excepts.put("||","or");
 
         excepts.put("&", "&amp;");
     }
@@ -137,12 +138,15 @@ public class UppaalXmlHandler {
     public static String escapeStr(final String input) {
         String output = input;
         for (String token : excepts.keySet()) {
-            output = output.replaceAll(token, excepts.get(token));
+            output = output.replace(token, excepts.get(token));
         }
         return output;
+
     }
 
     private void writeModel() {
+
+
         Element rootEle = this.uppaalDoc.createElement("nta");
         this.uppaalDoc.appendChild(rootEle);
 
