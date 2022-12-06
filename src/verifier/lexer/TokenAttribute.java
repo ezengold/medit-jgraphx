@@ -7,12 +7,18 @@ public class TokenAttribute {
 	private char charVal; // char value of the token
 	private boolean booleanVal; // boolean value of the token
 	private String idVal; // id of the token
+	private String chanVal; //chan value of token
 
 	public TokenAttribute() {}
 
 	// construct TokenAttribute with an clock value
 	public TokenAttribute(long clockVal){
 		this.clockVal = clockVal;
+	}
+
+	// construct TokenAttribute with an chan value
+	public TokenAttribute(String chanVal,boolean chanValue){
+		this.chanVal = chanVal;
 	}
 	
 	// construct TokenAttribute with an int value

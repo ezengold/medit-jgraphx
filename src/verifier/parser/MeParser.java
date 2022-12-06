@@ -8,42 +8,7 @@ import java.util.Map;
 
 import app.Console;
 import models.Automata;
-import verifier.ast.And;
-import verifier.ast.ArrayLookup;
-import verifier.ast.Assign;
-import verifier.ast.Block;
-import verifier.ast.BooleanLiteral;
-import verifier.ast.BooleanType;
-import verifier.ast.ClockLiteral;
-import verifier.ast.ClockType;
-import verifier.ast.Declarations;
-import verifier.ast.Divide;
-import verifier.ast.Equal;
-import verifier.ast.Exp;
-import verifier.ast.Identifier;
-import verifier.ast.IdentifierExp;
-import verifier.ast.If;
-import verifier.ast.IntegerLiteral;
-import verifier.ast.IntegerType;
-import verifier.ast.Invariant;
-import verifier.ast.LessThan;
-import verifier.ast.LessThanEqual;
-import verifier.ast.Minus;
-import verifier.ast.Modules;
-import verifier.ast.MoreThan;
-import verifier.ast.MoreThanEqual;
-import verifier.ast.Negative;
-import verifier.ast.Not;
-import verifier.ast.NotEqual;
-import verifier.ast.Or;
-import verifier.ast.Plus;
-import verifier.ast.Program;
-import verifier.ast.Statement;
-import verifier.ast.StatementList;
-import verifier.ast.Times;
-import verifier.ast.Type;
-import verifier.ast.VarDecl;
-import verifier.ast.VarDeclList;
+import verifier.ast.*;
 import verifier.lexer.MeLexer;
 import verifier.lexer.Token;
 import verifier.lexer.TokenType;
@@ -178,7 +143,7 @@ public class MeParser {
 	private Declarations parseDeclarations() throws IOException {
 		Declarations declarations = new Declarations();
 		while (token.getType() == TokenType.INT || token.getType() == TokenType.BOOLEAN
-				|| token.getType() == TokenType.CLOCK)
+				|| token.getType() == TokenType.CLOCK || token.getType() == TokenType.CHAN)
 			declarations.addElement(parseVarDecList());
 		return declarations;
 	}
@@ -245,6 +210,8 @@ public class MeParser {
 				} else {
 					this.automata.addClockVariable(id.getName());
 				}
+			} else if(type instanceof ChanType) {
+				this.automata.addChanVariable(id.getName());
 			}
 
 			return new VarDecl(type, id, value);
@@ -281,6 +248,10 @@ public class MeParser {
 			eat(TokenType.CLOCK);
 
 			return new ClockType();
+
+		case CHAN:
+			eat(TokenType.CHAN);
+			return new ChanType();
 
 		default:
 			// unknown type

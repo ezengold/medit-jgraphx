@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nta PUBLIC "-//Uppaal Team//DTD Flat System 1.1//EN" "http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd">
+<nta>
+    <declaration>clock TIMEOUT;
+</declaration>
+    <template>
+        <name>Automata</name>
+        <location id="85c17e1d-4c54-47e6-b0d9-b3001ff6283f" x="0.0" y="0.0">
+            <name x="-8.0" y="-8.0">s0</name>
+        </location>
+        <location id="dfcd3fdb-e732-4edf-a7e2-30d3edb83696" x="130.0" y="50.0">
+            <name x="122.0" y="42.0">off</name>
+        </location>
+        <location id="7f73f254-78a5-4323-ac4e-7177ec4523eb" x="410.0" y="50.0">
+            <name x="402.0" y="42.0">on</name>
+        </location>
+        <init ref="85c17e1d-4c54-47e6-b0d9-b3001ff6283f"/>
+        <transition>
+            <source ref="85c17e1d-4c54-47e6-b0d9-b3001ff6283f"/>
+            <target ref="dfcd3fdb-e732-4edf-a7e2-30d3edb83696"/>
+            <label kind="guard" x="0" y="0"/>
+            <label kind="assignment" x="0" y="15">
+</label>
+        </transition>
+        <transition>
+            <source ref="dfcd3fdb-e732-4edf-a7e2-30d3edb83696"/>
+            <target ref="7f73f254-78a5-4323-ac4e-7177ec4523eb"/>
+            <label kind="guard" x="0" y="0">TIMEOUT ==5</label>
+        </transition>
+        <transition>
+            <source ref="7f73f254-78a5-4323-ac4e-7177ec4523eb"/>
+            <target ref="dfcd3fdb-e732-4edf-a7e2-30d3edb83696"/>
+            <label kind="guard" x="0" y="0">TIMEOUT == 4</label>
+        </transition>
+    </template>
+    <system>automata = Automata();system automata;</system>
+</nta>

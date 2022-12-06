@@ -792,7 +792,7 @@ public class App extends JPanel {
 
 			// automata.getEngine().debug();
 
-			removeCurrentTempFile();
+//			removeCurrentTempFile();
 
 			if (analyze.getErrors() < 1) {
 				if (wantedTabIndex != 0) {
@@ -837,7 +837,7 @@ public class App extends JPanel {
 
 		fullProgram += "\n}";
 
-//		 System.out.println("FULL PROGRAM: "+fullProgram);
+		 System.out.println("FULL PROGRAM: "+fullProgram);
 
 		File outputFile = createCurrentTempFile();
 		try {

@@ -22,6 +22,7 @@ public class Automata implements Observable {
 	protected Hashtable<String, IntVariable> intVariablesList;
 	protected Hashtable<String, BooleanVariable> boolVariablesList;
 	protected Hashtable<String, ClockVariable> clockVariablesList;
+	protected Hashtable<String, ChanVariable> chanVariablesList;
 
 	// hold the engine for computations
 	protected Engine engine;
@@ -44,6 +45,7 @@ public class Automata implements Observable {
 		this.intVariablesList = new Hashtable<String, IntVariable>();
 		this.boolVariablesList = new Hashtable<String, BooleanVariable>();
 		this.clockVariablesList = new Hashtable<String, ClockVariable>();
+		this.chanVariablesList = new Hashtable<String, ChanVariable>();
 		this.labelProperties = new Hashtable<String, ArrayList<String>>();
 
 		this.engine = new Engine();
@@ -59,6 +61,7 @@ public class Automata implements Observable {
 		this.intVariablesList = new Hashtable<String, IntVariable>();
 		this.boolVariablesList = new Hashtable<String, BooleanVariable>();
 		this.clockVariablesList = new Hashtable<String, ClockVariable>();
+		this.chanVariablesList = new Hashtable<String, ChanVariable>();
 
 		this.engine = new Engine();
 	}
@@ -361,6 +364,16 @@ public class Automata implements Observable {
 		this.engine.setVariable(name, value);
 		updateObservers();
 	}
+
+	public void addChanVariable(String name) {
+		this.chanVariablesList.put(name, new ChanVariable(name));
+		this.engine.setVariable(name, 0);
+		updateObservers();
+	}
+
+
+
+
 
 	public ClockVariable findClockVariable(String name) {
 		return this.clockVariablesList.get(name);

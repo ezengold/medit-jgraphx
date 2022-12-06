@@ -3,6 +3,7 @@ package verifier.lexer;
 public enum TokenType {
 	CLOCK, // clock
 	INV, // invariant
+	CHAN, //channel
 	
 	//For verifier specially
 	//verifier tokens
