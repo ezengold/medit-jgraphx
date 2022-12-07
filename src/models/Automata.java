@@ -371,10 +371,6 @@ public class Automata implements Observable {
 		updateObservers();
 	}
 
-
-
-
-
 	public ClockVariable findClockVariable(String name) {
 		return this.clockVariablesList.get(name);
 	}
@@ -437,5 +433,12 @@ public class Automata implements Observable {
 	@Override
 	public void removeObserver() {
 		this.observersList.clear();
+	}
+
+	@Override
+	public void updateObservers(Notification notification) {
+		for (Observer observer : this.observersList) {
+			observer.update(notification);
+		}
 	}
 }

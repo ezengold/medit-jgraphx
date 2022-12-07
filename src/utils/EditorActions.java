@@ -129,7 +129,7 @@ public class EditorActions {
 									e1.printStackTrace();
 								}
 
-							}  else if (fc.getSelectedFile().getAbsolutePath().toLowerCase().endsWith(".qm")) {
+							} else if (fc.getSelectedFile().getAbsolutePath().toLowerCase().endsWith(".qm")) {
 								try {
 									((mxGraphModel) graphComponent.getGraph().getModel()).clear();
 
@@ -353,11 +353,12 @@ public class EditorActions {
 			App app = getApp(e);
 
 			if (app != null) {
-				if (undo) {
-					app.getUndoManager().undo();
-				} else {
-					app.getUndoManager().redo();
-				}
+				// TODO: To delegate from editor
+				// if (undo) {
+				// app.getUndoManager().undo();
+				// } else {
+				// app.getUndoManager().redo();
+				// }
 			}
 		}
 

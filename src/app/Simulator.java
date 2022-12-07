@@ -94,9 +94,10 @@ public class Simulator extends JPanel {
 
 	public Simulator(App app) {
 		this.app = app;
+
 		this.automata = app.getAutomata();
 
-		this.graphComponent = new SimulatorGraphComponent(app.graphComponent.getGraph());
+		this.graphComponent = new SimulatorGraphComponent(new mxGraph());
 
 		this.setCurrentState(automata.getInitialState());
 
