@@ -119,31 +119,32 @@ public class QmHandler {
                             System.out.println("INDEX: " + index);
                             System.out.println("PARENT INITIAL NODE: " + node.getNodeName());
                             if (node != null) {
-                                Node stateNode = node.getFirstChild();
+                                node = node.getFirstChild();
+                                System.out.println("FIRST CHILD: " + node.getNodeName());
                                 int i = 0;
                                 while (i <= index) {
-                                    stateNode = stateNode.getNextSibling();
-                                    if (stateNode.getNodeType() == Element.ELEMENT_NODE && !stateNode.getNodeName().equals("documentation")) {
-                                        System.out.println("INITIAL STATE NAME: " + stateNode.getNodeName());
+                                    node = node.getNextSibling();
+                                    if (node.getNodeType() == Element.ELEMENT_NODE && !node.getNodeName().equals("documentation")) {
+                                        System.out.println("INITIAL STATE NAME: " + node.getNodeName());
                                         i++;
-                                    }
-                                }
-
-                                String stateName = ((Element) stateNode).getAttribute("name");
-                                System.out.println("STATE INITIAL NAME: " + stateName);
-
-                                addStatesId(stateName);
-                                String targetStateId = getStateId(stateName);
-                                if (targetStateId != null) {
-                                    Transition transition = new Transition(initialState.getStateId(), targetStateId);
-                                    transitionList.add(transition);
-                                    if (action != null) {
-                                        setTransitionUpdate(transition.getTransitionId(), ((Element) action).getAttribute("brief"));
                                     }
                                 }
 
 
                             }
+                        }
+                    }
+
+                    String stateName = ((Element) node).getAttribute("name");
+                    System.out.println("STATE INITIAL NAME: " + stateName);
+
+                    addStatesId(stateName);
+                    String targetStateId = getStateId(stateName);
+                    if (targetStateId != null) {
+                        Transition transition = new Transition(initialState.getStateId(), targetStateId);
+                        transitionList.add(transition);
+                        if (action != null) {
+                            setTransitionUpdate(transition.getTransitionId(), ((Element) action).getAttribute("brief"));
                         }
                     }
 
@@ -155,9 +156,9 @@ public class QmHandler {
                         Node stateNode = locationsList.item(i);
                         if (stateNode.getNodeType() == Node.ELEMENT_NODE) {
                             Element location = (Element) stateNode;
-                            String stateName = location.getAttribute("name");
-                            addStatesId(stateName);
-                            String stateId = getStateId(stateName);
+                            String nameOfState = location.getAttribute("name");
+                            addStatesId(nameOfState);
+                            String stateId = getStateId(nameOfState);
 
                             Node entryNode = location.getElementsByTagName("entry").item(0);
                             Node existNode = location.getElementsByTagName("exit").item(0);
@@ -326,8 +327,8 @@ public class QmHandler {
                                 Node guardNode = choiceElement.getElementsByTagName("guard").item(0);
                                 String guardChoice = ((Element) guardNode).getAttribute("brief");
                                 String targetChoice = choiceElement.getAttribute("target");
-                                if (targetChoice != null && !target.isEmpty()) {
-
+                                if (targetChoice != null && !targetChoice.isEmpty()) {
+                                    System.out.println("TARGET CHOICE: "+targetChoice);
                                     Node targetState = getTargetNode(targetChoice, choiceNode);
                                     String targetStateName = ((Element) targetState).getAttribute("name");
                                     addStatesId(targetStateName);
@@ -391,7 +392,7 @@ public class QmHandler {
 
                         Element mainTargetElement = (Element) mainTarget;
                         String targetStateName = mainTargetElement.getAttribute("name");
-                        System.out.println("TARGET STATE NAME: " + sourceStateName);
+                        System.out.println("TARGET STATE NAME: " + targetStateName);
                         addStatesId(targetStateName);
                         String targetStateId = getStateId(targetStateName);
                         Transition transition = new Transition(sourceStateId, targetStateId);
