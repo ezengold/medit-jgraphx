@@ -96,10 +96,13 @@ public class XmlHandler {
 						+ cell.getTarget().getId() + "\" targetX=\"" + cell.getGeometry().getTargetPoint().getX()
 						+ "\" targetY=\"" + cell.getGeometry().getTargetPoint().getY() + "\">\n";
 				xmlStr += "\t\t\t<guard>" + (transition != null ? escapeStr(transition.getGuard()) : "") + "</guard>\n";
+				xmlStr += "\t\t\t<event>" + (transition != null ? escapeStr(transition.getEvent()) : "") + "</event>\n";
 				xmlStr += "\t\t\t<updates>" + (transition != null ? escapeStr(transition.getUpdate()) : "")
 						+ "</updates>\n";
 				xmlStr += "\t\t</transition>\n";
 				// save the transition in the automata model
+				assert transition != null;
+				this.app.addEvent(transition.getEvent());
 				this.app.getAutomata().addTransition(transition);
 			}
 		}
@@ -209,6 +212,7 @@ public class XmlHandler {
 
 						String guard = restoreStr(edge.getElementsByTagName("guard").item(0).getTextContent());
 						String updates = restoreStr(edge.getElementsByTagName("updates").item(0).getTextContent());
+						String event = restoreStr(edge.getElementsByTagName("event").item(0).getTextContent());
 
 						String sourceId = edge.getAttribute("source");
 						mxCell source = (mxCell) verticesArray.get(sourceId);
@@ -233,6 +237,10 @@ public class XmlHandler {
 
 						transition.setGuard(guard);
 						transition.setUpdate(updates);
+
+						//handling of events
+						transition.setEvent(event);
+						this.app.addEvent(event);
 
 						mxCell newEdge = (mxCell) graph.insertEdge(graph.getDefaultParent(), id, transition, source,
 								target);
@@ -268,6 +276,7 @@ public class XmlHandler {
 		ArrayList<String> conds = new ArrayList<String>();
 		ArrayList<String> updts = new ArrayList<String>();
 		ArrayList<String> invs = new ArrayList<String>();
+		ArrayList<String> events = new ArrayList<>();
 
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -311,11 +320,15 @@ public class XmlHandler {
 
 					String updates = restoreStr(edge.getElementsByTagName("updates").item(0).getTextContent());
 					String guard = restoreStr(edge.getElementsByTagName("guard").item(0).getTextContent());
+					String event = restoreStr(edge.getElementsByTagName("event").item(0).getTextContent());
 
 					conds.add((guard.isEmpty() ? "true" : guard) + "^" + (updates.isEmpty() ? "" : updates));
 
 					if (!updates.isEmpty())
 						updts.add(updates);
+					if(event != null && !event.isEmpty()) {
+						events.add(event);
+					}
 				}
 			}
 		} catch (Exception e) {

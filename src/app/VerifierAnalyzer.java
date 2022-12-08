@@ -189,7 +189,7 @@ public class VerifierAnalyzer {
             try {
                 String pathModel = "temp_uppaal/automata.xml";
                 String requestFile = "temp_uppaal/automata.q";
-                UppaalXmlHandler uppaalXmlHandler = new UppaalXmlHandler(app.getAutomata(),pathModel);
+                UppaalXmlHandler uppaalXmlHandler = new UppaalXmlHandler(app.getAutomata(),pathModel,app.getEvents());
                 uppaalXmlHandler.write();
                 System.out.println("EXPRESSION UPPAAL = "+expression);
                 uppaalXmlHandler.createCurrentTempFile(expression);

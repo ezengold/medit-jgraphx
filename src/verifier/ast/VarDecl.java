@@ -38,4 +38,6 @@ public class VarDecl {
 	public void accept(Visitor v) {
 		v.visit(this);
 	}
+
+
 }

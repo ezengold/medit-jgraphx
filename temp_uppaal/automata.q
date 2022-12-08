@@ -1,1 +1,1 @@
-E<> (automata.on && TIMEOUT > 5)
+E<> (automata.on && t>9)

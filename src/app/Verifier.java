@@ -113,12 +113,12 @@ public class Verifier extends JPanel {
 					try {
 						String pathModel = "temp_uppaal/automata.xml";
 						String requestFile = "temp_uppaal/automata.q";
-						UppaalXmlHandler uppaalXmlHandler = new UppaalXmlHandler(app.getAutomata(),pathModel);
+						UppaalXmlHandler uppaalXmlHandler = new UppaalXmlHandler(app.getAutomata(),pathModel,app.getEvents());
 						uppaalXmlHandler.write();
 						System.out.println("EXPRESSION UPPAAL = "+propertie.getText());
 						uppaalXmlHandler.createCurrentTempFile(propertie.getText());
 
-						Process proc = Runtime.getRuntime().exec("uppaal/bin-Linux/verifyta  -t0  "+pathModel+" "+requestFile);
+						Process proc = Runtime.getRuntime().exec("uppaal/bin-Linux/verifyta  -t1  "+pathModel+" "+requestFile);
 						BufferedReader stdInput = new BufferedReader(new
 								InputStreamReader(proc.getInputStream()));
 

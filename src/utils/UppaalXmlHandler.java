@@ -3,7 +3,9 @@ package utils;
 import app.App;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.view.mxGraph;
+import it.unimi.dsi.fastutil.Hash;
 import models.Automata;
+import models.EventAutomata;
 import models.State;
 import models.Transition;
 import org.w3c.dom.DOMImplementation;
@@ -29,6 +31,7 @@ public class UppaalXmlHandler {
     private String uppaalFilePath;
     private Document uppaalDoc;
     private Automata automata;
+    private  HashMap<String, Automata>eventsAutomata;
 
 
     public Document getUppaalDoc() {
@@ -48,9 +51,11 @@ public class UppaalXmlHandler {
         return automata;
     }
 
-    public UppaalXmlHandler(Automata automata, String uppaalFilePath) {
+    public UppaalXmlHandler(Automata automata, String uppaalFilePath,
+                            HashMap<String, Automata>eventsAutomata) {
        this.automata = automata;
        this.uppaalFilePath = uppaalFilePath;
+       this.eventsAutomata = eventsAutomata;
         this.uppaalDoc = null;
         excepts.put("<", "&lt;");
         excepts.put(">", "&gt;");
@@ -155,12 +160,26 @@ public class UppaalXmlHandler {
 
         StringBuilder declarations = new StringBuilder();
 
+
         for (int i = 0; i < this.automata.getDeclarationsList().size(); i++) {
 
             if(!automata.getDeclarationsList().get(i).trim().isEmpty()) {
                 declarations.append(this.automata.getDeclarationsList().get(i)).append(";\n");
             }
 
+        }
+
+        for (String event:eventsAutomata.keySet()) {
+            for (int i = 0; i < this.eventsAutomata.get(event).getDeclarationsList().size(); i++) {
+                String declarationEvent = eventsAutomata.get(event).getDeclarationsList().get(i);
+                System.out.println("DECLARATION EVENT: "+declarationEvent);
+                System.out.println("DECLARATIONS: "+declarations);
+                if(declarations.indexOf(declarationEvent) == -1) {
+                    declarations.append(declarationEvent).append("\n");
+                }
+
+
+            }
         }
 
 //        for (String clock : automata.getClockVariablesList().keySet()) {
@@ -179,19 +198,77 @@ public class UppaalXmlHandler {
 
         writeAutomata(rootEle);
 
+        for (String event:eventsAutomata.keySet()) {
+            System.out.println("EVENT NAME: "+event);
+            writeAutomata(rootEle,eventsAutomata.get(event));
+        }
+
+
         Element systemEle = this.uppaalDoc.createElement("system");
         rootEle.appendChild(systemEle);
         String name = "automata";
-        String systemDeclaration = "automata = Automata();";
-//        String systemDeclaration = "automata = "+
-//                name.substring(0, 1).toUpperCase() + name.substring(1)+";";
-        String systemStr = "system automata;";
-        systemEle.appendChild(this.uppaalDoc.createTextNode(systemDeclaration));
-        systemEle.appendChild(this.uppaalDoc.createTextNode(systemStr));
+        StringBuilder systemDeclaration = new StringBuilder("automata = Automata();\n");
+
+        //fill systems declaration of templates
+       if(!eventsAutomata.isEmpty()) {
+           for (String event:eventsAutomata.keySet()) {
+              if(!event.isEmpty()) {
+                  systemDeclaration.append(event.toLowerCase()).append(" = ").append(event.substring(0, 1).toUpperCase()).append(event.substring(1).toLowerCase()).append("();\n");
+
+              }
+           }
+       }
+
+
+        StringBuilder systemStr = new StringBuilder("system automata");
+        if(!eventsAutomata.isEmpty()) {
+            for (String event:eventsAutomata.keySet()) {
+                if(!event.isEmpty()) {
+                    systemStr.append(",").append(event.toLowerCase());
+                }
+
+            }
+
+        }
+        systemStr.append(";");
+
+
+        systemEle.appendChild(this.uppaalDoc.createTextNode(systemDeclaration.toString()));
+        systemEle.appendChild(this.uppaalDoc.createTextNode(systemStr.toString()));
 
 
     }
 
+
+    private void writeAutomata(Element rootEle,Automata eventAutomata) {
+        Element automataEle = this.uppaalDoc.createElement("template");
+        rootEle.appendChild(automataEle);
+        Element automataNameEle = this.uppaalDoc.createElement("name");
+        automataNameEle.appendChild(this.uppaalDoc.createTextNode(eventAutomata.getName()));
+        automataEle.appendChild(automataNameEle);
+
+        //handling of states
+        State state = null;
+        for (int j = 0; j < eventAutomata.getStatesList().size(); j++) {
+            state = eventAutomata.getStatesList().get(j);
+            writeStates(automataEle,state);
+        }
+
+        Element initStateEle = this.uppaalDoc.createElement("init");
+
+        initStateEle.setAttribute("ref", eventAutomata.getStatesList().get(0).getStateId());
+        automataEle.appendChild(initStateEle);
+
+
+        //handling of transitions
+        Transition transition = null;
+        for (int k = 0; k < eventAutomata.getTransitionsList().size(); k++) {
+            transition = eventAutomata.getTransitionsList().get(k);
+            writeTransitions(automataEle, transition);
+
+        }
+
+    }
 
     private void writeAutomata(Element rootEle) {
         Element automataEle = this.uppaalDoc.createElement("template");
@@ -279,6 +356,8 @@ public class UppaalXmlHandler {
         transitionEle.appendChild(transitionGuardEle);
 
 
+
+
         if(transition.getUpdate()!=null && !transition.getUpdate().isEmpty() ) {
             Element transitionAssignmentEle = this.uppaalDoc.createElement("label");
             transitionAssignmentEle.setAttribute("kind", "assignment");
@@ -286,6 +365,18 @@ public class UppaalXmlHandler {
             transitionAssignmentEle.setAttribute("y", "15");
             transitionAssignmentEle.appendChild(this.uppaalDoc.createTextNode(transition.getUpdate().replace(";","")));
             transitionEle.appendChild(transitionAssignmentEle);
+        }
+
+
+        if(transition.getEvent()!=null && !transition.getEvent().isEmpty()) {
+            Element transitionSynEle = this.uppaalDoc.createElement("label");
+            transitionSynEle.setAttribute("kind", "synchronisation");
+            transitionSynEle.setAttribute("x", "0");
+            transitionSynEle.setAttribute("y", "30");
+            String event = transition.getEvent();
+            event+= event.endsWith("!")?"":"?";
+            transitionSynEle.appendChild(this.uppaalDoc.createTextNode(event.replace(";","")));
+            transitionEle.appendChild(transitionSynEle);
         }
 
 

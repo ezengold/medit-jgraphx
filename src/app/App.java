@@ -39,9 +39,7 @@ import com.mxgraph.util.mxEventSource.mxIEventListener;
 import com.mxgraph.util.mxUndoableEdit.mxUndoableChange;
 import com.mxgraph.view.mxGraph;
 
-import models.Automata;
-import models.State;
-import models.Transition;
+import models.*;
 import ui.ConfigStateDialog;
 import ui.ConfigTransitionDialog;
 import ui.GraphComponent;
@@ -61,6 +59,14 @@ public class App extends JPanel {
 	}
 
 	private static final long serialVersionUID = -8150527452734294724L;
+
+
+	/**
+	 * Hold list of events synchronisations
+	 */
+	protected HashMap<String, Automata>events;
+
+	private int time = 2;
 
 	/*
 	 * Hold the current automata model
@@ -248,6 +254,7 @@ public class App extends JPanel {
 
 	public App() {
 		automata = new Automata();
+		events = new HashMap<>();
 
 		this.appTitle = "Medit";
 
@@ -712,6 +719,21 @@ public class App extends JPanel {
 
 	public Automata getAutomata() {
 		return automata;
+	}
+	public HashMap<String,Automata> getEvents() {
+		return events;
+	}
+
+	public void addEvent(String eventName) {
+		System.out.println("NEW EVENT: "+eventName);
+		if(!events.containsKey(eventName) && !eventName.isEmpty()) {
+			if(eventName.equals("TIMEOUT")) {
+				events.put(eventName,new EveryTimer(eventName,time));
+			}else {
+				events.put(eventName,new EventAutomata(eventName));
+			}
+
+		}
 	}
 
 	public void setAutomata(Automata automata) {

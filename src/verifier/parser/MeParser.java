@@ -80,7 +80,7 @@ public class MeParser {
 			return;
 		}
 
-		// print error report
+
 		setErrors(errors + 1);
 		log.error(token.getType().toString() + " at line " + token.getLineNumber() + ", column "
 				+ token.getColumnNumber() + "; Expected " + type);

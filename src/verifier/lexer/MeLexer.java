@@ -138,7 +138,7 @@ public class MeLexer {
 			nextChar = getChar();
 
 			// include remaining sequence of chars that are letters, digits, or _
-			while (Character.isLetterOrDigit(nextChar)) {
+			while (Character.isLetterOrDigit(nextChar) || (char)nextChar == '_') {
 				current += (char) nextChar;
 				columnNumber++;
 				nextChar = getChar();
@@ -157,6 +157,7 @@ public class MeLexer {
 				return new Token(TokenType.BOOLEAN_CONST, new TokenAttribute(false), lineNumber, columnNumber - current.length());
 
 			// token is an identifier
+			System.out.println("CURRENT "+current);
 			return new Token(TokenType.ID, new TokenAttribute(current), lineNumber, columnNumber - current.length());
 		}
 

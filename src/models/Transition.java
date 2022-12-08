@@ -17,6 +17,7 @@ public class Transition extends DefaultEdge {
 	private String guard = "";
 
 	private String update = "";
+	private String event = "";
 
 	public Transition() {
 		this.transitionId = UUID.randomUUID().toString();
@@ -70,13 +71,21 @@ public class Transition extends DefaultEdge {
 
 	public String debug() {
 		String verb = "";
-		verb += "TransitionId ="+ this.getTransitionId()+" || Guard = "+this.getGuard()+" || Update = "+this.getUpdate()+
+		verb += "TransitionId ="+ this.getTransitionId()+" || Event = "+this.getEvent()+" || Guard = "+this.getGuard()+" || Update = "+this.getUpdate()+
 				" || Source State Id = "+this.getSourceStateId()+" || Target State Id = "+this.getTargetStateId()+ "\n";
 		return verb;
 	}
 	
 	@Override
 	public String toString() {
-		return guard;
+		return event.isEmpty()?guard:event+"?";
+	}
+
+	public String getEvent() {
+		return event;
+	}
+
+	public void setEvent(String event) {
+		this.event = event;
 	}
 }

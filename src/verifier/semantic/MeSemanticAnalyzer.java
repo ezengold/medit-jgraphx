@@ -63,6 +63,7 @@ public class MeSemanticAnalyzer {
 	private void checkDeclerations() {
 		for (int i = 0; i < declerations.size(); i++) {
 			VarDecl varDecl = declerations.get(i);
+
 			String idName = varDecl.getId().getName();
 
 			for (int j = i + 1; j < declerations.size(); j++) {

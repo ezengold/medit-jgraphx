@@ -34,7 +34,9 @@ public class QmHandler {
     protected ArrayList<Transition> transitionList = new ArrayList<Transition>();
     protected HashMap<String, String> transitionUpdates = new HashMap<String, String>();
     protected HashMap<String, String> transitionGuards = new HashMap<String, String>();
+    protected HashMap<String, String> transitionEvents = new HashMap<String, String>();
     protected HashMap<String, String> statesId = new HashMap<String, String>();
+    protected ArrayList<String> declarations = new ArrayList<>();
     private App app;
 
     public QmHandler(App parent) {
@@ -195,11 +197,28 @@ public class QmHandler {
 
         // assign guards and updates to transitions
         System.out.println("=================DEBUG QUANTUM LEAPS===================");
-        for (Transition transition : transitionList) {
+        StringBuilder globalDeclarations = new StringBuilder();
+        if(!declarations.isEmpty()) {
+            for (String declaration : declarations) {
+
+                if(globalDeclarations.length() == 0) {
+                    globalDeclarations = new StringBuilder("chan "+declaration).append(";\n");
+                } else {
+                    globalDeclarations.append("chan ").append(declaration).append(";\n");
+                }
+
+            }
+//            globalDeclarations.append(";");
+
+        }
+       for (Transition transition : transitionList) {
             transition.setGuard(transitionGuards.get(transition.getTransitionId()) == null ? ""
                     : transitionGuards.get(transition.getTransitionId()));
-            transition.setUpdate(transitionUpdates.get(transition.getTransitionId()) == null ? ""
-                    : transitionUpdates.get(transition.getTransitionId()));
+//            transition.setUpdate(transitionUpdates.get(transition.getTransitionId()) == null ? ""
+//                    : transitionUpdates.get(transition.getTransitionId()));
+
+            transition.setEvent(transitionEvents.get(transition.getTransitionId()) == null ? ""
+                    : transitionEvents.get(transition.getTransitionId()));
             System.out.println(transition.debug());
 
         }
@@ -213,7 +232,7 @@ public class QmHandler {
         System.out.println("================END DEBUT QUANTUM LEAPS=================");
 
 
-        this.app.setGlobalDeclarations("");
+        this.app.setGlobalDeclarations(globalDeclarations.toString());
 
         // create the graph
         graph.getModel().beginUpdate();
@@ -259,6 +278,8 @@ public class QmHandler {
                 newEdge.setGeometry(edgeGeometry);
             }
         } finally {
+            graph.setMultigraph(true);
+            graph.setAllowLoops(true);
             graph.getModel().endUpdate();
         }
 
@@ -269,11 +290,13 @@ public class QmHandler {
         layout.setNodeDistance(50);
         layout.setUseBoundingBox(true);
         layout.setEdgeRouting(true);
+        layout.setHorizontal(true);
 
         layout.execute(graph.getDefaultParent());
         return layout.getGraph();
 
     }
+
 
 
     private void handlingTransitions(NodeList outgoingTransitions, Node existNode, String stateId, String target) {
@@ -307,7 +330,7 @@ public class QmHandler {
                             setTransitionUpdate(transitionOutgoing.getTransitionId(), actionContent);
                         }
                         if (transitionTrig != null) {
-                            setTransitionGuard(transitionOutgoing.getTransitionId(), transitionTrig);
+                            setTransitionEvent(transitionOutgoing.getTransitionId(), transitionTrig);
 
                         }
 
@@ -339,7 +362,7 @@ public class QmHandler {
 
 
                                         if (guardChoice != null) {
-                                            setTransitionGuard(transitionChoiceOutgoing.getTransitionId(), transitionTrig + " && " + guardChoice);
+                                            setTransitionGuard(transitionChoiceOutgoing.getTransitionId(), guardChoice);
 
                                         }
 
@@ -515,6 +538,13 @@ public class QmHandler {
 
             this.transitionGuards.put(transitionId, guard);
 
+        }
+    }
+
+    public void setTransitionEvent(String transitionId, String event) {
+        this.transitionEvents.put(transitionId,event);
+        if(!declarations.contains(event)) {
+            declarations.add(event);
         }
     }
 
