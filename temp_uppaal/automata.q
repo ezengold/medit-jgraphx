@@ -1,1 +1,1 @@
-E<> (automata.on && t>9)
+A[] (automata.off or t>200)

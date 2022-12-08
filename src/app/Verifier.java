@@ -109,6 +109,7 @@ public class Verifier extends JPanel {
 				if(propertie.isEnabled() && !propertie.getText().isEmpty()) {
 					statusVerifier.clearStatus();
 					statusVerifier.normal(propertie.getText());
+					statusVerifier.normal("Analyze en cours....");
 //					verifierAnalyzer.analyze(propertie.getText());
 					try {
 						String pathModel = "temp_uppaal/automata.xml";
@@ -132,8 +133,17 @@ public class Verifier extends JPanel {
 
 
 						while ((s = stdInput.readLine()) != null) {
+							System.out.println(s);
 							if(!s.isEmpty()) {
-								statusVerifier.success(s);
+
+								if(s.contains("Property is NOT satisfied.")) {
+									statusVerifier.error("La propriété n'est PAS satisfaite.");
+								} else if (s.contains("Property is satisfied")) {
+									statusVerifier.success("La propriété est satisfaite");
+								}
+
+
+//								statusVerifier.success(s);
 
 							}
 
@@ -143,6 +153,7 @@ public class Verifier extends JPanel {
 						// Read any errors from the attempted command
 						System.out.println("Here is the standard error of the command (if any):\n");
 						while ((s = stdError.readLine()) != null) {
+							System.out.println(s);
 							statusVerifier.error(s);
 						}
 

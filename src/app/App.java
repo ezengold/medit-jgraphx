@@ -725,15 +725,42 @@ public class App extends JPanel {
 	}
 
 	public void addEvent(String eventName) {
+		/**
+		 * Basic Event
+		 * AFTER_TIMER
+		 * EVERY_TIMER
+		 */
 		System.out.println("NEW EVENT: "+eventName);
 		if(!events.containsKey(eventName) && !eventName.isEmpty()) {
-			if(eventName.equals("TIMEOUT")) {
-				events.put(eventName,new EveryTimer(eventName,time));
-			}else {
-				events.put(eventName,new EventAutomata(eventName));
+			try {
+				if(eventName.toLowerCase().contains("after")) {
+					String[] elements = eventName.split("_");
+					if(elements.length == 2) {
+						events.put(eventName, new AfterTimer(eventName,Integer.parseInt(elements[1])));
+					} else {
+						defaultEvent(eventName);
+					}
+				} else if(eventName.toLowerCase().contains("every")) {
+					String[] elements = eventName.split("_");
+					if(elements.length == 2) {
+						events.put(eventName, new EveryTimer(eventName,Integer.parseInt(elements[1])));
+					} else {
+						defaultEvent(eventName);
+					}
+
+				} else {
+					defaultEvent(eventName);
+				}
+			}catch (Exception exeption) {
+				defaultEvent(eventName);
 			}
 
+
 		}
+	}
+
+	public void defaultEvent(String eventName) {
+		events.put(eventName, new EventAutomata(eventName));
 	}
 
 	public void setAutomata(Automata automata) {

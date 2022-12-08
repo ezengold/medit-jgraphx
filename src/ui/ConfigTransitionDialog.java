@@ -33,10 +33,12 @@ public class ConfigTransitionDialog extends JDialog {
 
 	protected JTextArea updateField = new JTextArea(10, 10);
 
+	protected JTextArea eventField = new JTextArea(10, 10);
+
 	public ConfigTransitionDialog(final mxCell cell, final mxIGraphModel graphModel) {
 		super((Frame) null, "Transition", true);
 		setModal(true);
-		setPreferredSize(new Dimension(400, 300));
+		setPreferredSize(new Dimension(400, 400));
 
 		setLocation(500, 200);
 
@@ -45,7 +47,7 @@ public class ConfigTransitionDialog extends JDialog {
 		this.graphModel = graphModel;
 		this.currentCell = cell;
 
-		JPanel panel = new JPanel(new GridLayout(4, 1));
+		JPanel panel = new JPanel(new GridLayout(6, 1));
 
 		JLabel guardLabel = new JLabel("Garde :");
 		guardLabel.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
@@ -71,8 +73,20 @@ public class ConfigTransitionDialog extends JDialog {
 		JScrollPane scrollUpdateField = new JScrollPane(updateField);
 		panel.add(scrollUpdateField);
 
+		JLabel eventLabel = new JLabel("Evenement :");
+		eventLabel.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
+		eventLabel.setBorder(new EmptyBorder(20, 5, 5, 5));
+		panel.add(eventLabel);
+		eventField.setBorder(new EmptyBorder(5, 5, 5, 5));
+		eventField.setLineWrap(true);
+		eventField.setWrapStyleWord(true);
+		eventField.setFont(new Font("Ubuntu Mono", Font.PLAIN, 14));
+		eventField.setText(transition.getEvent());
+		JScrollPane scrollEventField = new JScrollPane(eventField);
+		panel.add(scrollEventField);
+
 		JPanel buttonsPanel = new JPanel();
-		buttonsPanel.setBorder(new EmptyBorder(20, 5, 5, 5));
+		buttonsPanel.setBorder(new EmptyBorder(15, 5, 5, 5));
 
 		Button submitButton = new Button("Valider");
 		submitButton.setBackground(Color.decode("#9099ae"));
@@ -98,7 +112,7 @@ public class ConfigTransitionDialog extends JDialog {
 		buttonsPanel.add(submitButton);
 
 		JPanel container = new JPanel(new BorderLayout());
-		container.setBorder(new EmptyBorder(15, 15, 15, 15));
+		container.setBorder(new EmptyBorder(20, 15, 15, 15));
 		container.add(panel, BorderLayout.CENTER);
 		container.add(buttonsPanel, BorderLayout.SOUTH);
 
@@ -113,6 +127,7 @@ public class ConfigTransitionDialog extends JDialog {
 
 			trans.setGuard(guardField.getText());
 			trans.setUpdate(updateField.getText());
+			trans.setEvent(eventField.getText());
 
 			graphModel.setValue(currentCell, trans);
 

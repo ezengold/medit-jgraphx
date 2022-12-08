@@ -317,13 +317,13 @@ public class UppaalXmlHandler {
         stateEle.appendChild(stateNameEle);
 
         if(state.getInvariant()!= null && !state.getInvariant().isEmpty()) {
+
             Element invariantEle = this.uppaalDoc.createElement("label");
             invariantEle.setAttribute("kind", "invariant");
             invariantEle.setAttribute("x", String.valueOf(state.getPosition().getX() - 18));
             invariantEle.setAttribute("y", String.valueOf(state.getPosition().getY() + 10));
             invariantEle.appendChild(this.uppaalDoc.createTextNode(state.getInvariant()));
-
-
+            stateEle.appendChild(invariantEle);
 
         }
 
