@@ -1,1 +1,1 @@
-E<>   (automata.Interrupteur and deadlock)
+E<> (automata.Vert && t<60)

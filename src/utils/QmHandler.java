@@ -183,7 +183,7 @@ public class QmHandler {
 
                     }
 
-                    handlingSubMachine(firstStatechart);
+                    handlingSubMachineV2(firstStatechart);
 
 
                 }
@@ -384,6 +384,82 @@ public class QmHandler {
 
             }
         }
+    }
+
+
+    public void handlingSubMachineV2(Element firstStateChart) {
+        NodeList smStates = firstStateChart.getElementsByTagName("smstate");
+        if (smStates != null && smStates.getLength() > 0) {
+            for (int i = 0; i < smStates.getLength(); i++) {
+                Node smStateNode = smStates.item(i);
+                if (smStateNode.getNodeType() == Element.ELEMENT_NODE) {
+                    Element smStateElement = (Element) smStateNode;
+
+
+
+                    String sourceStateName = smStateElement.getAttribute("name");
+                    System.out.println("SOURCE STATE: " + sourceStateName);
+                    addStatesId(sourceStateName);
+                    String sourceStateId = getStateId(sourceStateName);
+                    String subMachine = smStateElement.getAttribute("submachine");
+
+                    Node subMachineTarget = getTargetNode(subMachine, smStateNode);
+                    System.out.println("SUBMACHINE: " + subMachineTarget.getNodeName());
+                    if (subMachineTarget.getNodeType() == Element.ELEMENT_NODE) {
+                        Element subMachineElement = (Element) subMachineTarget;
+                        Node subStateInitial = subMachineElement.getElementsByTagName("initial").item(0);
+                        Element subStateInitialElement = (Element) subStateInitial;
+
+                        Node subStateInitialAction = subStateInitialElement.getElementsByTagName("action").item(0);
+                        Node mainTarget = getTargetNode(subStateInitialElement.getAttribute("target"), subStateInitial);
+
+                        Element mainTargetElement = (Element) mainTarget;
+                        String targetStateName = mainTargetElement.getAttribute("name");
+                        System.out.println("TARGET STATE NAME: " + targetStateName);
+                        addStatesId(targetStateName);
+                        String targetStateId = getStateId(targetStateName);
+                        Transition transition = new Transition(sourceStateId, targetStateId);
+                        transitionList.add(transition);
+
+                        if (subStateInitialAction != null) {
+                            if (subStateInitialAction.getNodeType() == Element.ELEMENT_NODE) {
+                                Element subStateInitialActionElement = (Element) subStateInitialAction;
+                                setTransitionUpdate(transition.getTransitionId(), subStateInitialActionElement.getTextContent());
+                            }
+
+                        }
+
+                        NodeList transitions = smStateElement.getElementsByTagName("tran");
+                        if (transitions != null && transitions.getLength() > 0) {
+                            handlingTransitions(transitions, null, sourceStateId, "target");
+//                            handlingTransitions(transitions,null,subStateInitial,"target");
+                        }
+                        handleSubState(subMachineElement,smStateElement);
+
+
+                    }
+
+
+                }
+            }
+        }
+
+
+    }
+
+
+    public void handleSubState(Element submachine,Element smStateElement) {
+        NodeList states = submachine.getElementsByTagName("state");
+        NodeList transitions = smStateElement.getElementsByTagName("tran");
+        for (int i = 0; i < states.getLength(); i++) {
+            Node stateNode = states.item(i);
+            Element stateElement = (Element) stateNode;
+            String stateName = stateElement.getAttribute("name");
+            System.out.println("SUB STATE NAME " + stateName);
+            String sourceStateId = getStateId(stateName);
+            handlingTransitions(transitions, null, sourceStateId, "target");
+        }
+
     }
 
 
