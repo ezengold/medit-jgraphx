@@ -64,7 +64,7 @@ public class App extends JPanel {
 	/**
 	 * Hold list of events synchronisations
 	 */
-	protected HashMap<String, Automata>events;
+	protected HashMap<String, Automata> events;
 
 	private int time = 2;
 

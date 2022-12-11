@@ -1,1 +1,1 @@
-A[] (automata.off or t>200)
+E<>   (automata.Interrupteur and deadlock)

@@ -156,6 +156,9 @@ public class XmlHandler {
 			}
 
 			graph.getModel().beginUpdate();
+			graph.setMultigraph(true);
+			graph.setAllowLoops(true);
+
 			try {
 				graph.removeCells(graph.getChildCells(graph.getDefaultParent()));
 
@@ -185,7 +188,7 @@ public class XmlHandler {
 						s.setInvariant(invariant);
 						s.setPosition(x, y);
 
-						Object vertex = graph.insertVertex(graph.getDefaultParent(), id, s, x, y, 40, 40);
+						Object vertex = graph.insertVertex(graph.getDefaultParent(), id, s, x, y, 50, 50);
 
 						if (isInitial) {
 							((mxCell) vertex).setStyle("fillColor=" + GraphStyles.INIT_FILL_COLOR + ";strokeColor="

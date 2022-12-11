@@ -246,7 +246,7 @@ public class QmHandler {
             State.NB = 0;
             for (State s : stateList) {
                 Object vertex = graph.insertVertex(graph.getDefaultParent(), s.getStateId(), s, s.getPosition().getX(),
-                        s.getPosition().getY(), 40, 40);
+                        s.getPosition().getY(), 50, 50);
 
                 if (s.isInitial()) {
 
@@ -291,7 +291,6 @@ public class QmHandler {
         layout.setUseBoundingBox(true);
         layout.setEdgeRouting(true);
         layout.setHorizontal(true);
-
         layout.execute(graph.getDefaultParent());
         return layout.getGraph();
 
