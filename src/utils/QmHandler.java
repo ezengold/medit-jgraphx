@@ -9,6 +9,7 @@ import com.mxgraph.util.mxConstants;
 
 import com.mxgraph.util.mxPoint;
 import com.mxgraph.view.mxGraph;
+import models.Position;
 import models.State;
 import models.Transition;
 import org.w3c.dom.Document;
@@ -105,7 +106,11 @@ public class QmHandler {
                     Element initialElement = (Element) initialNode;
                     State initialState = new State();
                     initialState.setInitial(true);
+                    String initialGlyphPosition = getGliphInitial(initialElement);
+                    Position position = getStatePosition(initialGlyphPosition);
+                    initialState.setPosition(position.getX(),position.getY());
                     stateList.add(initialState);
+
                     Node action = initialElement.getElementsByTagName("action").item(0);
                     String target = ((Element) initialNode).getAttribute("target");
 
@@ -126,7 +131,10 @@ public class QmHandler {
                                 int i = 0;
                                 while (i <= index) {
                                     node = node.getNextSibling();
-                                    if (node.getNodeType() == Element.ELEMENT_NODE && !node.getNodeName().equals("documentation")) {
+                                    if (node.getNodeType() == Element.ELEMENT_NODE && !node.getNodeName().equals("documentation")
+                                            && !node.getNodeName().equals("exit")
+                                            && !node.getNodeName().equals("entry")
+                                    ) {
                                         System.out.println("INITIAL STATE NAME: " + node.getNodeName());
                                         i++;
                                     }
@@ -138,9 +146,9 @@ public class QmHandler {
                     }
 
                     String stateName = ((Element) node).getAttribute("name");
-                    System.out.println("STATE INITIAL NAME: " + stateName);
 
-                    addStatesId(stateName);
+                    String glyPosition = getGlyphState(((Element) node));
+                    addStatesId(stateName,getStatePosition(glyPosition));
                     String targetStateId = getStateId(stateName);
                     if (targetStateId != null) {
                         Transition transition = new Transition(initialState.getStateId(), targetStateId);
@@ -159,7 +167,7 @@ public class QmHandler {
                         if (stateNode.getNodeType() == Node.ELEMENT_NODE) {
                             Element location = (Element) stateNode;
                             String nameOfState = location.getAttribute("name");
-                            addStatesId(nameOfState);
+                            addStatesId(nameOfState,getStatePosition(getGlyphState(location)));
                             String stateId = getStateId(nameOfState);
 
                             Node entryNode = location.getElementsByTagName("entry").item(0);
@@ -182,8 +190,9 @@ public class QmHandler {
 
 
                     }
+                    handlingSubMachine(firstStatechart);
 
-                    handlingSubMachineV2(firstStatechart);
+//                    handlingSubMachineV2(firstStatechart);
 
 
                 }
@@ -274,7 +283,7 @@ public class QmHandler {
                 mxGeometry edgeGeometry = new mxGeometry();
                 edgeGeometry.setTerminalPoint(new mxPoint(sourceX, sourceY), true);
                 edgeGeometry.setTerminalPoint(new mxPoint(targetX, targetY), false);
-                edgeGeometry.setRelative(true);
+                edgeGeometry.setRelative(false);
                 newEdge.setGeometry(edgeGeometry);
             }
         } finally {
@@ -288,12 +297,50 @@ public class QmHandler {
         layout.setLevelDistance(30);
         layout.setGroupPadding(50);
         layout.setNodeDistance(50);
-        layout.setUseBoundingBox(true);
+        layout.setUseBoundingBox(false);
         layout.setEdgeRouting(true);
         layout.setHorizontal(true);
         layout.execute(graph.getDefaultParent());
         return layout.getGraph();
+//        return graph;
 
+    }
+
+    private String getGlyphState(Element node) {
+        System.out.println("NODE ELEMENT: "+node.getNodeName());
+        System.out.println("NODE TEXT CONTENT: "+node.getTextContent());
+        if(node.getNodeName().equals("smstate")) {
+            return getGliphSubMachine(node);
+        } else {
+            Node glyphNode = node.getElementsByTagName("state_glyph").item(0);
+            return ((Element)glyphNode).getAttribute("node");
+        }
+
+    }
+
+    private String getGlyphChoice(Element node) {
+        Node glyphNode = node.getElementsByTagName("choice_glyph").item(0);
+        return ((Element)glyphNode).getAttribute("conn");
+    }
+
+    private String getGliphSubMachine(Element node) {
+        Node glyphNode = node.getElementsByTagName("smstate_glyph").item(0);
+        return ((Element)glyphNode).getAttribute("node");
+    }
+
+    private String getGliphInitial(Element node) {
+        Node glyphNode = node.getElementsByTagName("initial_glyph").item(0);
+        return ((Element)glyphNode).getAttribute("conn");
+    }
+
+
+
+
+    private Position getStatePosition(String glyphPositions) {
+        System.out.println("GLY POSITION: "+ glyphPositions);
+        String[] positions = glyphPositions.split(",");
+        System.out.println("POSITION X =  "+ Double.parseDouble(positions[0])+" POSITION Y = "+Double.parseDouble(positions[1]));
+        return new Position(Double.parseDouble(positions[0])*2,Double.parseDouble(positions[1])*2);
     }
 
 
@@ -306,13 +353,16 @@ public class QmHandler {
                 Element transition = (Element) transitionNode;
                 String transitionTrig = transition.getAttribute("trig");
                 String transitionTarget = transition.getAttribute("target");
+                System.out.println("TRANSITION TARGET: "+transitionTarget);
 
                 Node transitionAction = transition.getElementsByTagName("action").item(0);
 
                 if (transitionTarget != null && !transitionTarget.equals("..") && !transitionTarget.isEmpty()) {
                     Node targetState = getTargetNode(transitionTarget, transitionNode);
                     String targetStateName = ((Element) targetState).getAttribute("name");
-                    addStatesId(targetStateName);
+                    System.out.println("TARGET STATE NAME: "+targetStateName);
+                    String glyphPositions = getGlyphState(((Element) targetState));
+                    addStatesId(targetStateName,getStatePosition(glyphPositions));
                     String targetStateId = getStateId(targetStateName);
                     if (targetStateId != null) {
                         Transition transitionOutgoing = new Transition(stateId, targetStateId);
@@ -346,14 +396,14 @@ public class QmHandler {
                             if (choiceNode.getNodeType() == Element.ELEMENT_NODE) {
 
                                 Element choiceElement = (Element) choiceNode;
+                                String glyphChoice = getGlyphChoice(choiceElement);
                                 Node guardNode = choiceElement.getElementsByTagName("guard").item(0);
                                 String guardChoice = ((Element) guardNode).getAttribute("brief");
                                 String targetChoice = choiceElement.getAttribute("target");
                                 if (targetChoice != null && !targetChoice.isEmpty()) {
-                                    System.out.println("TARGET CHOICE: "+targetChoice);
                                     Node targetState = getTargetNode(targetChoice, choiceNode);
                                     String targetStateName = ((Element) targetState).getAttribute("name");
-                                    addStatesId(targetStateName);
+                                    addStatesId(targetStateName,getStatePosition(glyphChoice));
                                     String targetChoiceStateId = getStateId(targetStateName);
                                     if (targetChoiceStateId != null) {
                                         Transition transitionChoiceOutgoing = new Transition(stateId, targetChoiceStateId);
@@ -394,12 +444,12 @@ public class QmHandler {
                 Node smStateNode = smStates.item(i);
                 if (smStateNode.getNodeType() == Element.ELEMENT_NODE) {
                     Element smStateElement = (Element) smStateNode;
-
+                    String glyphPosition = getGliphSubMachine(smStateElement);
 
 
                     String sourceStateName = smStateElement.getAttribute("name");
                     System.out.println("SOURCE STATE: " + sourceStateName);
-                    addStatesId(sourceStateName);
+                    addStatesId(sourceStateName,getStatePosition(glyphPosition));
                     String sourceStateId = getStateId(sourceStateName);
                     String subMachine = smStateElement.getAttribute("submachine");
 
@@ -415,8 +465,9 @@ public class QmHandler {
 
                         Element mainTargetElement = (Element) mainTarget;
                         String targetStateName = mainTargetElement.getAttribute("name");
+                        String glyphState = getGlyphState(mainTargetElement);
                         System.out.println("TARGET STATE NAME: " + targetStateName);
-                        addStatesId(targetStateName);
+                        addStatesId(targetStateName,getStatePosition(glyphState));
                         String targetStateId = getStateId(targetStateName);
                         Transition transition = new Transition(sourceStateId, targetStateId);
                         transitionList.add(transition);
@@ -470,11 +521,11 @@ public class QmHandler {
                 Node smStateNode = smStates.item(i);
                 if (smStateNode.getNodeType() == Element.ELEMENT_NODE) {
                     Element smStateElement = (Element) smStateNode;
-
+                    String glyphPosition = getGliphSubMachine(smStateElement);
 
                     String sourceStateName = smStateElement.getAttribute("name");
                     System.out.println("SOURCE STATE: " + sourceStateName);
-                    addStatesId(sourceStateName);
+                    addStatesId(sourceStateName,getStatePosition(glyphPosition));
                     String sourceStateId = getStateId(sourceStateName);
                     String subMachine = smStateElement.getAttribute("submachine");
 
@@ -490,8 +541,9 @@ public class QmHandler {
 
                         Element mainTargetElement = (Element) mainTarget;
                         String targetStateName = mainTargetElement.getAttribute("name");
+                        String glyState = getGlyphState(mainTargetElement);
                         System.out.println("TARGET STATE NAME: " + targetStateName);
-                        addStatesId(targetStateName);
+                        addStatesId(targetStateName,getStatePosition(glyState));
                         String targetStateId = getStateId(targetStateName);
                         Transition transition = new Transition(sourceStateId, targetStateId);
                         transitionList.add(transition);
@@ -534,21 +586,26 @@ public class QmHandler {
             } else {
                 int index = Integer.parseInt(item);
                 if (node != null) {
-                    Node nodeFound = node.getFirstChild();
+                    node = node.getFirstChild();
                     int i = 0;
                     while (i <= index) {
-                        nodeFound = nodeFound.getNextSibling();
-                        if (nodeFound.getNodeType() == Element.ELEMENT_NODE && !nodeFound.getNodeName().equals("documentation")) {
+                        node = node.getNextSibling();
+                        if (node.getNodeType() == Element.ELEMENT_NODE && !node.getNodeName().equals("documentation")
+                        && !node.getNodeName().equals("exit")
+                                && !node.getNodeName().equals("entry")
+
+
+                        ) {
                             i++;
                         }
 
                     }
 
-                    return nodeFound;
+
                 }
             }
         }
-        return null;
+        return node;
     }
 
 
@@ -578,6 +635,16 @@ public class QmHandler {
         if (!this.statesId.containsValue(name)) {
             State state = new State(name);
             state.setInitial(false);
+            stateList.add(state);
+            statesId.put(state.getStateId(), name);
+        }
+    }
+
+    public void addStatesId(String name,Position position) {
+        if (!this.statesId.containsValue(name)) {
+            State state = new State(name);
+            state.setInitial(false);
+            state.setPosition(position.getX(),position.getY());
             stateList.add(state);
             statesId.put(state.getStateId(), name);
         }

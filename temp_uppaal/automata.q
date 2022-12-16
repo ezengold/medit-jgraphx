@@ -1,1 +1,1 @@
-E<> (automata.Vert && t<60)
+E<>(automata.rouge && t<=60)

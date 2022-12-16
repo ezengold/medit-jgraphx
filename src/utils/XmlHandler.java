@@ -20,6 +20,8 @@ import com.mxgraph.model.mxGeometry;
 import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.mxPoint;
 import com.mxgraph.view.mxGraph;
+import com.mxgraph.view.mxCellState;
+
 
 import app.App;
 import app.App.Compilables;
@@ -182,17 +184,32 @@ public class XmlHandler {
 						String invariant = restoreStr(
 								location.getElementsByTagName("invariant").item(0).getTextContent());
 
+
 						State s = new State(name);
 						s.setStateId(stateId);
 						s.setInitial(isInitial);
 						s.setInvariant(invariant);
 						s.setPosition(x, y);
+						System.out.println("ELEMENT "+s.debug());
 
-						Object vertex = graph.insertVertex(graph.getDefaultParent(), id, s, x, y, 50, 50);
+						Object vertex = graph.insertVertex(graph.getDefaultParent(), id, s, x, y, 60, 60);
+						((mxCell)vertex).setStyle("fontSize= 14");
+//						// Get the mxCellState for the cell and set the font size using the setStyle() method
+//						mxCellState state = graph.getView().getState(((mxCell)vertex));
+//						System.out.println("STATE = "+state);
+//						HashMap<String, Object> style = new HashMap<>();
+//						style.put("fontSize", 16);
+//						state.setStyle(style);
+
+
+
+
+
+
 
 						if (isInitial) {
 							((mxCell) vertex).setStyle("fillColor=" + GraphStyles.INIT_FILL_COLOR + ";strokeColor="
-									+ GraphStyles.INIT_STROKE_COLOR + ";fontColor=" + GraphStyles.INIT_FONT_COLOR);
+									+ GraphStyles.INIT_STROKE_COLOR + ";fontColor=" + GraphStyles.INIT_FONT_COLOR + ";fontSize= 12" );
 						}
 
 						verticesArray.put(id, vertex);
@@ -222,6 +239,7 @@ public class XmlHandler {
 						double sourceX = Double.parseDouble(edge.getAttribute("sourceX"));
 						double sourceY = Double.parseDouble(edge.getAttribute("sourceY"));
 
+
 						String targetId = edge.getAttribute("target");
 						mxCell target = (mxCell) verticesArray.get(targetId);
 						double targetX = Double.parseDouble(edge.getAttribute("targetX"));
@@ -229,6 +247,7 @@ public class XmlHandler {
 
 						Transition transition = new Transition();
 						transition.setTransitionId(transitionId);
+
 
 						if (source != null && source.getValue() != null) {
 							transition.setSourceStateId(((State) source.getValue()).getStateId());
@@ -248,14 +267,18 @@ public class XmlHandler {
 						mxCell newEdge = (mxCell) graph.insertEdge(graph.getDefaultParent(), id, transition, source,
 								target);
 
+
+
 						mxGeometry edgeGeometry = new mxGeometry();
 						edgeGeometry.setTerminalPoint(new mxPoint(sourceX, sourceY), true);
 						edgeGeometry.setTerminalPoint(new mxPoint(targetX, targetY), false);
 						edgeGeometry.setRelative(true);
 						newEdge.setGeometry(edgeGeometry);
+						newEdge.setStyle("fontSize = 20;");
 
 						// save the transition in the automata model
 						this.app.getAutomata().addTransition(transition);
+
 					}
 				}
 			} finally {

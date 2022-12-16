@@ -29,6 +29,8 @@ public class Transition extends DefaultEdge {
 		this.targetStateId = targetStateId;
 	}
 
+
+
 	public String getSourceStateId() {
 		return sourceStateId;
 	}
