@@ -36,6 +36,7 @@ public class QmHandler {
     protected HashMap<String, String> statesId = new HashMap<String, String>();
     protected ArrayList<String> declarations = new ArrayList<>();
     protected ArrayList<String> guardDeclarations = new ArrayList<>();
+    protected ArrayList<String> actionDeclarations = new ArrayList<>();
 
     private App app;
 
@@ -97,6 +98,18 @@ public class QmHandler {
             NodeList element = model.getElementsByTagName("package");
             for (int iter = 0; iter< element.getLength();iter++) {
                 Element firstPackage = (Element) model.getElementsByTagName("package").item(iter);
+                //handling of attributes
+                NodeList attributes = model.getElementsByTagName("attribute");
+                for (int k = 0; k < attributes.getLength();k++) {
+                    Element attribute = (Element)attributes.item(k);
+                    if(attribute.getAttribute("type").contains("int")) {
+                        actionDeclarations.add("int "+attribute.getAttribute("name")+";\n");
+                    } else if(attribute.getAttribute("type").contains("QTimeEvt")) {
+                        actionDeclarations.add("clock "+attribute.getAttribute("name")+";\n");
+                    }
+                }
+                //handling of statecharts
+
                 Element firstStatechart = (Element) firstPackage.getElementsByTagName("statechart").item(0);
                 if (firstStatechart != null) {
 
@@ -166,13 +179,15 @@ public class QmHandler {
                         if (stateNode.getNodeType() == Node.ELEMENT_NODE) {
                             Element location = (Element) stateNode;
                             String nameOfState = location.getAttribute("name");
+                            System.out.println("STATE NAME PARENT "+nameOfState);
                             addStatesId(nameOfState,getStatePosition(getGlyphState(location)));
                             String stateId = getStateId(nameOfState);
 
                             Node entryNode = location.getElementsByTagName("entry").item(0);
                             Node existNode = location.getElementsByTagName("exit").item(0);
-                            //outgoing transitions
-                            NodeList outgoingTransitions = location.getElementsByTagName("tran");
+
+
+
 
                             if (entryNode != null) {
                                 Transition transitionEntry = getEntryTransition(stateId);
@@ -181,8 +196,14 @@ public class QmHandler {
                                 }
                             }
 
+
+                            //HANDLING OF OUTGOING TRANSITIONS
+                            ArrayList<Node> outgoingTransitions =  getOutgoingTransitions(location);
+//                            location.getElementsByTagName("tran");
+
                             //Iterate each outgoing transitions
                             handlingTransitions(outgoingTransitions, existNode, stateId, target);
+                            System.out.println("\n\n===============================");
 
 
                         }
@@ -221,13 +242,25 @@ public class QmHandler {
         }
 
         //guard declarations to clock variables
-        if(!guardDeclarations.isEmpty()) {
-            for (String declaration : guardDeclarations) {
+//        if(!guardDeclarations.isEmpty()) {
+//            for (String declaration : guardDeclarations) {
+//
+//                if(globalDeclarations.length() == 0) {
+//                    globalDeclarations = new StringBuilder("clock "+declaration).append(";\n");
+//                } else {
+//                    globalDeclarations.append("clock ").append(declaration).append(";\n");
+//                }
+//
+//            }
+//        }
+
+        if(!actionDeclarations.isEmpty()) {
+            for (String declaration : actionDeclarations) {
 
                 if(globalDeclarations.length() == 0) {
-                    globalDeclarations = new StringBuilder("clock "+declaration).append(";\n");
+                    globalDeclarations = new StringBuilder(declaration);
                 } else {
-                    globalDeclarations.append("clock ").append(declaration).append(";\n");
+                    globalDeclarations.append(declaration);
                 }
 
             }
@@ -235,8 +268,8 @@ public class QmHandler {
        for (Transition transition : transitionList) {
             transition.setGuard(transitionGuards.get(transition.getTransitionId()) == null ? ""
                     : transitionGuards.get(transition.getTransitionId()));
-//            transition.setUpdate(transitionUpdates.get(transition.getTransitionId()) == null ? ""
-//                    : transitionUpdates.get(transition.getTransitionId()));
+            transition.setUpdate(transitionUpdates.get(transition.getTransitionId()) == null ? ""
+                    : transitionUpdates.get(transition.getTransitionId()));
 
             transition.setEvent(transitionEvents.get(transition.getTransitionId()) == null ? ""
                     : transitionEvents.get(transition.getTransitionId()));
@@ -256,7 +289,10 @@ public class QmHandler {
         this.app.setGlobalDeclarations(globalDeclarations.toString());
 
         // create the graph
+        graph.setMultigraph(true);
+        graph.setAllowLoops(true);
         graph.getModel().beginUpdate();
+
         try {
             graph.removeCells(graph.getChildCells(graph.getDefaultParent()));
 
@@ -299,8 +335,6 @@ public class QmHandler {
                 newEdge.setGeometry(edgeGeometry);
             }
         } finally {
-            graph.setMultigraph(true);
-            graph.setAllowLoops(true);
             graph.getModel().endUpdate();
         }
 
@@ -316,6 +350,19 @@ public class QmHandler {
         return layout.getGraph();
 //        return graph;
 
+    }
+
+
+    private ArrayList<Node> getOutgoingTransitions(Element state) {
+        NodeList childNodes = state.getChildNodes();
+        ArrayList<Node> nodes = new ArrayList<>();
+        for (int i = 0;i < childNodes.getLength();i++) {
+            Node child = childNodes.item(i);
+            if(child.getNodeType() == Node.ELEMENT_NODE && child.getNodeName().equals("tran")) {
+                nodes.add(child);
+            }
+        }
+        return nodes;
     }
 
     private String getGlyphState(Element node) {
@@ -353,19 +400,20 @@ public class QmHandler {
 
 
 
-    private void handlingTransitions(NodeList outgoingTransitions, Node existNode, String stateId, String target) {
-        for (int j = 0; j < outgoingTransitions.getLength(); j++) {
-            Node transitionNode = outgoingTransitions.item(j);
+    private void handlingTransitions(ArrayList<Node> outgoingTransitions, Node existNode, String stateId, String target) {
+        for (int j = 0; j < outgoingTransitions.size(); j++) {
+            Node transitionNode = outgoingTransitions.get(j);
 
             if (transitionNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element transition = (Element) transitionNode;
                 String transitionTrig = transition.getAttribute("trig");
                 String transitionTarget = transition.getAttribute("target");
+                System.out.println("TRANSITION TRIG: "+transitionTrig);
                 System.out.println("TRANSITION TARGET: "+transitionTarget);
 
                 Node transitionAction = transition.getElementsByTagName("action").item(0);
 
-                if (transitionTarget != null && !transitionTarget.equals("..") && !transitionTarget.isEmpty()) {
+                if (transitionTarget != null  && !transitionTarget.isEmpty()) {
                     Node targetState = getTargetNode(transitionTarget, transitionNode);
                     String targetStateName = ((Element) targetState).getAttribute("name");
                     System.out.println("TARGET STATE NAME: "+targetStateName);
@@ -406,6 +454,11 @@ public class QmHandler {
                                 Element choiceElement = (Element) choiceNode;
                                 String glyphChoice = getGlyphChoice(choiceElement);
                                 Node guardNode = choiceElement.getElementsByTagName("guard").item(0);
+                                Node actionNode = choiceElement.getElementsByTagName("action").item(0);
+
+
+
+
                                 String guardChoice = ((Element) guardNode).getAttribute("brief");
                                 String targetChoice = choiceElement.getAttribute("target");
                                 if (targetChoice != null && !targetChoice.isEmpty()) {
@@ -421,6 +474,14 @@ public class QmHandler {
                                         if (guardChoice != null) {
                                             setTransitionGuard(transitionChoiceOutgoing.getTransitionId(), guardChoice);
 
+                                        }
+
+                                        if(actionNode != null) {
+                                            Element actionChoiceElement = ((Element) actionNode);
+                                            String actionContent = actionChoiceElement.getTextContent() == null ?
+                                                    actionChoiceElement.getAttribute("brief")
+                                                    : actionChoiceElement.getTextContent();
+                                            setTransitionUpdate(transitionChoiceOutgoing.getTransitionId(), actionContent);
                                         }
 
 
@@ -444,82 +505,82 @@ public class QmHandler {
         }
     }
 
+//
+//    public void handlingSubMachineV2(Element firstStateChart) {
+//        NodeList smStates = firstStateChart.getElementsByTagName("smstate");
+//        if (smStates != null && smStates.getLength() > 0) {
+//            for (int i = 0; i < smStates.getLength(); i++) {
+//                Node smStateNode = smStates.item(i);
+//                if (smStateNode.getNodeType() == Element.ELEMENT_NODE) {
+//                    Element smStateElement = (Element) smStateNode;
+//                    String glyphPosition = getGliphSubMachine(smStateElement);
+//
+//
+//                    String sourceStateName = smStateElement.getAttribute("name");
+//                    System.out.println("SOURCE STATE: " + sourceStateName);
+//                    addStatesId(sourceStateName,getStatePosition(glyphPosition));
+//                    String sourceStateId = getStateId(sourceStateName);
+//                    String subMachine = smStateElement.getAttribute("submachine");
+//
+//                    Node subMachineTarget = getTargetNode(subMachine, smStateNode);
+//                    System.out.println("SUBMACHINE: " + subMachineTarget.getNodeName());
+//                    if (subMachineTarget.getNodeType() == Element.ELEMENT_NODE) {
+//                        Element subMachineElement = (Element) subMachineTarget;
+//                        Node subStateInitial = subMachineElement.getElementsByTagName("initial").item(0);
+//                        Element subStateInitialElement = (Element) subStateInitial;
+//
+//                        Node subStateInitialAction = subStateInitialElement.getElementsByTagName("action").item(0);
+//                        Node mainTarget = getTargetNode(subStateInitialElement.getAttribute("target"), subStateInitial);
+//
+//                        Element mainTargetElement = (Element) mainTarget;
+//                        String targetStateName = mainTargetElement.getAttribute("name");
+//                        String glyphState = getGlyphState(mainTargetElement);
+//                        System.out.println("TARGET STATE NAME: " + targetStateName);
+//                        addStatesId(targetStateName,getStatePosition(glyphState));
+//                        String targetStateId = getStateId(targetStateName);
+//                        Transition transition = new Transition(sourceStateId, targetStateId);
+//                        transitionList.add(transition);
+//
+//                        if (subStateInitialAction != null) {
+//                            if (subStateInitialAction.getNodeType() == Element.ELEMENT_NODE) {
+//                                Element subStateInitialActionElement = (Element) subStateInitialAction;
+//                                setTransitionUpdate(transition.getTransitionId(), subStateInitialActionElement.getTextContent());
+//                            }
+//
+//                        }
+//
+//                        NodeList transitions = smStateElement.getElementsByTagName("tran");
+//                        if (transitions != null && transitions.getLength() > 0) {
+//                            handlingTransitions(transitions, null, sourceStateId, "target");
+////                            handlingTransitions(transitions,null,subStateInitial,"target");
+//                        }
+//                        handleSubState(subMachineElement,smStateElement);
+//
+//
+//                    }
+//
+//
+//                }
+//            }
+//        }
+//
+//
+//    }
 
-    public void handlingSubMachineV2(Element firstStateChart) {
-        NodeList smStates = firstStateChart.getElementsByTagName("smstate");
-        if (smStates != null && smStates.getLength() > 0) {
-            for (int i = 0; i < smStates.getLength(); i++) {
-                Node smStateNode = smStates.item(i);
-                if (smStateNode.getNodeType() == Element.ELEMENT_NODE) {
-                    Element smStateElement = (Element) smStateNode;
-                    String glyphPosition = getGliphSubMachine(smStateElement);
 
-
-                    String sourceStateName = smStateElement.getAttribute("name");
-                    System.out.println("SOURCE STATE: " + sourceStateName);
-                    addStatesId(sourceStateName,getStatePosition(glyphPosition));
-                    String sourceStateId = getStateId(sourceStateName);
-                    String subMachine = smStateElement.getAttribute("submachine");
-
-                    Node subMachineTarget = getTargetNode(subMachine, smStateNode);
-                    System.out.println("SUBMACHINE: " + subMachineTarget.getNodeName());
-                    if (subMachineTarget.getNodeType() == Element.ELEMENT_NODE) {
-                        Element subMachineElement = (Element) subMachineTarget;
-                        Node subStateInitial = subMachineElement.getElementsByTagName("initial").item(0);
-                        Element subStateInitialElement = (Element) subStateInitial;
-
-                        Node subStateInitialAction = subStateInitialElement.getElementsByTagName("action").item(0);
-                        Node mainTarget = getTargetNode(subStateInitialElement.getAttribute("target"), subStateInitial);
-
-                        Element mainTargetElement = (Element) mainTarget;
-                        String targetStateName = mainTargetElement.getAttribute("name");
-                        String glyphState = getGlyphState(mainTargetElement);
-                        System.out.println("TARGET STATE NAME: " + targetStateName);
-                        addStatesId(targetStateName,getStatePosition(glyphState));
-                        String targetStateId = getStateId(targetStateName);
-                        Transition transition = new Transition(sourceStateId, targetStateId);
-                        transitionList.add(transition);
-
-                        if (subStateInitialAction != null) {
-                            if (subStateInitialAction.getNodeType() == Element.ELEMENT_NODE) {
-                                Element subStateInitialActionElement = (Element) subStateInitialAction;
-                                setTransitionUpdate(transition.getTransitionId(), subStateInitialActionElement.getTextContent());
-                            }
-
-                        }
-
-                        NodeList transitions = smStateElement.getElementsByTagName("tran");
-                        if (transitions != null && transitions.getLength() > 0) {
-                            handlingTransitions(transitions, null, sourceStateId, "target");
-//                            handlingTransitions(transitions,null,subStateInitial,"target");
-                        }
-                        handleSubState(subMachineElement,smStateElement);
-
-
-                    }
-
-
-                }
-            }
-        }
-
-
-    }
-
-
-    public void handleSubState(Element submachine,Element smStateElement) {
-        NodeList states = submachine.getElementsByTagName("state");
-        NodeList transitions = smStateElement.getElementsByTagName("tran");
-        for (int i = 0; i < states.getLength(); i++) {
-            Node stateNode = states.item(i);
-            Element stateElement = (Element) stateNode;
-            String stateName = stateElement.getAttribute("name");
-            System.out.println("SUB STATE NAME " + stateName);
-            String sourceStateId = getStateId(stateName);
-            handlingTransitions(transitions, null, sourceStateId, "target");
-        }
-
-    }
+//    public void handleSubState(Element submachine,Element smStateElement) {
+//        NodeList states = submachine.getElementsByTagName("state");
+//        NodeList transitions = smStateElement.getElementsByTagName("tran");
+//        for (int i = 0; i < states.getLength(); i++) {
+//            Node stateNode = states.item(i);
+//            Element stateElement = (Element) stateNode;
+//            String stateName = stateElement.getAttribute("name");
+//            System.out.println("SUB STATE NAME " + stateName);
+//            String sourceStateId = getStateId(stateName);
+//            handlingTransitions(transitions, null, sourceStateId, "target");
+//        }
+//
+//    }
 
 
     public void handlingSubMachine(Element firstStateChart) {
@@ -564,8 +625,9 @@ public class QmHandler {
 
                         }
 
-                        NodeList transitions = smStateElement.getElementsByTagName("tran");
-                        if (transitions != null && transitions.getLength() > 0) {
+//                        NodeList transitions = smStateElement.getElementsByTagName("tran");
+                        ArrayList<Node> transitions = getOutgoingTransitions(smStateElement);
+                        if (transitions != null && transitions.size() > 0) {
                             handlingTransitions(transitions, null, targetStateId, "target");
 //                            handlingTransitions(transitions,null,subStateInitial,"target");
                         }
@@ -584,35 +646,40 @@ public class QmHandler {
 
     public Node getTargetNode(String target, Node currentNode) {
 
-        String[] elements = target.split("/");
-
         Node node = currentNode;
-        for (String item : elements) {
-            if (item.equals("..")) {
-                assert node != null;
-                node = node.getParentNode();
-            } else {
-                int index = Integer.parseInt(item);
-                if (node != null) {
-                    node = node.getFirstChild();
-                    int i = 0;
-                    while (i <= index) {
-                        node = node.getNextSibling();
-                        if (node.getNodeType() == Element.ELEMENT_NODE && !node.getNodeName().equals("documentation")
-                        && !node.getNodeName().equals("exit")
-                                && !node.getNodeName().equals("entry")
+        if(target.equals("..")) {
+            node = node.getParentNode();
+        } else {
+            String[] elements = target.split("/");
+            for (String item : elements) {
+                if (item.equals("..")) {
+                    assert node != null;
+                    node = node.getParentNode();
+                } else {
+                    int index = Integer.parseInt(item);
+                    if (node != null) {
+                        node = node.getFirstChild();
+                        int i = 0;
+                        while (i <= index) {
+                            node = node.getNextSibling();
+                            if (node.getNodeType() == Element.ELEMENT_NODE && !node.getNodeName().equals("documentation")
+                                    && !node.getNodeName().equals("exit")
+                                    && !node.getNodeName().equals("entry")
 
 
-                        ) {
-                            i++;
+                            ) {
+                                i++;
+                            }
+
                         }
 
+
                     }
-
-
                 }
             }
         }
+
+
         return node;
     }
 
@@ -661,7 +728,7 @@ public class QmHandler {
     public void setTransitionUpdate(String transitionId, String update) {
 
 
-        if (!update.isEmpty()) {
+        if (!update.isEmpty() && isTransitionUpdateCorrect(update)) {
 
             if (this.transitionUpdates.containsKey(transitionId)) {
 
@@ -690,6 +757,34 @@ public class QmHandler {
             this.transitionGuards.put(transitionId, guard);
 
         }
+    }
+
+    public boolean isTransitionUpdateCorrect(String expression) {
+        // Créez une pile pour stocker les opérateurs
+        Stack<Character> operatorStack = new Stack<>();
+
+        // Parcourez chaque caractère de l'expression
+        for (int i = 0; i < expression.length(); i++) {
+            char c = expression.charAt(i);
+
+            // Si c'est un opérateur d'affectation, renvoyez true
+            if (c == '=' || c == '+' || c == '-' || c == '*' || c == '/') {
+                return true;
+            }
+
+            // Si c'est une parenthèse ouvrante, ajoutez-la à la pile
+            if (c == '(') {
+                operatorStack.push(c);
+            }
+
+            // Si c'est une parenthèse fermante, retirez la dernière parenthèse ouvrante de la pile
+            if (c == ')') {
+                operatorStack.pop();
+            }
+        }
+
+        // Si la pile est vide à la fin, cela signifie qu'il n'y a pas d'affectation de variable dans l'expression
+        return !operatorStack.isEmpty();
     }
 
     public void handleTransitionGuard(String expression) {

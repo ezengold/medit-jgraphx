@@ -1,102 +1,193 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE nta PUBLIC "-//Uppaal Team//DTD Flat System 1.1//EN" "http://www.it.uu.se/research/group/darts/uppaal/flat-1_1.dtd">
 <nta>
-    <declaration>chan TIMEOUT0;
+    <declaration>chan ALLUME;
 
-chan BTN_PRESSED;
+chan ERREUR;
 
+chan AFTER_240;
+
+chan ETEINT;
+
+chan CHAUFFAGE;
+
+chan REFROIDISSEMENT;
+
+clock timeEvt;
+
+int temperature = 10;
 clock t;
 </declaration>
     <template>
         <name>Automata</name>
-        <location id="e32c231b-0507-4d52-9f99-3cb5fae2d927" x="8.0" y="83.0">
-            <name x="0.0" y="75.0">s1</name>
+        <location id="d712799e-44c7-4268-bf5e-9e54ef50660c" x="4.0" y="24.0">
+            <name x="-4.0" y="16.0">s1</name>
         </location>
-        <location id="22fc3d80-17db-47ee-86b8-0bc2acb481d6" x="138.0" y="83.0">
-            <name x="130.0" y="75.0">active</name>
+        <location id="a4de38a5-80f9-4da3-81fd-a5a3bc0889e3" x="40.0" y="210.0">
+            <name x="32.0" y="202.0">Eteint</name>
         </location>
-        <location id="e67a2818-fe4d-45a4-875a-05884253d5e2" x="268.0" y="8.0">
-            <name x="260.0" y="0.0">inactive</name>
+        <location id="c6aaa3b4-61df-49d9-afac-a48f214299cc" x="220.0" y="330.0">
+            <name x="212.0" y="322.0">Allume</name>
         </location>
-        <location id="9d9b443a-3e97-492e-939e-a111bce6eba0" x="180.0" y="350.0">
-            <name x="172.0" y="342.0">off</name>
+        <location id="5bbd0d42-b3dc-4c4a-92cc-77e163b8fce8" x="320.0" y="100.0">
+            <name x="312.0" y="92.0">ModeChauffage</name>
         </location>
-        <location id="8c71ee24-4827-4ce4-b3cc-7538f4c6f05e" x="500.0" y="210.0">
-            <name x="492.0" y="202.0">on</name>
+        <location id="927ace51-3f89-4223-8a48-617cd5457e24" x="510.0" y="270.0">
+            <name x="502.0" y="262.0">ModeRefroidissement</name>
         </location>
-        <init ref="e32c231b-0507-4d52-9f99-3cb5fae2d927"/>
+        <init ref="d712799e-44c7-4268-bf5e-9e54ef50660c"/>
         <transition>
-            <source ref="e32c231b-0507-4d52-9f99-3cb5fae2d927"/>
-            <target ref="22fc3d80-17db-47ee-86b8-0bc2acb481d6"/>
+            <source ref="d712799e-44c7-4268-bf5e-9e54ef50660c"/>
+            <target ref="a4de38a5-80f9-4da3-81fd-a5a3bc0889e3"/>
             <label kind="guard" x="0" y="0"/>
         </transition>
         <transition>
-            <source ref="22fc3d80-17db-47ee-86b8-0bc2acb481d6"/>
-            <target ref="e67a2818-fe4d-45a4-875a-05884253d5e2"/>
-            <label kind="guard" x="0" y="0">t==3</label>
-        </transition>
-        <transition>
-            <source ref="22fc3d80-17db-47ee-86b8-0bc2acb481d6"/>
-            <target ref="9d9b443a-3e97-492e-939e-a111bce6eba0"/>
+            <source ref="a4de38a5-80f9-4da3-81fd-a5a3bc0889e3"/>
+            <target ref="c6aaa3b4-61df-49d9-afac-a48f214299cc"/>
             <label kind="guard" x="0" y="0"/>
+            <label kind="synchronisation" x="0" y="30">ALLUME?</label>
         </transition>
         <transition>
-            <source ref="22fc3d80-17db-47ee-86b8-0bc2acb481d6"/>
-            <target ref="8c71ee24-4827-4ce4-b3cc-7538f4c6f05e"/>
+            <source ref="c6aaa3b4-61df-49d9-afac-a48f214299cc"/>
+            <target ref="a4de38a5-80f9-4da3-81fd-a5a3bc0889e3"/>
             <label kind="guard" x="0" y="0"/>
-            <label kind="synchronisation" x="0" y="30">TIMEOUT0?</label>
+            <label kind="synchronisation" x="0" y="30">ERREUR?</label>
         </transition>
         <transition>
-            <source ref="8c71ee24-4827-4ce4-b3cc-7538f4c6f05e"/>
-            <target ref="e67a2818-fe4d-45a4-875a-05884253d5e2"/>
-            <label kind="guard" x="0" y="0">t==5</label>
-        </transition>
-        <transition>
-            <source ref="8c71ee24-4827-4ce4-b3cc-7538f4c6f05e"/>
-            <target ref="9d9b443a-3e97-492e-939e-a111bce6eba0"/>
+            <source ref="c6aaa3b4-61df-49d9-afac-a48f214299cc"/>
+            <target ref="a4de38a5-80f9-4da3-81fd-a5a3bc0889e3"/>
             <label kind="guard" x="0" y="0"/>
+            <label kind="synchronisation" x="0" y="30">AFTER_240?</label>
         </transition>
         <transition>
-            <source ref="9d9b443a-3e97-492e-939e-a111bce6eba0"/>
-            <target ref="8c71ee24-4827-4ce4-b3cc-7538f4c6f05e"/>
+            <source ref="c6aaa3b4-61df-49d9-afac-a48f214299cc"/>
+            <target ref="a4de38a5-80f9-4da3-81fd-a5a3bc0889e3"/>
             <label kind="guard" x="0" y="0"/>
-            <label kind="synchronisation" x="0" y="30">TIMEOUT0?</label>
+            <label kind="synchronisation" x="0" y="30">ETEINT?</label>
         </transition>
         <transition>
-            <source ref="e67a2818-fe4d-45a4-875a-05884253d5e2"/>
-            <target ref="22fc3d80-17db-47ee-86b8-0bc2acb481d6"/>
+            <source ref="c6aaa3b4-61df-49d9-afac-a48f214299cc"/>
+            <target ref="5bbd0d42-b3dc-4c4a-92cc-77e163b8fce8"/>
             <label kind="guard" x="0" y="0"/>
-            <label kind="synchronisation" x="0" y="30">BTN_PRESSED?</label>
+            <label kind="synchronisation" x="0" y="30">CHAUFFAGE?</label>
+        </transition>
+        <transition>
+            <source ref="c6aaa3b4-61df-49d9-afac-a48f214299cc"/>
+            <target ref="927ace51-3f89-4223-8a48-617cd5457e24"/>
+            <label kind="guard" x="0" y="0"/>
+            <label kind="synchronisation" x="0" y="30">REFROIDISSEMENT?</label>
+        </transition>
+        <transition>
+            <source ref="5bbd0d42-b3dc-4c4a-92cc-77e163b8fce8"/>
+            <target ref="927ace51-3f89-4223-8a48-617cd5457e24"/>
+            <label kind="guard" x="0" y="0"/>
+            <label kind="synchronisation" x="0" y="30">REFROIDISSEMENT?</label>
+        </transition>
+        <transition>
+            <source ref="5bbd0d42-b3dc-4c4a-92cc-77e163b8fce8"/>
+            <target ref="5bbd0d42-b3dc-4c4a-92cc-77e163b8fce8"/>
+            <label kind="guard" x="0" y="0">temperature &lt;40</label>
+            <label kind="assignment" x="0" y="15">temperature = temperature +1</label>
+        </transition>
+        <transition>
+            <source ref="927ace51-3f89-4223-8a48-617cd5457e24"/>
+            <target ref="5bbd0d42-b3dc-4c4a-92cc-77e163b8fce8"/>
+            <label kind="guard" x="0" y="0"/>
+            <label kind="synchronisation" x="0" y="30">CHAUFFAGE?</label>
+        </transition>
+        <transition>
+            <source ref="927ace51-3f89-4223-8a48-617cd5457e24"/>
+            <target ref="927ace51-3f89-4223-8a48-617cd5457e24"/>
+            <label kind="guard" x="0" y="0">temperature &gt;0</label>
+            <label kind="assignment" x="0" y="15">temperature = temperature -1</label>
         </transition>
     </template>
     <template>
-        <name>Btn_pressed</name>
-        <location id="4d69b70b-402b-4e73-b044-98c9e5d0e4f9" x="0.0" y="0.0">
-            <name x="-8.0" y="-8.0">initBtn_pressed</name>
+        <name>After_240</name>
+        <location id="dfe32808-6ebe-430b-923d-4ebda1331c43" x="0.0" y="0.0">
+            <name x="-8.0" y="-8.0">initAfter_240</name>
+            <label kind="invariant" x="-18.0" y="10.0">t &lt;= 240</label>
         </location>
-        <init ref="4d69b70b-402b-4e73-b044-98c9e5d0e4f9"/>
+        <init ref="dfe32808-6ebe-430b-923d-4ebda1331c43"/>
         <transition>
-            <source ref="4d69b70b-402b-4e73-b044-98c9e5d0e4f9"/>
-            <target ref="4d69b70b-402b-4e73-b044-98c9e5d0e4f9"/>
-            <label kind="guard" x="0" y="0"/>
-            <label kind="synchronisation" x="0" y="30">BTN_PRESSED!</label>
+            <source ref="dfe32808-6ebe-430b-923d-4ebda1331c43"/>
+            <target ref="dfe32808-6ebe-430b-923d-4ebda1331c43"/>
+            <label kind="guard" x="0" y="0">t == 240</label>
+            <label kind="assignment" x="0" y="15">t := 0</label>
+            <label kind="synchronisation" x="0" y="30">AFTER_240!</label>
         </transition>
     </template>
     <template>
-        <name>Timeout0</name>
-        <location id="84daaf92-9e25-4503-a11c-8b78e083cd25" x="0.0" y="0.0">
-            <name x="-8.0" y="-8.0">initTimeout0</name>
+        <name>Allume</name>
+        <location id="b324880e-f905-483e-b03a-7c65adbe8157" x="0.0" y="0.0">
+            <name x="-8.0" y="-8.0">initAllume</name>
         </location>
-        <init ref="84daaf92-9e25-4503-a11c-8b78e083cd25"/>
+        <init ref="b324880e-f905-483e-b03a-7c65adbe8157"/>
         <transition>
-            <source ref="84daaf92-9e25-4503-a11c-8b78e083cd25"/>
-            <target ref="84daaf92-9e25-4503-a11c-8b78e083cd25"/>
+            <source ref="b324880e-f905-483e-b03a-7c65adbe8157"/>
+            <target ref="b324880e-f905-483e-b03a-7c65adbe8157"/>
             <label kind="guard" x="0" y="0"/>
-            <label kind="synchronisation" x="0" y="30">TIMEOUT0!</label>
+            <label kind="synchronisation" x="0" y="30">ALLUME!</label>
+        </transition>
+    </template>
+    <template>
+        <name>Erreur</name>
+        <location id="43fe4fdf-7828-43c3-a17d-864f3b9887ad" x="0.0" y="0.0">
+            <name x="-8.0" y="-8.0">initErreur</name>
+        </location>
+        <init ref="43fe4fdf-7828-43c3-a17d-864f3b9887ad"/>
+        <transition>
+            <source ref="43fe4fdf-7828-43c3-a17d-864f3b9887ad"/>
+            <target ref="43fe4fdf-7828-43c3-a17d-864f3b9887ad"/>
+            <label kind="guard" x="0" y="0"/>
+            <label kind="synchronisation" x="0" y="30">ERREUR!</label>
+        </transition>
+    </template>
+    <template>
+        <name>Eteint</name>
+        <location id="8e1da15d-f067-4502-b737-aa219af5f67b" x="0.0" y="0.0">
+            <name x="-8.0" y="-8.0">initEteint</name>
+        </location>
+        <init ref="8e1da15d-f067-4502-b737-aa219af5f67b"/>
+        <transition>
+            <source ref="8e1da15d-f067-4502-b737-aa219af5f67b"/>
+            <target ref="8e1da15d-f067-4502-b737-aa219af5f67b"/>
+            <label kind="guard" x="0" y="0"/>
+            <label kind="synchronisation" x="0" y="30">ETEINT!</label>
+        </transition>
+    </template>
+    <template>
+        <name>Refroidissement</name>
+        <location id="15ea6618-6d2f-4c4f-a511-db9559949b44" x="0.0" y="0.0">
+            <name x="-8.0" y="-8.0">initRefroidissement</name>
+        </location>
+        <init ref="15ea6618-6d2f-4c4f-a511-db9559949b44"/>
+        <transition>
+            <source ref="15ea6618-6d2f-4c4f-a511-db9559949b44"/>
+            <target ref="15ea6618-6d2f-4c4f-a511-db9559949b44"/>
+            <label kind="guard" x="0" y="0"/>
+            <label kind="synchronisation" x="0" y="30">REFROIDISSEMENT!</label>
+        </transition>
+    </template>
+    <template>
+        <name>Chauffage</name>
+        <location id="f8edc960-fa0c-4da5-a1ca-9a422573963c" x="0.0" y="0.0">
+            <name x="-8.0" y="-8.0">initChauffage</name>
+        </location>
+        <init ref="f8edc960-fa0c-4da5-a1ca-9a422573963c"/>
+        <transition>
+            <source ref="f8edc960-fa0c-4da5-a1ca-9a422573963c"/>
+            <target ref="f8edc960-fa0c-4da5-a1ca-9a422573963c"/>
+            <label kind="guard" x="0" y="0"/>
+            <label kind="synchronisation" x="0" y="30">CHAUFFAGE!</label>
         </transition>
     </template>
     <system>automata = Automata();
-btn_pressed = Btn_pressed();
-timeout0 = Timeout0();
-system automata,btn_pressed,timeout0;</system>
+after_240 = After_240();
+allume = Allume();
+erreur = Erreur();
+eteint = Eteint();
+refroidissement = Refroidissement();
+chauffage = Chauffage();
+system automata,after_240,allume,erreur,eteint,refroidissement,chauffage;</system>
 </nta>

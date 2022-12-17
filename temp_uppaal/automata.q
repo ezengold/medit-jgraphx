@@ -1,1 +1,1 @@
-E<> (automata.active && t>5)
+A[] (automata.ModeChauffage imply (temperature <=40 && t<=240))

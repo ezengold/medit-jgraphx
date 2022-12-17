@@ -13,11 +13,19 @@ public class AfterTimer extends Automata {
         state.setInvariant("t <= "+time);
         addState(state);
 
-        State state1 = new State("state"+name);
-        state.setInitial(false);
-        addState(state1);
+//        State state1 = new State("state"+name);
+//        state.setInitial(false);
+//        addState(state1);
+////
+//        Transition transition = new Transition(state.getStateId(),state1.getStateId());
+//        transition.setEvent(eventName+ "!");
+//        transition.setGuard("t == "+time);
+//        transition.setUpdate("t := 0");
+//        addTransition(transition);
 
-        Transition transition = new Transition(state.getStateId(),state1.getStateId());
+
+
+        Transition transition = new Transition(state.getStateId(),state.getStateId());
         transition.setEvent(eventName+ "!");
         transition.setGuard("t == "+time);
         transition.setUpdate("t := 0");
