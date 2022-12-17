@@ -268,13 +268,15 @@ public class XmlHandler {
 								target);
 
 
-
 						mxGeometry edgeGeometry = new mxGeometry();
 						edgeGeometry.setTerminalPoint(new mxPoint(sourceX, sourceY), true);
 						edgeGeometry.setTerminalPoint(new mxPoint(targetX, targetY), false);
+
+
 						edgeGeometry.setRelative(true);
 						newEdge.setGeometry(edgeGeometry);
 						newEdge.setStyle("fontSize = 20;");
+
 
 						// save the transition in the automata model
 						this.app.getAutomata().addTransition(transition);

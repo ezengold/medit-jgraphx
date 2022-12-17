@@ -31,6 +31,8 @@ public class Transition extends DefaultEdge {
 
 
 
+
+
 	public String getSourceStateId() {
 		return sourceStateId;
 	}
@@ -82,6 +84,11 @@ public class Transition extends DefaultEdge {
 	public String toString() {
 		return event.isEmpty()?guard:event+"?";
 	}
+
+//	@Override
+//	public String toString() {
+//		return "";
+//	}
 
 	public String getEvent() {
 		return event;

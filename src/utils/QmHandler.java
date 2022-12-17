@@ -323,29 +323,33 @@ public class QmHandler {
 
                 mxCell target = (mxCell) verticesArray.get(t.getTargetStateId());
                 State targetState = (State) target.getValue();
+
                 double targetX = targetState.getPosition().getX();
                 double targetY = targetState.getPosition().getY();
 
                 mxCell newEdge = (mxCell) graph.insertEdge(graph.getDefaultParent(), t.getTransitionId(), t, source, target);
+
 
                 mxGeometry edgeGeometry = new mxGeometry();
                 edgeGeometry.setTerminalPoint(new mxPoint(sourceX, sourceY), true);
                 edgeGeometry.setTerminalPoint(new mxPoint(targetX, targetY), false);
                 edgeGeometry.setRelative(false);
                 newEdge.setGeometry(edgeGeometry);
+
             }
         } finally {
             graph.getModel().endUpdate();
         }
 
-//         mxFastOrganicLayout layout = new mxFastOrganicLayout(graph);
-        mxCompactTreeLayout layout = new mxCompactTreeLayout(graph, true);
-        layout.setLevelDistance(30);
-        layout.setGroupPadding(50);
-        layout.setNodeDistance(50);
-        layout.setUseBoundingBox(false);
-        layout.setEdgeRouting(true);
-        layout.setHorizontal(true);
+         mxFastOrganicLayout layout = new mxFastOrganicLayout(graph);
+//        mxCompactTreeLayout layout = new mxCompactTreeLayout(graph, true);
+//        layout.setLevelDistance(50);
+//        layout.setGroupPadding(50);
+//        layout.setNodeDistance(80);
+        layout.setUseBoundingBox(true);
+//        layout.setEdgeRouting(true);
+//        layout.setHorizontal(true);
+
         layout.execute(graph.getDefaultParent());
         return layout.getGraph();
 //        return graph;
