@@ -120,8 +120,10 @@ public class UppaalXmlHandler {
             transformer.setOutputProperty("omit-xml-declaration", "no");
             transformer.setOutputProperty("method", "xml");
             DOMImplementation domImpl = this.uppaalDoc.getImplementation();
-            DocumentType doctype = domImpl.createDocumentType("doctype","-//Uppaal Team//DTD Flat System 1.1//EN",
-                    "http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd");
+//            DocumentType doctype = domImpl.createDocumentType("doctype","-//Uppaal Team//DTD Flat System 1.1//EN",
+//                    "http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd");
+
+            DocumentType doctype = domImpl.createDocumentType("doctype","-//Uppaal Team//DTD Flat System 1.1//EN" ,"http://www.it.uu.se/research/group/darts/uppaal/flat-1_1.dtd");
             transformer.setOutputProperty("doctype-public", doctype.getPublicId());
             transformer.setOutputProperty("doctype-system", doctype.getSystemId());
             this.uppaalDoc.setXmlStandalone(true);

@@ -1,304 +1,102 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE nta PUBLIC "-//Uppaal Team//DTD Flat System 1.1//EN" "http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd">
+<!DOCTYPE nta PUBLIC "-//Uppaal Team//DTD Flat System 1.1//EN" "http://www.it.uu.se/research/group/darts/uppaal/flat-1_1.dtd">
 <nta>
-    <declaration>chan POLICE_INTERRUPT;
+    <declaration>chan TIMEOUT0;
 
-chan AFTER_60;
+chan BTN_PRESSED;
 
-chan AFTER_30;
-
-chan AFTER_5;
-
-chan ENABLE_TIMER;
-
-chan EVERY_1;
-
-chan AFTER_35;
-
-chan DISABLE_TIMER;
 clock t;
 </declaration>
     <template>
         <name>Automata</name>
-        <location id="e7365a5f-a798-4fc7-a604-330f1cc73567" x="0.0" y="80.0">
-            <name x="-8.0" y="72.0">s0</name>
+        <location id="e32c231b-0507-4d52-9f99-3cb5fae2d927" x="8.0" y="83.0">
+            <name x="0.0" y="75.0">s1</name>
         </location>
-        <location id="1de5079e-d95f-4fec-877d-231a24649d86" x="670.0" y="230.0">
-            <name x="662.0" y="222.0">rouge</name>
+        <location id="22fc3d80-17db-47ee-86b8-0bc2acb481d6" x="138.0" y="83.0">
+            <name x="130.0" y="75.0">active</name>
         </location>
-        <location id="0cdeb051-f84e-4424-921d-7e086ca50463" x="140.0" y="150.0">
-            <name x="132.0" y="142.0">normal</name>
+        <location id="e67a2818-fe4d-45a4-875a-05884253d5e2" x="268.0" y="8.0">
+            <name x="260.0" y="0.0">inactive</name>
         </location>
-        <location id="c66b4ec7-8ffc-45b4-b15e-fba516a68289" x="260.0" y="350.0">
-            <name x="252.0" y="342.0">Interrupteur</name>
+        <location id="9d9b443a-3e97-492e-939e-a111bce6eba0" x="180.0" y="350.0">
+            <name x="172.0" y="342.0">off</name>
         </location>
-        <location id="8fdf659c-9d64-4ed1-9da1-865cd4967673" x="260.0" y="0.0">
-            <name x="252.0" y="-8.0">Vert</name>
+        <location id="8c71ee24-4827-4ce4-b3cc-7538f4c6f05e" x="500.0" y="210.0">
+            <name x="492.0" y="202.0">on</name>
         </location>
-        <location id="8338be46-a8ef-401d-995b-b26b5dc4ca63" x="570.0" y="80.0">
-            <name x="562.0" y="72.0">Jaune</name>
-        </location>
-        <location id="767a45be-5b38-4800-ab60-4979bb124402" x="320.0" y="240.0">
-            <name x="312.0" y="232.0">desactive</name>
-        </location>
-        <location id="a9a98e00-42e5-4dd6-bb23-d419c5606a94" x="290.0" y="430.0">
-            <name x="282.0" y="422.0">horloge</name>
-        </location>
-        <location id="3bc19306-647c-4170-ba3d-260682a70c03" x="60.0" y="310.0">
-            <name x="52.0" y="302.0">JauneClignotant</name>
-        </location>
-        <location id="53e7607b-052f-418c-966c-4fb71fe48219" x="40.0" y="480.0">
-            <name x="32.0" y="472.0">NoirClignotant</name>
-        </location>
-        <location id="5fad5ddd-1724-4307-a31d-4bb0cbd3a70b" x="600.0" y="420.0">
-            <name x="592.0" y="412.0">Initial</name>
-        </location>
-        <location id="371141ad-557b-4487-a27c-1225d6a63a28" x="280.0" y="520.0">
-            <name x="272.0" y="512.0">Alarmerouge</name>
-        </location>
-        <location id="061e3021-8a61-4e2a-89b7-835e9244fd22" x="670.0" y="520.0">
-            <name x="662.0" y="512.0">Alarmevert</name>
-        </location>
-        <init ref="e7365a5f-a798-4fc7-a604-330f1cc73567"/>
+        <init ref="e32c231b-0507-4d52-9f99-3cb5fae2d927"/>
         <transition>
-            <source ref="e7365a5f-a798-4fc7-a604-330f1cc73567"/>
-            <target ref="1de5079e-d95f-4fec-877d-231a24649d86"/>
+            <source ref="e32c231b-0507-4d52-9f99-3cb5fae2d927"/>
+            <target ref="22fc3d80-17db-47ee-86b8-0bc2acb481d6"/>
             <label kind="guard" x="0" y="0"/>
         </transition>
         <transition>
-            <source ref="0cdeb051-f84e-4424-921d-7e086ca50463"/>
-            <target ref="c66b4ec7-8ffc-45b4-b15e-fba516a68289"/>
-            <label kind="guard" x="0" y="0"/>
-            <label kind="synchronisation" x="0" y="30">POLICE_INTERRUPT?</label>
+            <source ref="22fc3d80-17db-47ee-86b8-0bc2acb481d6"/>
+            <target ref="e67a2818-fe4d-45a4-875a-05884253d5e2"/>
+            <label kind="guard" x="0" y="0">t==3</label>
         </transition>
         <transition>
-            <source ref="0cdeb051-f84e-4424-921d-7e086ca50463"/>
-            <target ref="8fdf659c-9d64-4ed1-9da1-865cd4967673"/>
-            <label kind="guard" x="0" y="0"/>
-            <label kind="synchronisation" x="0" y="30">AFTER_60?</label>
-        </transition>
-        <transition>
-            <source ref="0cdeb051-f84e-4424-921d-7e086ca50463"/>
-            <target ref="8338be46-a8ef-401d-995b-b26b5dc4ca63"/>
-            <label kind="guard" x="0" y="0"/>
-            <label kind="synchronisation" x="0" y="30">AFTER_30?</label>
-        </transition>
-        <transition>
-            <source ref="0cdeb051-f84e-4424-921d-7e086ca50463"/>
-            <target ref="1de5079e-d95f-4fec-877d-231a24649d86"/>
-            <label kind="guard" x="0" y="0"/>
-            <label kind="synchronisation" x="0" y="30">AFTER_5?</label>
-        </transition>
-        <transition>
-            <source ref="1de5079e-d95f-4fec-877d-231a24649d86"/>
-            <target ref="8fdf659c-9d64-4ed1-9da1-865cd4967673"/>
-            <label kind="guard" x="0" y="0"/>
-            <label kind="synchronisation" x="0" y="30">AFTER_60?</label>
-        </transition>
-        <transition>
-            <source ref="8fdf659c-9d64-4ed1-9da1-865cd4967673"/>
-            <target ref="8338be46-a8ef-401d-995b-b26b5dc4ca63"/>
-            <label kind="guard" x="0" y="0"/>
-            <label kind="synchronisation" x="0" y="30">AFTER_30?</label>
-        </transition>
-        <transition>
-            <source ref="8338be46-a8ef-401d-995b-b26b5dc4ca63"/>
-            <target ref="1de5079e-d95f-4fec-877d-231a24649d86"/>
-            <label kind="guard" x="0" y="0"/>
-            <label kind="synchronisation" x="0" y="30">AFTER_5?</label>
-        </transition>
-        <transition>
-            <source ref="767a45be-5b38-4800-ab60-4979bb124402"/>
-            <target ref="a9a98e00-42e5-4dd6-bb23-d419c5606a94"/>
-            <label kind="guard" x="0" y="0"/>
-            <label kind="synchronisation" x="0" y="30">ENABLE_TIMER?</label>
-        </transition>
-        <transition>
-            <source ref="3bc19306-647c-4170-ba3d-260682a70c03"/>
-            <target ref="53e7607b-052f-418c-966c-4fb71fe48219"/>
-            <label kind="guard" x="0" y="0"/>
-            <label kind="synchronisation" x="0" y="30">EVERY_1?</label>
-        </transition>
-        <transition>
-            <source ref="53e7607b-052f-418c-966c-4fb71fe48219"/>
-            <target ref="3bc19306-647c-4170-ba3d-260682a70c03"/>
-            <label kind="guard" x="0" y="0"/>
-            <label kind="synchronisation" x="0" y="30">EVERY_1?</label>
-        </transition>
-        <transition>
-            <source ref="5fad5ddd-1724-4307-a31d-4bb0cbd3a70b"/>
-            <target ref="371141ad-557b-4487-a27c-1225d6a63a28"/>
+            <source ref="22fc3d80-17db-47ee-86b8-0bc2acb481d6"/>
+            <target ref="9d9b443a-3e97-492e-939e-a111bce6eba0"/>
             <label kind="guard" x="0" y="0"/>
         </transition>
         <transition>
-            <source ref="371141ad-557b-4487-a27c-1225d6a63a28"/>
-            <target ref="061e3021-8a61-4e2a-89b7-835e9244fd22"/>
+            <source ref="22fc3d80-17db-47ee-86b8-0bc2acb481d6"/>
+            <target ref="8c71ee24-4827-4ce4-b3cc-7538f4c6f05e"/>
             <label kind="guard" x="0" y="0"/>
-            <label kind="synchronisation" x="0" y="30">AFTER_60?</label>
+            <label kind="synchronisation" x="0" y="30">TIMEOUT0?</label>
         </transition>
         <transition>
-            <source ref="061e3021-8a61-4e2a-89b7-835e9244fd22"/>
-            <target ref="371141ad-557b-4487-a27c-1225d6a63a28"/>
-            <label kind="guard" x="0" y="0"/>
-            <label kind="synchronisation" x="0" y="30">AFTER_35?</label>
+            <source ref="8c71ee24-4827-4ce4-b3cc-7538f4c6f05e"/>
+            <target ref="e67a2818-fe4d-45a4-875a-05884253d5e2"/>
+            <label kind="guard" x="0" y="0">t==5</label>
         </transition>
         <transition>
-            <source ref="c66b4ec7-8ffc-45b4-b15e-fba516a68289"/>
-            <target ref="3bc19306-647c-4170-ba3d-260682a70c03"/>
-            <label kind="guard" x="0" y="0"/>
-        </transition>
-        <transition>
-            <source ref="3bc19306-647c-4170-ba3d-260682a70c03"/>
-            <target ref="0cdeb051-f84e-4424-921d-7e086ca50463"/>
-            <label kind="guard" x="0" y="0"/>
-            <label kind="synchronisation" x="0" y="30">POLICE_INTERRUPT?</label>
-        </transition>
-        <transition>
-            <source ref="a9a98e00-42e5-4dd6-bb23-d419c5606a94"/>
-            <target ref="5fad5ddd-1724-4307-a31d-4bb0cbd3a70b"/>
+            <source ref="8c71ee24-4827-4ce4-b3cc-7538f4c6f05e"/>
+            <target ref="9d9b443a-3e97-492e-939e-a111bce6eba0"/>
             <label kind="guard" x="0" y="0"/>
         </transition>
         <transition>
-            <source ref="5fad5ddd-1724-4307-a31d-4bb0cbd3a70b"/>
-            <target ref="767a45be-5b38-4800-ab60-4979bb124402"/>
+            <source ref="9d9b443a-3e97-492e-939e-a111bce6eba0"/>
+            <target ref="8c71ee24-4827-4ce4-b3cc-7538f4c6f05e"/>
             <label kind="guard" x="0" y="0"/>
-            <label kind="synchronisation" x="0" y="30">DISABLE_TIMER?</label>
+            <label kind="synchronisation" x="0" y="30">TIMEOUT0?</label>
+        </transition>
+        <transition>
+            <source ref="e67a2818-fe4d-45a4-875a-05884253d5e2"/>
+            <target ref="22fc3d80-17db-47ee-86b8-0bc2acb481d6"/>
+            <label kind="guard" x="0" y="0"/>
+            <label kind="synchronisation" x="0" y="30">BTN_PRESSED?</label>
         </transition>
     </template>
     <template>
-        <name>Police_interrupt</name>
-        <location id="49091d65-ddc3-4fec-8dda-04a2d0f64cdd" x="0.0" y="0.0">
-            <name x="-8.0" y="-8.0">initPolice_interrupt</name>
+        <name>Btn_pressed</name>
+        <location id="4d69b70b-402b-4e73-b044-98c9e5d0e4f9" x="0.0" y="0.0">
+            <name x="-8.0" y="-8.0">initBtn_pressed</name>
         </location>
-        <init ref="49091d65-ddc3-4fec-8dda-04a2d0f64cdd"/>
+        <init ref="4d69b70b-402b-4e73-b044-98c9e5d0e4f9"/>
         <transition>
-            <source ref="49091d65-ddc3-4fec-8dda-04a2d0f64cdd"/>
-            <target ref="49091d65-ddc3-4fec-8dda-04a2d0f64cdd"/>
+            <source ref="4d69b70b-402b-4e73-b044-98c9e5d0e4f9"/>
+            <target ref="4d69b70b-402b-4e73-b044-98c9e5d0e4f9"/>
             <label kind="guard" x="0" y="0"/>
-            <label kind="synchronisation" x="0" y="30">POLICE_INTERRUPT!</label>
+            <label kind="synchronisation" x="0" y="30">BTN_PRESSED!</label>
         </transition>
     </template>
     <template>
-        <name>Disable_timer</name>
-        <location id="5e5227cb-1bb5-404c-baf4-f1b5eeeee2eb" x="0.0" y="0.0">
-            <name x="-8.0" y="-8.0">initDisable_timer</name>
+        <name>Timeout0</name>
+        <location id="84daaf92-9e25-4503-a11c-8b78e083cd25" x="0.0" y="0.0">
+            <name x="-8.0" y="-8.0">initTimeout0</name>
         </location>
-        <init ref="5e5227cb-1bb5-404c-baf4-f1b5eeeee2eb"/>
+        <init ref="84daaf92-9e25-4503-a11c-8b78e083cd25"/>
         <transition>
-            <source ref="5e5227cb-1bb5-404c-baf4-f1b5eeeee2eb"/>
-            <target ref="5e5227cb-1bb5-404c-baf4-f1b5eeeee2eb"/>
+            <source ref="84daaf92-9e25-4503-a11c-8b78e083cd25"/>
+            <target ref="84daaf92-9e25-4503-a11c-8b78e083cd25"/>
             <label kind="guard" x="0" y="0"/>
-            <label kind="synchronisation" x="0" y="30">DISABLE_TIMER!</label>
-        </transition>
-    </template>
-    <template>
-        <name>After_60</name>
-        <location id="c8411615-b492-4bcf-b3d4-fd5dce645dcf" x="0.0" y="0.0">
-            <name x="-8.0" y="-8.0">initAfter_60</name>
-            <label kind="invariant" x="-18.0" y="10.0">t &lt;= 60</label>
-        </location>
-        <location id="de01cea4-c037-4485-89bb-fb696e853acd" x="0.0" y="0.0">
-            <name x="-8.0" y="-8.0">stateAfter_60</name>
-        </location>
-        <init ref="c8411615-b492-4bcf-b3d4-fd5dce645dcf"/>
-        <transition>
-            <source ref="c8411615-b492-4bcf-b3d4-fd5dce645dcf"/>
-            <target ref="de01cea4-c037-4485-89bb-fb696e853acd"/>
-            <label kind="guard" x="0" y="0">t == 60</label>
-            <label kind="assignment" x="0" y="15">t := 0</label>
-            <label kind="synchronisation" x="0" y="30">AFTER_60!</label>
-        </transition>
-    </template>
-    <template>
-        <name>Enable_timer</name>
-        <location id="398a44b2-feb5-4f84-9197-6e230d28af03" x="0.0" y="0.0">
-            <name x="-8.0" y="-8.0">initEnable_timer</name>
-        </location>
-        <init ref="398a44b2-feb5-4f84-9197-6e230d28af03"/>
-        <transition>
-            <source ref="398a44b2-feb5-4f84-9197-6e230d28af03"/>
-            <target ref="398a44b2-feb5-4f84-9197-6e230d28af03"/>
-            <label kind="guard" x="0" y="0"/>
-            <label kind="synchronisation" x="0" y="30">ENABLE_TIMER!</label>
-        </transition>
-    </template>
-    <template>
-        <name>After_30</name>
-        <location id="39e0a994-69ba-4da1-ae3d-a8b91293a7d0" x="0.0" y="0.0">
-            <name x="-8.0" y="-8.0">initAfter_30</name>
-            <label kind="invariant" x="-18.0" y="10.0">t &lt;= 30</label>
-        </location>
-        <location id="39d371af-8d66-4432-b78b-0350bd2c59c0" x="0.0" y="0.0">
-            <name x="-8.0" y="-8.0">stateAfter_30</name>
-        </location>
-        <init ref="39e0a994-69ba-4da1-ae3d-a8b91293a7d0"/>
-        <transition>
-            <source ref="39e0a994-69ba-4da1-ae3d-a8b91293a7d0"/>
-            <target ref="39d371af-8d66-4432-b78b-0350bd2c59c0"/>
-            <label kind="guard" x="0" y="0">t == 30</label>
-            <label kind="assignment" x="0" y="15">t := 0</label>
-            <label kind="synchronisation" x="0" y="30">AFTER_30!</label>
-        </transition>
-    </template>
-    <template>
-        <name>After_5</name>
-        <location id="28b43ce9-c287-4338-90ac-455afb25623d" x="0.0" y="0.0">
-            <name x="-8.0" y="-8.0">initAfter_5</name>
-            <label kind="invariant" x="-18.0" y="10.0">t &lt;= 5</label>
-        </location>
-        <location id="422ec496-5875-457a-b5e8-bee10eb6fdf2" x="0.0" y="0.0">
-            <name x="-8.0" y="-8.0">stateAfter_5</name>
-        </location>
-        <init ref="28b43ce9-c287-4338-90ac-455afb25623d"/>
-        <transition>
-            <source ref="28b43ce9-c287-4338-90ac-455afb25623d"/>
-            <target ref="422ec496-5875-457a-b5e8-bee10eb6fdf2"/>
-            <label kind="guard" x="0" y="0">t == 5</label>
-            <label kind="assignment" x="0" y="15">t := 0</label>
-            <label kind="synchronisation" x="0" y="30">AFTER_5!</label>
-        </transition>
-    </template>
-    <template>
-        <name>Every_1</name>
-        <location id="f11bba9c-a637-43d4-8ad3-ecb8a8e1ad29" x="0.0" y="0.0">
-            <name x="-8.0" y="-8.0">initEvery_1</name>
-            <label kind="invariant" x="-18.0" y="10.0">t &lt;= 1</label>
-        </location>
-        <init ref="f11bba9c-a637-43d4-8ad3-ecb8a8e1ad29"/>
-        <transition>
-            <source ref="f11bba9c-a637-43d4-8ad3-ecb8a8e1ad29"/>
-            <target ref="f11bba9c-a637-43d4-8ad3-ecb8a8e1ad29"/>
-            <label kind="guard" x="0" y="0">t == 1</label>
-            <label kind="assignment" x="0" y="15">t := 0</label>
-            <label kind="synchronisation" x="0" y="30">EVERY_1!</label>
-        </transition>
-    </template>
-    <template>
-        <name>After_35</name>
-        <location id="17653d02-14a0-474a-aac6-e372a28e5352" x="0.0" y="0.0">
-            <name x="-8.0" y="-8.0">initAfter_35</name>
-            <label kind="invariant" x="-18.0" y="10.0">t &lt;= 35</label>
-        </location>
-        <location id="77dbf82c-2089-48d5-9c23-320dcd911dbe" x="0.0" y="0.0">
-            <name x="-8.0" y="-8.0">stateAfter_35</name>
-        </location>
-        <init ref="17653d02-14a0-474a-aac6-e372a28e5352"/>
-        <transition>
-            <source ref="17653d02-14a0-474a-aac6-e372a28e5352"/>
-            <target ref="77dbf82c-2089-48d5-9c23-320dcd911dbe"/>
-            <label kind="guard" x="0" y="0">t == 35</label>
-            <label kind="assignment" x="0" y="15">t := 0</label>
-            <label kind="synchronisation" x="0" y="30">AFTER_35!</label>
+            <label kind="synchronisation" x="0" y="30">TIMEOUT0!</label>
         </transition>
     </template>
     <system>automata = Automata();
-police_interrupt = Police_interrupt();
-disable_timer = Disable_timer();
-after_60 = After_60();
-enable_timer = Enable_timer();
-after_30 = After_30();
-after_5 = After_5();
-every_1 = Every_1();
-after_35 = After_35();
-system automata,police_interrupt,disable_timer,after_60,enable_timer,after_30,after_5,every_1,after_35;</system>
+btn_pressed = Btn_pressed();
+timeout0 = Timeout0();
+system automata,btn_pressed,timeout0;</system>
 </nta>

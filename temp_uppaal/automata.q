@@ -1,1 +1,1 @@
-E<>(automata.rouge && t<=60)
+E<> (automata.active && t>5)

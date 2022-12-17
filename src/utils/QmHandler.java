@@ -22,10 +22,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
+import java.util.*;
 
 public class QmHandler {
     private static HashMap<String, String> excepts = new HashMap<String, String>();
@@ -38,6 +35,8 @@ public class QmHandler {
     protected HashMap<String, String> transitionEvents = new HashMap<String, String>();
     protected HashMap<String, String> statesId = new HashMap<String, String>();
     protected ArrayList<String> declarations = new ArrayList<>();
+    protected ArrayList<String> guardDeclarations = new ArrayList<>();
+
     private App app;
 
     public QmHandler(App parent) {
@@ -207,6 +206,8 @@ public class QmHandler {
         // assign guards and updates to transitions
         System.out.println("=================DEBUG QUANTUM LEAPS===================");
         StringBuilder globalDeclarations = new StringBuilder();
+
+        //event declarations
         if(!declarations.isEmpty()) {
             for (String declaration : declarations) {
 
@@ -217,8 +218,19 @@ public class QmHandler {
                 }
 
             }
-//            globalDeclarations.append(";");
+        }
 
+        //guard declarations to clock variables
+        if(!guardDeclarations.isEmpty()) {
+            for (String declaration : guardDeclarations) {
+
+                if(globalDeclarations.length() == 0) {
+                    globalDeclarations = new StringBuilder("clock "+declaration).append(";\n");
+                } else {
+                    globalDeclarations.append("clock ").append(declaration).append(";\n");
+                }
+
+            }
         }
        for (Transition transition : transitionList) {
             transition.setGuard(transitionGuards.get(transition.getTransitionId()) == null ? ""
@@ -307,8 +319,6 @@ public class QmHandler {
     }
 
     private String getGlyphState(Element node) {
-        System.out.println("NODE ELEMENT: "+node.getNodeName());
-        System.out.println("NODE TEXT CONTENT: "+node.getTextContent());
         if(node.getNodeName().equals("smstate")) {
             return getGliphSubMachine(node);
         } else {
@@ -337,9 +347,7 @@ public class QmHandler {
 
 
     private Position getStatePosition(String glyphPositions) {
-        System.out.println("GLY POSITION: "+ glyphPositions);
         String[] positions = glyphPositions.split(",");
-        System.out.println("POSITION X =  "+ Double.parseDouble(positions[0])+" POSITION Y = "+Double.parseDouble(positions[1]));
         return new Position(Double.parseDouble(positions[0])*2,Double.parseDouble(positions[1])*2);
     }
 
@@ -671,6 +679,7 @@ public class QmHandler {
     }
 
     public void setTransitionGuard(String transitionId, String guard) {
+        handleTransitionGuard(guard);
         if (this.transitionGuards.containsKey(transitionId)) {
 
             String oldValue = this.transitionGuards.get(transitionId);
@@ -683,12 +692,54 @@ public class QmHandler {
         }
     }
 
+    public void handleTransitionGuard(String expression) {
+        String variable = "";
+        for (int i = 0; i < expression.length(); i++) {
+            char ch = expression.charAt(i);
+            if (Character.isAlphabetic(ch)) {
+                variable += ch;
+            } else if (!variable.isEmpty()) {
+                if (!guardDeclarations.contains(variable)) {
+                    guardDeclarations.add(variable);
+                }
+                variable = "";
+            } else if (Character.isDigit(ch)) {
+                while (Character.isDigit(ch)) {
+                    ch = (i + 1 < expression.length()) ? expression.charAt(++i) : ' ';
+                }
+            } else if (ch == '(') {
+                // ignore opening parenthesis
+            } else if (ch == ')') {
+                // ignore closing parenthesis
+            } else if (ch == '&' || ch == '|') {
+                // check if next character is also an operator
+                char nextCh = (i + 1 < expression.length()) ? expression.charAt(i + 1) : ' ';
+                if (nextCh == ch) {
+                    // skip both characters
+                    i++;
+                }
+            }
+        }
+        if (!variable.isEmpty() && !guardDeclarations.contains(variable)) {
+            guardDeclarations.add(variable);
+        }
+//        System.out.println("GUARD DECLARATION FINALLY FOR  "+expression+" :"+guardDeclarations);
+    }
+
+
+
     public void setTransitionEvent(String transitionId, String event) {
         this.transitionEvents.put(transitionId,event);
         if(!declarations.contains(event)) {
             declarations.add(event);
         }
     }
+
+
+
+
+
+
 
 
 }

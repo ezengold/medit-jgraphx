@@ -91,6 +91,7 @@ public class MeSemanticAnalyzer {
 					|| exp instanceof LessThanEqual || exp instanceof NotEqual || exp instanceof Equal
 					|| exp instanceof BooleanLiteral || exp instanceof And || exp instanceof  Or) ) {
 
+				System.out.println("EXPRESSION: "+exp.toString());
 				error(ErrorType.INVALID_CONDITION, null);
 			}
 
