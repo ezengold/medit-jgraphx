@@ -303,8 +303,8 @@ public class QmHandler {
             State.NB = 0;
             for (State s : stateList) {
                 Object vertex = graph.insertVertex(graph.getDefaultParent(), s.getStateId(), s, s.getPosition().getX(),
-                        s.getPosition().getY(), 50, 50);
-
+                        s.getPosition().getY(), 60, 60);
+                ((mxCell)vertex).setStyle("fontSize= 14");
                 if (s.isInitial()) {
 
                     ((mxCell) vertex).setStyle("fillColor=#888888;strokeColor=#dddddd");
@@ -338,15 +338,27 @@ public class QmHandler {
 
             }
         } finally {
+            graph.setEdgeLabelsMovable(true);
+            graph.setKeepEdgesInBackground(true);
+            graph.setAlternateEdgeStyle("fontSize=15");
             graph.getModel().endUpdate();
+
         }
 
          mxFastOrganicLayout layout = new mxFastOrganicLayout(graph);
+
+
+
 //        mxCompactTreeLayout layout = new mxCompactTreeLayout(graph, true);
 //        layout.setLevelDistance(50);
 //        layout.setGroupPadding(50);
 //        layout.setNodeDistance(80);
+
+        layout.setInitialTemp(20);
+        layout.setMinDistanceLimit(30);
+        layout.setForceConstant(100);
         layout.setUseBoundingBox(true);
+
 //        layout.setEdgeRouting(true);
 //        layout.setHorizontal(true);
 

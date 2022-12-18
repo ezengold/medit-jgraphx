@@ -153,8 +153,16 @@ public class Verifier extends JPanel {
 						// Read any errors from the attempted command
 						System.out.println("Here is the standard error of the command (if any):\n");
 						while ((s = stdError.readLine()) != null) {
+							if(s.contains("automata has no member named")) {
+								statusVerifier.error("Une erreur s'est produite. Veuillez vérifier si les états sont existants");
+							} else if(s.contains("syntax error")) {
+								statusVerifier.error("Une erreur de syntaxe s'est produite. Vérifier l'exactitude de la proprieté");
+							} else if(s.contains("type error")) {
+								statusVerifier.error("Une erreur de type s'est produite. Vérifier l'exactitude de la proprieté");
+							}
+//							statusVerifier.error(s);
 							System.out.println(s);
-							statusVerifier.error(s);
+
 						}
 
 
